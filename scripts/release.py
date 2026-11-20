@@ -18,4 +18,4 @@ if not advanced:raise SystemExit('本次没有可发布的新版本，保留现�
 export_snapshot(snapshot,a.out)
 tracking=Path(a.root)/'tracking.json'
 if tracking.exists():atomic_json(Path(a.out)/'tracking.json',json.loads(tracking.read_text()))
-print(json.dumps({'snapshot':snapshot['snapshot_id'],'modules':{k:v['status'] for k,v in snapshot['modules'].items()}},ensure_ascii=False))
+print(json.dumps({'snapshot':snapshot['snapshot_id'],'modules':{k:v['status'] for k,v in snapshot['modules'].items()},'source_failures':{k:v.get('error') for k,v in snapshot.get('evidence',{}).items() if v['status']=='failed'}},ensure_ascii=False))
