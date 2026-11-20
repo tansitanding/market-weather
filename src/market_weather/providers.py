@@ -116,6 +116,24 @@ def cn_history(fetch, code, now):
     return rows
 
 
+def growth_index_history(fetch, now):
+    try:
+        return cn_history(fetch, '399006', now)
+    except (RuntimeError, ValueError, KeyError, TypeError):
+        url = ('https://quotes.sina.cn/cn/api/jsonp_v2.php/var=/'
+               'CN_MarketDataService.getKLineData?symbol=sz399006&scale=240&ma=no&datalen=12')
+        payload = fetch.get('sina_sz399006', url).decode('utf-8').strip()
+        match = re.search(r'var=\((\[.*\])\);$', payload, re.S)
+        if not match:
+            raise ValueError('创业板备用数据格式无效')
+        rows = [{'date': r['day'], 'close': r['close'], 'amount': None}
+                for r in json.loads(match[1])]
+        rows = completed_cn(rows, now)
+        if len(rows) < 2:
+            raise ValueError('创业板收盘数据不足')
+        return rows
+
+
 def yahoo_quote(fetch, symbol, name, asset_type, now):
     url = 'https://query1.finance.yahoo.com/v8/finance/chart/' + urllib.parse.quote(symbol, safe='') + '?range=6mo&interval=1d'
     data = fetch.json('yahoo_' + re.sub(r'[^a-zA-Z0-9]', '_', symbol), url)

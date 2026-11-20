@@ -8,7 +8,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
 from pathlib import Path
 from .metrics import rank_industries, recover_daily_returns
-from .providers import (CST, SOURCES, Fetcher, sw_universe, sw_history, cn_history,
+from .providers import (CST, SOURCES, Fetcher, sw_universe, sw_history, cn_history, growth_index_history,
                         yahoo_quote, rss_news, pbc_news, merge_news)
 from .storage import atomic_json, publish
 from .news import curate_news
@@ -53,7 +53,7 @@ def collect(root, now=None, replay=None, settings=None):
         jobs[pool.submit(guarded, lambda: market_universe(fetch, now))] = ('breadth', 'all', None)
         jobs[pool.submit(guarded, lambda: cn_history(fetch, '000300', now))] = ('benchmark', '000300', None)
         jobs[pool.submit(guarded, lambda: cn_history(fetch, '000001', now))] = ('cn_index', '000001', None)
-        jobs[pool.submit(guarded, lambda: cn_history(fetch, '399006', now))] = ('cn_index', '399006', None)
+        jobs[pool.submit(guarded, lambda: growth_index_history(fetch, now))] = ('cn_index', '399006', None)
         for industry in universe.get('data', []):
             code, name = industry['code'], industry['name']
             jobs[pool.submit(guarded, lambda c=code: sw_history(fetch, c, now))] = ('industry', code, name)
@@ -100,6 +100,8 @@ def collect(root, now=None, replay=None, settings=None):
     else:
         modules['industry'] = industry
     if benchmark:
+        previous_indices = prior['modules'].get('cn_market', {}).get('data', {}).get('indices', {})
+        cn_indices = {**previous_indices, **cn_indices}
         modules['cn_market'] = {'status': 'succeeded', 'collected_at': now.isoformat(), 'carried_forward': False,
                                 'data': {'benchmark': benchmark, 'indices': cn_indices}, 'source_as_of_date': benchmark[-1]['date']}
     else:
