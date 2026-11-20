@@ -160,10 +160,73 @@ function cnRows(snapshot: Snapshot) {
       : empty("A 股资料暂不可用", "等待完整日线，不用模拟数值补齐。"))
   );
 }
+function climate(snapshot: Snapshot) {
+  const m = snapshot.modules.temperature,
+    t = dataOf(m);
+  return `<section class="hero"><div class="eyebrow">最新市场概览</div><h1>看市场变化<br>也看判断的依据</h1>${t ? `<div class="climate-score"><strong>${decimal(t.score, 1)}<small> / 100</small></strong><span>${e(t.label)}</span></div><div class="climate-scale"><i style="left:${t.score}%"></i></div><div class="scale-labels"><span>冷</span><span>中性</span><span>热</span></div><p class="hero-note">${e(t.as_of_date)} · ${e(t.basis)}</p>` : `<div class="temperature-placeholder"><strong>冷暖暂不可评估</strong><span>等待同一日终的完整行情与市场广度</span></div>`}<p class="hero-note">透明规则研究 · 不执行交易 · 不代表上涨概率</p></section>${moduleNote(m, "市场温度")}${t ? card("温度如何得出", `${t.components.map((c) => `<div class="factor"><div><strong>${e(c.name)}</strong><b>${decimal(c.score, 1)}<small> · 权重 ${Math.round(c.weight * 100)}%</small></b></div><p>${e(c.detail)}</p></div>`).join("")}<p class="caption">${e(t.calibration)} · 行情：东方财富；广度：新浪财经报价池</p>`) : ""}`;
+}
+function macroSummary(snapshot: Snapshot) {
+  const m = snapshot.modules.macro,
+    d = dataOf(m);
+  if (!d) return "";
+  return card(
+    "宏观线索与判断",
+    `${moduleNote(m, "宏观解读")}<span class="badge">事实依据</span>${d.facts.map((f) => `<div class="story"><strong>${e(f.title)}</strong><p>${e(f.text)}</p><small>${e(timeLabel(f.as_of))} 北京时间</small>${external(f.source_url, "来源")}</div>`).join("")}<h3>条件化判断</h3><p>${e(d.interpretation)}</p><h3>仍需验证</h3><p>${e(d.counter_evidence)}</p><p class="caption">${e(d.method)}</p>`,
+  );
+}
+function sectorReviews(snapshot: Snapshot, code?: string) {
+  const rows = (
+    dataOf(snapshot.modules.industry)?.recommendations ?? []
+  ).filter((r) => !code || r.code === code);
+  return card(
+    "行业研究观察",
+    rows.length
+      ? rows
+          .map(
+            (r) =>
+              `<article class="sector-review"><a class="section-link" href="#/industry/${encodeURIComponent(r.code)}">${e(r.name)}</a><span class="badge">${e(r.state)}</span><p>${e(r.conclusion)}</p>${fold("sector-" + r.code, "查看条件、风险与版本", `<h3>观察条件</h3><p>${e(r.trigger)}</p><h3>失效条件</h3><p>${e(r.invalidation)}</p><ul>${r.risks.map((v) => `<li>${e(v)}</li>`).join("")}</ul><small>${e(r.rule_version)} · ${e(timeLabel(r.published_at))}</small>`)}</article>`,
+          )
+          .join("")
+      : empty(
+          "暂无行业入选",
+          "同时要求30日收益、相对强度和5日收益为正。排行靠前并不自动入选。",
+        ),
+  );
+}
+function trackingSection(snapshot: Snapshot) {
+  const rows = dataOf(snapshot.modules.tracking) ?? [];
+  const labels: Record<string, string> = {
+    watching: "等待触发",
+    confirmed: "信号确认",
+    model_position: "模型观察中",
+    completed: "观察完成",
+    cancelled: "入场取消",
+    expired: "观察过期",
+    adjustment_changed: "复权变更暂停",
+  };
+  return card(
+    "5 / 10 / 20 日纸面跟踪",
+    `<p class="caption">保存原始信号和规则版本；仅为纸面模拟，非用户成交。包含0.1%往返成本，未模拟全部滑点与涨跌停排队。</p>${
+      rows.length
+        ? rows
+            .slice(-15)
+            .reverse()
+            .map(
+              (r) =>
+                `<article class="story"><strong>${e(r.name)} · ${e(r.code)}</strong><span class="badge">${e(labels[r.status] ?? r.status)}</span><small>建立于 ${e(timeLabel(r.created_at))}</small><div class="metrics">${[5, 10, 20].map((n) => metric(n + "日净收益", r.horizons[String(n)] ? signed(r.horizons[String(n)].net_return_pct) : "待观察")).join("")}</div><p class="caption">${e(r.note)}</p></article>`,
+            )
+            .join("")
+        : empty(
+            "尚无可跟踪信号",
+            "从首个满足条件的真实研究信号开始累计，不回填示例业绩。",
+          )
+    }`,
+  );
+}
 function home(snapshot: Snapshot) {
   const industry = dataOf(snapshot.modules.industry);
   const globals = dataOf(snapshot.modules.global) ?? [];
-  return `<section class="hero"><div class="eyebrow">最新市场概览</div><h1>看市场变化<br>也看判断的依据</h1><div class="temperature-placeholder"><strong>冷暖待计算</strong><span>市场状态模型尚未启用</span></div><p class="hero-note">当前已接入行情与资讯；暂不输出温度分数或 AI 投资结论。</p></section>${card("本次资料覆盖", `<div class="coverage"><div><strong>${industry?.valid_count ?? "—"}</strong><span>一级行业</span></div><div><strong>${globals.length}</strong><span>国际观测</span></div><div><strong>${dataOf(snapshot.modules.news)?.length ?? 0}</strong><span>资讯条目</span></div></div>${industry?.missing_session_dates.length ? `<p class="caption">行业窗口有 ${industry.missing_session_dates.length} 个交易日缺口，热度与回撤暂停计算。</p>` : ""}`)}${card("A 股收盘行情", cnRows(snapshot))}${card(
+  return `${climate(snapshot)}${macroSummary(snapshot)}${card("本次资料覆盖", `<div class="coverage"><div><strong>${industry?.valid_count ?? "—"}</strong><span>一级行业</span></div><div><strong>${globals.length}</strong><span>国际观测</span></div><div><strong>${dataOf(snapshot.modules.news)?.length ?? 0}</strong><span>资讯条目</span></div></div>${industry?.missing_session_dates.length ? `<p class="caption">行业窗口有 ${industry.missing_session_dates.length} 个交易日缺口，热度与回撤暂停计算。</p>` : ""}`)}${card("A 股收盘行情", cnRows(snapshot))}${card(
     "行业近 30 日表现",
     `${moduleNote(snapshot.modules.industry, "行业数据")}${
       industry
@@ -232,7 +295,7 @@ function industryPage(snapshot: Snapshot) {
         data.expected_count +
         " 个行业",
     ) +
-    `<div class="window"><span>统计区间</span><strong>${e(data.window_start)} — ${e(data.as_of_date)}</strong><small>30 个交易间隔 · 日终口径</small></div>${moduleNote(m, "行业")}${data.freshness === "lags_benchmark" ? '<div class="module-note">行业数据晚于最新 A 股基准，请以本页截至日期为准。</div>' : ""}<div class="segment" role="group" aria-label="行业排行维度">${[
+    `<div class="window"><span>统计区间</span><strong>${e(data.window_start)} — ${e(data.as_of_date)}</strong><small>30 个交易间隔 · 日终口径</small></div>${moduleNote(m, "行业")}${data.freshness === "lags_benchmark" ? '<div class="module-note">行业尚未更新至最新 A 股基准日期，请以本页截至日期为准。</div>' : ""}<div class="segment" role="group" aria-label="行业排行维度">${[
       ["return", "涨幅"],
       ["heat", "交易热度"],
       ["rising", "升温"],
@@ -258,7 +321,7 @@ function industryPage(snapshot: Snapshot) {
             .join(
               "",
             )}${rows.length > 5 ? `<button class="text-button full" data-action="all-industries">${showAll ? "收起到 Top 5" : "查看全部 " + rows.length + " 个行业"}</button>` : ""}`,
-    )}${card("如何理解这些指标", fold("industry-method", "查看统计口径与缺失处理", "<p>30 日涨幅由起止收盘计算；升温与热度需要完整成交路径。中间交易日缺失时仍可计算起止收益，但热度、升温和完整最大回撤不可计算。</p><p>基准为沪深 300，同区间差值以“百分点”表示。新闻综合热度与行业推荐尚未启用。</p>"))}`
+    )} ${sectorReviews(snapshot)}${card("如何理解这些指标", fold("industry-method", "查看统计口径与缺失处理", "<p>30 日涨幅由起止收盘计算；升温与热度需要完整成交路径。中间交易日缺失时仍可计算起止收益，但热度、升温和完整最大回撤不可计算。</p><p>基准为沪深 300，同区间差值以“百分点”表示。行业研究采用固定规则；关键词新闻关联不作为收益预测或推荐得分。</p>"))}`
   );
 }
 function chart(snapshot: Snapshot, r: IndustryRecord) {
@@ -305,7 +368,16 @@ function industryDetail(snapshot: Snapshot, code: string) {
       ) +
       '<a class="section-link" href="#/industry">返回行业排行</a>'
     );
-  return `<a class="back-link" href="#/industry">返回行业排行</a>${heading(e(r.code) + " · 申万一级", e(r.name), e(data.window_start) + " 至 " + e(data.as_of_date))}${moduleNote(m, "行业数据")}<section class="card chart-card"><span class="eyebrow">近 30 个交易间隔</span><div class="return-head"><strong class="${direction(r.return_30d_pct)}">${signed(r.return_30d_pct)}</strong><span>相对沪深 300 <b class="${direction(r.excess_30d_pp)}">${signed(r.excess_30d_pp, " 个百分点")}</b></span></div>${chart(snapshot, r)}${r.missing_session_dates.length ? `<p class="caption">缺口 ${e(r.missing_session_dates.join("、"))} · 曲线断线显示，未补值。</p>` : ""}</section>${card("趋势与交易指标", `<div class="metrics">${metric("最近 5 日收益", signed(r.return_5d_pct), direction(r.return_5d_pct))}${metric("30 日最大回撤", signed(r.max_drawdown_30d_pct), direction(r.max_drawdown_30d_pct))}${metric("30 日交易份额", data.heat_status === "succeeded" && r.transaction_heat_30d_share_pct != null ? decimal(r.transaction_heat_30d_share_pct) + "%" : "暂不可计算")}${metric("交易关注升温", data.heat_status === "succeeded" ? signed(r.heat_rising_5v25_pct) : "暂不可计算")}</div>`)}${card("依据与来源", `${external(sourceURLs.sw, "申万宏源研究 · 行业指数")}${external(sourceURLs.eastmoney, "东方财富 · 沪深 300 基准")}${fold("industry-evidence", "查看计算方法与数据范围", "<p>起止收盘形成 30 个交易间隔收益，5 日收益使用对应交易日收盘。基准与行业对齐同一区间，不使用后来发布的资料修改原始快照。</p>")}<p class="caption">当前没有经过核验的行业新闻映射，暂不将普通财经新闻作为该行业的催化证据。</p>`)}${card("行业研究与相关个股", empty("研究分析待启用", "有证据的行业判断、条件和风险分析尚未启用。当前涨幅排行不作为买入推荐，暂无已筛选的关联个股。"))}`;
+  return `<a class="back-link" href="#/industry">返回行业排行</a>${heading(e(r.code) + " · 申万一级", e(r.name), e(data.window_start) + " 至 " + e(data.as_of_date))}${moduleNote(m, "行业数据")}<section class="card chart-card"><span class="eyebrow">近 30 个交易间隔</span><div class="return-head"><strong class="${direction(r.return_30d_pct)}">${signed(r.return_30d_pct)}</strong><span>相对沪深 300 <b class="${direction(r.excess_30d_pp)}">${signed(r.excess_30d_pp, " 个百分点")}</b></span></div>${chart(snapshot, r)}${r.missing_session_dates.length ? `<p class="caption">缺口 ${e(r.missing_session_dates.join("、"))} · 曲线断线显示，未补值。</p>` : ""}</section>${card("趋势与交易指标", `<div class="metrics">${metric("最近 5 日收益", signed(r.return_5d_pct), direction(r.return_5d_pct))}${metric("30 日最大回撤", signed(r.max_drawdown_30d_pct), direction(r.max_drawdown_30d_pct))}${metric("30 日交易份额", data.heat_status === "succeeded" && r.transaction_heat_30d_share_pct != null ? decimal(r.transaction_heat_30d_share_pct) + "%" : "暂不可计算")}${metric("交易关注升温", data.heat_status === "succeeded" ? signed(r.heat_rising_5v25_pct) : "暂不可计算")}</div>`)}${card("依据与来源", `${external(sourceURLs.sw, "申万宏源研究 · 行业指数")}${external(sourceURLs.eastmoney, "东方财富 · 沪深 300 基准")}${fold("industry-evidence", "查看计算方法与数据范围", "<p>起止收盘形成 30 个交易间隔收益，5 日收益使用对应交易日收盘。基准与行业对齐同一区间，不使用后来发布的资料修改原始快照。</p>")}<p class="caption">行业与新闻按标题关键词关联，不能据此确认催化或利好。</p>`)}${sectorReviews(snapshot, code)}${card("相关资讯线索", `<p class="caption">仅标题关键词关联，需阅读原文核验。</p>${(dataOf(snapshot.modules.macro)?.industry_news[code] ?? []).map(article).join("") || empty("暂无匹配资讯", "当前来源覆盖有限，未匹配不代表没有事件。")}`)}${card(
+    "相关个股",
+    (dataOf(snapshot.modules.observations) ?? [])
+      .filter((x) => x.conclusion.includes(r.name))
+      .map(
+        (x) =>
+          `<a class="section-link" href="#/observe/${encodeURIComponent(x.code)}">${e(x.name)} · ${e(x.state)}</a>`,
+      )
+      .join("") || '<p class="muted">本行业暂无满足当前规则的个股候选。</p>',
+  )}}`;
 }
 function globalPage(snapshot: Snapshot) {
   const m = snapshot.modules.global,
@@ -330,6 +402,7 @@ function globalPage(snapshot: Snapshot) {
       "全球与宏观",
       "各市场独立标注时间，均为最近可用观测。",
     ) +
+    macroSummary(snapshot) +
     moduleNote(m, "国际行情") +
     (rows.length
       ? groups
@@ -392,13 +465,17 @@ function observe(snapshot: Snapshot) {
             m?.status === "failed"
               ? "研究模块未返回有效资料，请稍后刷新。"
               : m
-                ? "当前已发布的观察池为空，不强制凑满推荐数量。"
+                ? e(
+                    m.explanation ??
+                      "当前已发布的观察池为空，不强制凑满推荐数量。",
+                  )
                 : "个股筛选与证据分析尚未启用。当前仅提供行情与行业事实指标，不生成示例推荐。",
           ),
         )) +
+    trackingSection(snapshot) +
     card(
-      "研究卡将包含什么",
-      '<div class="process"><div><b>研究依据</b><span>行业背景、量价事实与来源</span></div><div><b>条件与风险</b><span>何时触发，何时失效，哪些判断待验证</span></div><div><b>后续跟踪</b><span>保留原始结论，与基准和成本对照</span></div></div>',
+      "筛选与跟踪规则",
+      '<div class="process"><div><b>研究依据</b><span>行业背景、量价事实与来源</span></div><div><b>条件与风险</b><span>何时触发，何时失效，哪些判断待验证</span></div><div><b>后续跟踪</b><span>保留原始信号，以纸面成本追踪各窗口</span></div></div>',
     )
   );
 }
@@ -448,7 +525,7 @@ function render(preserve = true) {
     content =
       heading("NOT FOUND", "页面不存在") +
       '<a class="section-link" href="#/">返回市场总览</a>';
-  app.innerHTML = `<a class="skip-link" href="#main-content">跳到主要内容</a><div class="app-shell"><header><a class="brand" href="#/" aria-label="股市气象站首页"><span aria-hidden="true">◒</span><div><b>股市气象站</b><small>最新资料 · 公开阅读</small></div></a><button class="refresh" data-action="refresh" ${state.loading ? "disabled" : ""}>${state.loading ? "读取中…" : "刷新资料"}</button></header>${banner}<main id="main-content" tabindex="-1"><div class="snapshot-meta">${snapshot ? `<span>上次发布 ${e(timeLabel(snapshot.published_at))} 北京时间</span><small>${state.fromCache ? "本机缓存 · " : ""}自动采集尚未启用</small>` : state.loading ? "<span>正在读取资料快照</span>" : "<span>暂无有效资料快照</span>"}</div>${content}<footer><p>行情时间独立标注 · 本地开发预览</p><button id="manager-open" class="text-button" data-action="manager">采集管理</button><small>研究分析与自动采集尚未启用。</small></footer></main>${nav()}</div>${managerOpen ? `<div class="sheet-backdrop"><section class="sheet" role="dialog" aria-modal="true" aria-labelledby="manager-title"><div class="handle"></div><span class="badge">所有者管理入口</span><h2 id="manager-title">后台采集尚未接入</h2><p>“刷新资料”只读取最新已发布快照，不触发新的行情或新闻采集。</p><p class="muted">所有者身份验证与任务服务接通后，可在此管理采集与定时运行。</p><button id="close-manager" class="primary full" data-action="close-manager">知道了，继续阅读</button></section></div>` : ""}`;
+  app.innerHTML = `<a class="skip-link" href="#main-content">跳到主要内容</a><div class="app-shell"><header><a class="brand" href="#/" aria-label="股市气象站首页"><span aria-hidden="true">◒</span><div><b>股市气象站</b><small>最新资料 · 公开阅读</small></div></a><button class="refresh" data-action="refresh" ${state.loading ? "disabled" : ""}>${state.loading ? "读取中…" : "刷新资料"}</button></header>${banner}<main id="main-content" tabindex="-1"><div class="snapshot-meta">${snapshot ? `<span>上次发布 ${e(timeLabel(snapshot.published_at))} 北京时间</span><small>${state.fromCache ? "本机缓存 · " : ""}交易日 08:45 / 11:45 / 17:30 采集</small>` : state.loading ? "<span>正在读取资料快照</span>" : "<span>暂无有效资料快照</span>"}</div>${content}<footer><p>行情时间独立标注 · 无需登录阅读</p><button id="manager-open" class="text-button" data-action="manager">采集管理</button><small>固定规则研究，未经收益优势验证。</small></footer></main>${nav()}</div>${managerOpen ? `<div class="sheet-backdrop"><section class="sheet" role="dialog" aria-modal="true" aria-labelledby="manager-title"><div class="handle"></div><span class="badge">所有者管理入口</span><h2 id="manager-title">手动采集与发布</h2><p>“刷新资料”只读取最新已发布快照，不触发新的行情或新闻采集。</p><p class="muted">定时采集由 GitHub Actions 运行，可能排队延迟。所有者可打开任务页，点击 Run workflow 立即采集；只有管理任务需要 GitHub 登录，阅读网页无需登录。</p>${external("https://github.com/tansitanding/market-weather/actions/workflows/refresh.yml", "打开采集任务 →", "primary full manager-link")}<button id="close-manager" class="primary full" data-action="close-manager">知道了，继续阅读</button></section></div>` : ""}`;
   document.title =
     (route.page === "industry"
       ? "行业分析"
@@ -552,8 +629,14 @@ document.addEventListener("keydown", (event) => {
     closeManager();
   }
   if (managerOpen && event.key === "Tab") {
+    const items = Array.from(
+      app.querySelectorAll<HTMLElement>(".sheet a[href], .sheet button"),
+    );
+    const i = items.indexOf(document.activeElement as HTMLElement);
     event.preventDefault();
-    document.getElementById("close-manager")?.focus();
+    items[
+      (i + (event.shiftKey ? -1 : 1) + items.length) % items.length
+    ]?.focus();
   }
 });
 store.subscribe(() => render());

@@ -10,6 +10,9 @@ export interface DataModule<T> {
   source_as_of_date?: string;
   carried_forward?: boolean;
   error?: SourceError;
+  explanation?: string;
+  pool_count?: number;
+  market_gate?: string;
 }
 export interface Bar {
   date: string;
@@ -44,7 +47,13 @@ export interface IndustryModule {
   heat_reason: string | null;
   freshness: "stale" | "lags_benchmark" | "latest_available";
   missing_session_dates: string[];
-  benchmark: { code: string; name: string; return_30d_pct: number };
+  benchmark: {
+    code: string;
+    name: string;
+    return_30d_pct: number;
+    series?: { date: string; cumulative_return_pct: number }[];
+  };
+  recommendations?: SectorReview[];
   rankings: {
     return_top: string[];
     transaction_heat_top: string[];
@@ -104,5 +113,47 @@ export interface Snapshot {
     global: DataModule<GlobalQuote[]>;
     cn_market: DataModule<CNMarket>;
     observations?: DataModule<ResearchCard[]>;
+    temperature?: DataModule<Temperature>;
+    macro?: DataModule<MacroReview>;
+    tracking?: DataModule<TrackedSignal[]>;
   };
+}
+
+export interface Temperature {
+  score: number;
+  label: string;
+  as_of_date: string;
+  basis: string;
+  calibration: string;
+  components: { name: string; score: number; weight: number; detail: string }[];
+}
+export interface SectorReview {
+  code: string;
+  name: string;
+  state: string;
+  conclusion: string;
+  trigger: string;
+  invalidation: string;
+  risks: string[];
+  published_at: string;
+  rule_version: string;
+}
+export interface MacroReview {
+  method: string;
+  facts: { title: string; text: string; as_of: string; source_url: string }[];
+  interpretation: string;
+  counter_evidence: string;
+  industry_news: Record<string, NewsItem[]>;
+}
+export interface TrackedSignal {
+  id: string;
+  code: string;
+  name: string;
+  status: string;
+  created_at: string;
+  note: string;
+  horizons: Record<
+    string,
+    { date: string; net_return_pct: number; exit_reason: string }
+  >;
 }

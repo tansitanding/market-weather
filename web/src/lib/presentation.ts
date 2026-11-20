@@ -82,6 +82,25 @@ export function comparisonData(
   const bars = (dataOf(snapshot.modules.cn_market)?.benchmark ?? []).filter(
     (b) => b.date >= m.window_start && b.date <= m.as_of_date,
   );
+  if (m.benchmark.series?.length) {
+    const points = m.benchmark.series;
+    const map = new Map(
+      record.series.map((p) => [p.date, p.cumulative_return_pct]),
+    );
+    return {
+      dates: points.map((p) => p.date),
+      benchmark: points.map((p) => ({
+        date: p.date,
+        value: p.cumulative_return_pct,
+      })),
+      industry: points.map((p) => ({
+        date: p.date,
+        value: record.missing_session_dates.includes(p.date)
+          ? null
+          : (map.get(p.date) ?? null),
+      })),
+    };
+  }
   const dates = bars.map((b) => b.date);
   const map = new Map(
     record.series.map((p) => [p.date, p.cumulative_return_pct]),

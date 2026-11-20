@@ -4,6 +4,7 @@ import html
 import json
 import re
 import time
+import threading
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -17,6 +18,7 @@ from .metrics import validate_bars, number
 CST = ZoneInfo('Asia/Shanghai')
 SW_BASE = 'https://www.swsresearch.com/institute-sw/api/index_publish/'
 SOURCES = {
+    'sina': {'name':'新浪财经报价池','url':'https://finance.sina.com.cn/','redistribution':'unverified'},
     'sw': {'name': '申万宏源研究', 'url': 'https://www.swsresearch.com/institute_sw/allIndex/releasedIndex', 'redistribution': 'unverified'},
     'eastmoney': {'name': '东方财富', 'url': 'https://quote.eastmoney.com/zs000300.html', 'redistribution': 'unverified'},
     'yahoo': {'name': 'Yahoo Finance', 'url': 'https://finance.yahoo.com/', 'redistribution': 'unverified'},
@@ -31,6 +33,8 @@ class Fetcher:
         self.root = Path(root)
         self.root.mkdir(parents=True, exist_ok=True)
         self.timeout, self.attempts, self.replay = timeout, attempts, Path(replay) if replay else None
+        self._rate_lock = threading.Lock()
+        self._host_next = {}
 
     def get(self, key, url):
         path = self.root / (key + '.raw')
@@ -41,7 +45,12 @@ class Fetcher:
         error = None
         for attempt in range(self.attempts):
             try:
-                request = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0 (MarketWeather research prototype)', 'Accept': '*/*'})
+                host=urllib.parse.urlsplit(url).netloc
+                with self._rate_lock:
+                    delay=max(0,self._host_next.get(host,0)-time.monotonic())
+                    if delay:time.sleep(delay)
+                    self._host_next[host]=time.monotonic()+.4
+                request = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0 (MarketWeather research prototype)', 'Accept': '*/*', **({'Referer':'https://finance.sina.com.cn/'} if 'sina' in host else {})})
                 with urllib.request.urlopen(request, timeout=self.timeout) as response:
                     data = response.read(10_000_001)
                     if len(data) > 10_000_000:
@@ -51,7 +60,7 @@ class Fetcher:
             except (OSError, urllib.error.URLError) as exc:
                 error = exc
                 if attempt + 1 < self.attempts:
-                    time.sleep(0.5 * (attempt + 1))
+                    time.sleep(1.5 * (attempt + 1))
         raise RuntimeError(type(error).__name__ + ': ' + str(error))
 
     def json(self, key, url):
@@ -80,8 +89,8 @@ def sw_history(fetch, code, now):
 
 
 def cn_history(fetch, code, now):
-    params = {'secid': '1.' + code, 'klt': 101, 'fqt': 0, 'beg': '20250101', 'end': now.astimezone(CST).strftime('%Y%m%d'),
-              'lmt': 180, 'fields1': 'f1,f2,f3,f4,f5,f6', 'fields2': 'f51,f52,f53,f54,f55,f56,f57'}
+    params = {'secid': '1.' + code, 'klt': 101, 'fqt': 0, 'end': '20500101',
+              'lmt': 180, 'fields1': 'f1,f2,f3,f4,f5,f6', 'fields2': 'f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61'}
     data = fetch.json('em_' + code, 'https://push2his.eastmoney.com/api/qt/stock/kline/get?' + urllib.parse.urlencode(params))
     rows = []
     for line in data['data']['klines']:
@@ -200,3 +209,106 @@ def merge_news(previous, incoming, now, retention_days=30):
     today = now.astimezone(CST).date()
     results = [r for r in merged.values() if 0 <= (today - datetime.fromisoformat(r['published_date']).date()).days <= retention_days]
     return sorted(results, key=lambda r: (r['published_date'], r['published_at'] or '', r['event_id']), reverse=True)
+
+
+def _market_universe_em(fetch, now):
+    """EM paginates at 100 rows even when a larger page size is requested."""
+    from collections import Counter
+    from concurrent.futures import ThreadPoolExecutor
+    base = 'https://push2.eastmoney.com/api/qt/clist/get?'
+    params = {'pn': 1, 'pz': 100, 'po': 1, 'np': 1, 'fltt': 2, 'invt': 2, 'fid': 'f12',
+              'fs': 'm:0+t:6,m:0+t:80,m:1+t:2,m:1+t:23,m:0+t:81+s:2048',
+              'fields': 'f2,f3,f6,f12,f13,f14,f124'}
+    def page(n):
+        return fetch.json('market_page_%d' % n, base + urllib.parse.urlencode(dict(params, pn=n)))['data']
+    first = page(1)
+    total = int(first['total'])
+    if not 100 <= total <= 10000:
+        raise ValueError('unexpected A-share universe size')
+    rows = list(first['diff'])
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        for data in pool.map(page, range(2, (total + 99) // 100 + 1)):
+            rows.extend(data['diff'])
+    seen, valid = set(), []
+    for r in rows:
+        identity = (str(r.get('f13')), str(r.get('f12')))
+        if identity in seen:
+            raise ValueError('duplicate security across market pages')
+        seen.add(identity)
+        try:
+            price = number(r['f2'], positive=True)
+            change = number(r['f3'])
+            amount = number(r['f6'])
+            observed = datetime.fromtimestamp(int(r['f124']), timezone.utc)
+            if observed > now or amount <= 0:
+                continue
+            valid.append({'code': str(r['f12']), 'market': int(r['f13']), 'name': r['f14'],
+                          'price': price, 'change_pct': change, 'amount': amount,
+                          'date': observed.astimezone(CST).date().isoformat(), 'observed_at': observed.isoformat()})
+        except (ValueError, TypeError, KeyError, OverflowError):
+            continue
+    if len(seen) < total * .98 or not valid:
+        raise ValueError('market pagination incomplete')
+    trade_date = Counter(r['date'] for r in valid).most_common(1)[0][0]
+    current = [r for r in valid if r['date'] == trade_date]
+    if len(current) < total * .85:
+        raise ValueError('market breadth coverage below 85%')
+    return {'as_of_date': trade_date, 'expected_count': total, 'valid_count': len(current),
+            'advancing': sum(r['change_pct'] > 0 for r in current),
+            'declining': sum(r['change_pct'] < 0 for r in current),
+            'unchanged': sum(r['change_pct'] == 0 for r in current), 'securities': current,
+            'source': 'eastmoney', 'collected_at': now.isoformat()}
+
+
+def sw_components(fetch, industry_code):
+    data = fetch.json('components_' + industry_code, SW_BASE + 'details/component_stocks/?' + urllib.parse.urlencode(
+        {'swindexcode': industry_code, 'page': 1, 'page_size': 10000}))['data']
+    rows = data['results']
+    if len(rows) != data['count']:
+        raise ValueError('industry components incomplete')
+    return [{'code': r['stockcode'], 'name': r['stockname']} for r in rows]
+
+
+def stock_history(fetch, security, now):
+    params = {'secid': str(security['market']) + '.' + security['code'], 'klt': 101, 'fqt': 1,
+              'end': '20500101', 'lmt': 180,
+              'fields1': 'f1,f2,f3,f4,f5,f6', 'fields2': 'f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61'}
+    data = fetch.json('stock_' + security['code'], 'https://push2his.eastmoney.com/api/qt/stock/kline/get?' + urllib.parse.urlencode(params))['data']
+    rows = []
+    for line in data['klines']:
+        v = line.split(',')
+        values = [number(x, positive=True) for x in v[1:5]]
+        if values[2] < max(values[0], values[1]) or values[3] > min(values[0], values[1]):
+            raise ValueError('OHLC range invalid')
+        rows.append({'date': v[0], 'open': values[0], 'close': values[1], 'high': values[2], 'low': values[3], 'amount': number(v[6])})
+    return completed_cn(rows, now)[-180:]
+
+
+def market_universe(fetch, now):
+    from concurrent.futures import ThreadPoolExecutor
+    source='https://vip.stock.finance.sina.com.cn/quotes_service/api/json_v2.php/'
+    index=fetch.get('sina_breadth_date','https://hq.sinajs.cn/list=sh000001').decode('gb18030')
+    match=re.search(r',([0-9]{4}-[0-9]{2}-[0-9]{2}),([0-9]{2}:[0-9]{2}:[0-9]{2}),',index)
+    if not match:raise ValueError('Sina quote date unavailable')
+    trade_date=match[1]
+    total=int(fetch.json('sina_universe_count',source+'Market_Center.getHQNodeStockCount?node=hs_a'))
+    if not 100<=total<=10000:raise ValueError('unexpected Sina universe size')
+    def page(n):
+        return fetch.json('sina_market_%d'%n,source+'Market_Center.getHQNodeData?'+urllib.parse.urlencode({'node':'hs_a','sort':'symbol','asc':1,'page':n,'num':100}))
+    rows=[]
+    with ThreadPoolExecutor(max_workers=2)as pool:
+        for batch in pool.map(page,range(1,(total+99)//100+1)):
+            if not isinstance(batch,list):raise ValueError('Sina market page invalid')
+            rows.extend(batch)
+    if len({r['symbol'] for r in rows})!=len(rows) or len(rows)<total*.98:raise ValueError('Sina pagination incomplete')
+    valid=[]
+    for r in rows:
+        try:
+            price=number(r['trade'],positive=True);change=number(r['changepercent']);amount=number(r['amount'])
+            if amount<=0:continue
+            observed=datetime.fromisoformat(trade_date+'T'+r['ticktime']+'+08:00')
+            if observed>now:continue
+            valid.append({'code':r['code'],'market':1 if r['symbol'].startswith('sh')else 0,'name':r['name'],'price':price,'change_pct':change,'amount':amount,'date':trade_date,'observed_at':observed.isoformat()})
+        except(ValueError,TypeError,KeyError):continue
+    if len(valid)<total*.85:raise ValueError('Sina breadth coverage below 85%')
+    return {'as_of_date':trade_date,'expected_count':total,'valid_count':len(valid),'advancing':sum(r['change_pct']>0 for r in valid),'declining':sum(r['change_pct']<0 for r in valid),'unchanged':sum(r['change_pct']==0 for r in valid),'completed_session':match[2]>='15:00:00','securities':valid,'source':'sina','collected_at':now.isoformat()}

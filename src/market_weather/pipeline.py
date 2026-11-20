@@ -11,6 +11,8 @@ from .metrics import rank_industries
 from .providers import (CST, SOURCES, Fetcher, sw_universe, sw_history, cn_history,
                         yahoo_quote, rss_news, pbc_news, merge_news)
 from .storage import atomic_json, publish
+from .analysis import temperature, macro_review, industry_research, stock_card, track_signals, RULE
+from .providers import market_universe, sw_components, stock_history
 
 GLOBAL = [
     ('^GSPC', '标普500', 'index'), ('^IXIC', '纳斯达克综合', 'index'),
@@ -40,11 +42,14 @@ def collect(root, now=None, replay=None, settings=None):
     prior_path = root / 'latest.json'
     prior = json.loads(prior_path.read_text()) if prior_path.exists() else {'modules': {}}
     evidence = {}
+    tracking_path = root / 'tracking.json'
+    previous_tracking = json.loads(tracking_path.read_text()) if tracking_path.exists() else []
     universe = guarded(lambda: sw_universe(fetch))
     evidence['sw_universe'] = {k: v for k, v in universe.items() if k != 'data'}
     histories, quotes = {}, []
     jobs = {}
     with ThreadPoolExecutor(max_workers=4) as pool:
+        jobs[pool.submit(guarded, lambda: market_universe(fetch, now))] = ('breadth', 'all', None)
         jobs[pool.submit(guarded, lambda: cn_history(fetch, '000300', now))] = ('benchmark', '000300', None)
         jobs[pool.submit(guarded, lambda: cn_history(fetch, '000001', now))] = ('cn_index', '000001', None)
         for industry in universe.get('data', []):
@@ -59,7 +64,7 @@ def collect(root, now=None, replay=None, settings=None):
         ]
         for source, call in news_jobs:
             jobs[pool.submit(guarded, call)] = ('news', source, None)
-        benchmark, cn_indices, incoming = [], {}, []
+        benchmark, cn_indices, incoming, breadth = [], {}, [], None
         source_news_count = {}
         for future in as_completed(jobs):
             result = future.result()
@@ -68,7 +73,9 @@ def collect(root, now=None, replay=None, settings=None):
             if result['status'] != 'succeeded':
                 continue
             data = result['data']
-            if kind == 'industry':
+            if kind == 'breadth':
+                breadth = data
+            elif kind == 'industry':
                 histories[key] = {'name': name, 'bars': data}
             elif kind == 'benchmark':
                 benchmark = data
@@ -112,6 +119,55 @@ def collect(root, now=None, replay=None, settings=None):
             old = prior['modules'][name]
             modules[name] = dict(old, status='stale', carried_forward=True, last_attempt_error=module.get('error'),
                                  last_attempt_at=now.isoformat())
+    # Research is derived only after all independent source modules are settled.
+    market_temp = guarded(lambda: temperature(benchmark, breadth))
+    if market_temp['status'] == 'succeeded':
+        modules['temperature'] = {'status':'succeeded','data':market_temp['data'],'collected_at':now.isoformat()}
+    elif prior['modules'].get('temperature',{}).get('data'):
+        modules['temperature'] = dict(prior['modules']['temperature'],status='stale',carried_forward=True,last_attempt_at=now.isoformat())
+    else:
+        modules['temperature'] = market_temp
+    industry_value = modules['industry'].get('data')
+    modules['macro'] = {'status':'succeeded' if quotes else 'partial','data':macro_review(quotes,news,industry_value),'collected_at':now.isoformat()}
+    industry_cards = industry_research(industry_value,now) if industry_value else []
+    if industry_value:
+        industry_value['recommendations']=industry_cards
+        industry_value['recommendation_status']='rules_v1'
+    security_map={r['code']:r for r in (breadth or {}).get('securities',[])}
+    pool={}
+    for sector in industry_cards:
+        result=guarded(lambda c=sector['code']:sw_components(fetch,c))
+        evidence['components:'+sector['code']]={k:v for k,v in result.items() if k!='data'}
+        matching=[security_map[x['code']] for x in result.get('data',[]) if x['code'] in security_map]
+        matching=[x for x in matching if 'ST' not in x['name'].upper() and '退' not in x['name'] and x['amount']>=100_000_000]
+        for row in sorted(matching,key=lambda x:-x['amount'])[:6]:pool[row['code']]=dict(row,industry=sector['name'])
+    # Tracking continues even if an older signal leaves the current candidate pool.
+    for record in previous_tracking:
+        if record['status'] in ('watching','confirmed','model_position') and record['code'] in security_map:
+            pool.setdefault(record['code'],dict(security_map[record['code']],industry='历史观察'))
+    stock_histories={};cards=[]
+    with ThreadPoolExecutor(max_workers=4) as workers:
+        futures={workers.submit(guarded,lambda sec=sec:stock_history(fetch,sec,now)):sec for sec in list(pool.values())[:60]}
+        for future in as_completed(futures):
+            sec=futures[future];result=future.result()
+            evidence['stock:'+sec['code']]={k:v for k,v in result.items() if k!='data'}
+            if result['status']=='succeeded':
+                stock_histories[sec['code']]=result['data']
+                candidate=stock_card(sec,result['data'],benchmark,sec['industry'],now)
+                if candidate and sec['industry']!='历史观察':cards.append(candidate)
+    # Broad-market trend is a research gate, not an automatic order.
+    trend_ok = bool(benchmark and len(benchmark)>=20 and benchmark[-1]['close']>sum(r['close'] for r in benchmark[-20:])/20)
+    selected=[];seen_industries=set()
+    if trend_ok:
+        for card in sorted(cards,key=lambda c:(-c['return_30d_pct'],c['code'])):
+            if card['industry'] not in seen_industries:selected.append(card);seen_industries.add(card['industry'])
+            if len(selected)>=3:break
+    modules['observations']={'status':'succeeded' if breadth else 'partial','data':selected,'collected_at':now.isoformat(),
+                             'pool_count':len(pool),'market_gate':'open' if trend_ok else 'closed',
+                             'explanation':'沪深300收盘低于20日均线，本期不新增个股候选。' if not trend_ok else '仅在满足行业规则的有限成分池中筛选，允许无候选。'}
+    tracking=track_signals(previous_tracking,selected,stock_histories,benchmark)
+    modules['tracking']={'status':'succeeded','data':tracking,'collected_at':now.isoformat()}
+    atomic_json(tracking_path,tracking)
     # An observed historical session calendar is sufficient for 30-session metrics;
     # it deliberately does not pretend to predict exchange holidays for scheduling.
     calendar = {'source': 'benchmark_observed_daily_sessions', 'sessions': [r['date'] for r in benchmark],
@@ -119,9 +175,9 @@ def collect(root, now=None, replay=None, settings=None):
     snapshot = {'schema_version': '1.0', 'snapshot_id': run_id, 'started_at': now.isoformat(),
                 'published_at': datetime.now(timezone.utc).isoformat(), 'trigger': 'local_manual_validation',
                 'timezone': 'Asia/Shanghai', 'public_access_requires_login': False,
-                'analysis_status': 'phase_5_not_implemented', 'modules': modules, 'calendar': calendar,
+                'analysis_status': 'rules_v1', 'modules': modules, 'calendar': calendar,
                 'sources': SOURCES, 'evidence': evidence,
-                'rule_version': 'sw31-return30-transaction-share30-5v25-v1',
+                'rule_version': RULE,
                 'distribution': {'public_export_enabled': False, 'reason': 'local validation; source redistribution permissions not presumed'},
                 'settings_sha256': hashlib.sha256(json.dumps(settings, sort_keys=True).encode()).hexdigest()}
     atomic_json(root / 'runs' / run_id / 'normalized.json', {'industry_histories': histories, 'benchmark': benchmark})

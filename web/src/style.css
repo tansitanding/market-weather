@@ -841,3 +841,87 @@ footer small {
     padding-right: 14px;
   }
 }
+.climate-score {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 28px 0 18px;
+}
+.climate-score strong {
+  font-size: 52px;
+  letter-spacing: -2px;
+}
+.climate-score small {
+  font-size: 15px;
+  letter-spacing: 0;
+  opacity: 0.7;
+}
+.climate-score > span {
+  font-size: 20px;
+  border: 1px solid #ffffff50;
+  border-radius: 99px;
+  padding: 8px 16px;
+}
+.climate-scale {
+  height: 8px;
+  background: linear-gradient(90deg, #77bde2, #a1dad0, #ffd278, #fa8d7b);
+  border-radius: 20px;
+  position: relative;
+  margin-right: 8px;
+}
+.climate-scale i {
+  position: absolute;
+  top: -5px;
+  width: 3px;
+  height: 18px;
+  background: white;
+  box-shadow: 0 0 0 2px #143b44;
+  border-radius: 4px;
+}
+.scale-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  opacity: 0.7;
+  margin-top: 8px;
+}
+.factor {
+  padding: 13px 0;
+  border-bottom: 1px solid var(--line);
+}
+.factor > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+.factor b {
+  white-space: nowrap;
+}
+.factor small {
+  font-size: 10px;
+  font-weight: 400;
+  color: var(--muted);
+}
+.factor p {
+  margin: 5px 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+.sector-review + .sector-review {
+  border-top: 1px solid var(--line);
+  margin-top: 18px;
+  padding-top: 12px;
+}
+.sector-review .section-link {
+  display: inline-block;
+  margin-right: 12px;
+}
+.manager-link {
+  display: block;
+  text-align: center;
+  text-decoration: none;
+  margin: 16px 0;
+}
+.story .badge {
+  margin-left: 8px;
+}

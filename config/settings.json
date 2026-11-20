@@ -18,7 +18,7 @@
   ],
   "news_retention_days": 30,
   "provider_timeout_seconds": 15,
-  "provider_attempts": 2,
+  "provider_attempts": 4,
   "public_data_export_enabled": false,
   "publication_note": "Source connectivity verified locally; redistribution permissions are not presumed.",
   "industry_definition_source": "https://www.swsresearch.com/institute_sw/allIndex/downloadCenter/industryType",

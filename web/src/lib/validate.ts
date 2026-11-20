@@ -8,6 +8,10 @@ import type {
   CNMarket,
   ResearchCard,
   Bar,
+  Temperature,
+  SectorReview,
+  MacroReview,
+  TrackedSignal,
 } from "../contracts.ts";
 type Obj = Record<string, unknown>;
 const statuses = ["succeeded", "partial", "failed", "stale"];
@@ -174,7 +178,19 @@ function industry(v: unknown): IndustryModule {
           ? "lags_benchmark"
           : "latest_available",
     missing_session_dates: dates(r.missing_session_dates ?? []),
+    recommendations: r.recommendations ? sectorReviews(r.recommendations) : [],
     benchmark: {
+      ...(b.series
+        ? {
+            series: list(b.series).map((x) => {
+              const q = obj(x);
+              return {
+                date: day(q.date),
+                cumulative_return_pct: num(q.cumulative_return_pct),
+              };
+            }),
+          }
+        : {}),
       code: code(b.code),
       name: str(b.name, 80),
       return_30d_pct: num(b.return_30d_pct),
@@ -280,6 +296,94 @@ function research(v: unknown): ResearchCard[] {
     };
   });
 }
+function sectorReviews(v: unknown): SectorReview[] {
+  return list(v, 3).map((x) => {
+    const r = obj(x);
+    return {
+      code: code(r.code),
+      name: str(r.name),
+      state: str(r.state),
+      conclusion: str(r.conclusion, 3000),
+      trigger: str(r.trigger, 2000),
+      invalidation: str(r.invalidation, 2000),
+      risks: list(r.risks, 20).map((x) => str(x)),
+      published_at: stamp(r.published_at),
+      rule_version: str(r.rule_version),
+    };
+  });
+}
+function temperatureData(v: unknown): Temperature {
+  const r = obj(v),
+    score = num(r.score);
+  if (score < 0 || score > 100) throw Error("温度超出范围");
+  const components = list(r.components, 10).map((x) => {
+    const c = obj(x),
+      s = num(c.score),
+      w = num(c.weight);
+    if (s < 0 || s > 100 || w < 0 || w > 1) throw Error("温度分项无效");
+    return { name: str(c.name), score: s, weight: w, detail: str(c.detail) };
+  });
+  if (Math.abs(components.reduce((n, c) => n + c.weight, 0) - 1) > 0.001)
+    throw Error("权重不完整");
+  return {
+    score,
+    label: str(r.label),
+    as_of_date: day(r.as_of_date),
+    basis: str(r.basis),
+    calibration: str(r.calibration),
+    components,
+  };
+}
+function macroData(v: unknown): MacroReview {
+  const r = obj(v);
+  return {
+    method: str(r.method),
+    interpretation: str(r.interpretation, 3000),
+    counter_evidence: str(r.counter_evidence, 3000),
+    facts: list(r.facts, 20).map((x) => {
+      const f = obj(x),
+        u = safeURL(f.source_url);
+      if (!u) throw Error("分析来源链接无效");
+      return {
+        title: str(f.title),
+        text: str(f.text),
+        as_of: stamp(f.as_of),
+        source_url: u,
+      };
+    }),
+    industry_news: Object.fromEntries(
+      Object.entries(obj(r.industry_news)).map(([k, v]) => [code(k), news(v)]),
+    ),
+  };
+}
+function trackingData(v: unknown): TrackedSignal[] {
+  return list(v, 300).map((x) => {
+    const r = obj(x);
+    if (r.modelled !== true) throw Error("只展示明确的模型观察记录");
+    return {
+      id: str(r.id, 150),
+      code: code(r.code),
+      name: str(r.name),
+      status: str(r.status),
+      created_at: stamp(r.created_at),
+      note: str(r.note, 1500),
+      horizons: Object.fromEntries(
+        Object.entries(obj(r.horizons)).map(([k, v]) => {
+          const h = obj(v);
+          if (!["5", "10", "20"].includes(k)) throw Error("观察窗口无效");
+          return [
+            k,
+            {
+              date: day(h.date),
+              net_return_pct: num(h.net_return_pct),
+              exit_reason: str(h.exit_reason),
+            },
+          ];
+        }),
+      ),
+    };
+  });
+}
 function moduleData<T>(v: unknown, decode: (v: unknown) => T): DataModule<T> {
   try {
     const r = obj(v);
@@ -293,6 +397,14 @@ function moduleData<T>(v: unknown, decode: (v: unknown) => T): DataModule<T> {
         ? day(r.source_as_of_date)
         : undefined,
       carried_forward: r.carried_forward === true,
+      explanation:
+        typeof r.explanation === "string"
+          ? str(r.explanation, 1500)
+          : undefined,
+      pool_count:
+        typeof r.pool_count === "number" ? num(r.pool_count) : undefined,
+      market_gate:
+        typeof r.market_gate === "string" ? str(r.market_gate) : undefined,
       error: r.error
         ? { code: "SOURCE_ERROR", message: "上游资料暂不可用" }
         : undefined,
@@ -331,6 +443,11 @@ export function parseSnapshot(v: unknown): Snapshot {
       typeof r.analysis_status === "string" ? r.analysis_status : "unavailable",
     modules: {
       industry: moduleData(m.industry, industry),
+      ...(m.temperature
+        ? { temperature: moduleData(m.temperature, temperatureData) }
+        : {}),
+      ...(m.macro ? { macro: moduleData(m.macro, macroData) } : {}),
+      ...(m.tracking ? { tracking: moduleData(m.tracking, trackingData) } : {}),
       cn_market: moduleData(m.cn_market, cn),
       global: moduleData(m.global, globalQuotes),
       news: moduleData(m.news, news),

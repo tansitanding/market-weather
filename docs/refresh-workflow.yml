@@ -1,0 +1,98 @@
+name: Refresh and publish market weather
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  schedule:
+    - cron: '45 0,3 * * 1-5'
+    - cron: '30 9 * * 1-5'
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+concurrency:
+  group: market-weather-publish
+  cancel-in-progress: false
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - name: Restore last published state
+        shell: bash
+        run: |
+          mkdir -p .local/data
+          if git fetch origin state --depth=1; then
+            git show FETCH_HEAD:latest.json > .local/data/latest.json
+            git show FETCH_HEAD:tracking.json > .local/data/tracking.json || printf '[]' > .local/data/tracking.json
+          fi
+      - name: Validate research and frontend
+        run: |
+          PYTHONPATH=src python -m unittest discover -s tests -q
+          npm ci
+          npm run test:web
+      - name: Collect and compute
+        id: collect
+        shell: bash
+        env:
+          TRIGGER: ${{ github.event_name }}
+        run: |
+          set +e
+          PYTHONPATH=src python scripts/release.py --trigger "$TRIGGER"
+          result=$?
+          set -e
+          if [ "$result" = 3 ]; then
+            echo 'skip=true' >> "$GITHUB_OUTPUT"
+          elif [ "$result" != 0 ]; then
+            exit "$result"
+          else
+            echo 'skip=false' >> "$GITHUB_OUTPUT"
+          fi
+      - name: Build public website
+        if: steps.collect.outputs.skip != 'true'
+        run: |
+          npm run build
+          mkdir -p dist/data
+          cp .release/latest.json dist/data/latest.json
+          touch dist/.nojekyll
+      - name: Save published state
+        if: steps.collect.outputs.skip != 'true'
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          state_dir="$RUNNER_TEMP/market-weather-state"
+          if git fetch origin state --depth=1; then
+            git worktree add --detach "$state_dir" FETCH_HEAD
+          else
+            git worktree add --detach "$state_dir" HEAD
+            git -C "$state_dir" checkout --orphan state-initial
+            git -C "$state_dir" rm -rf .
+          fi
+          cp .release/latest.json "$state_dir/latest.json"
+          cp .release/tracking.json "$state_dir/tracking.json"
+          git -C "$state_dir" add latest.json tracking.json
+          if ! git -C "$state_dir" diff --cached --quiet; then
+            git -C "$state_dir" commit -m 'data: refresh public research brief'
+            git -C "$state_dir" push origin HEAD:state
+          fi
+      - uses: actions/configure-pages@v5
+        if: steps.collect.outputs.skip != 'true'
+      - uses: actions/upload-pages-artifact@v3
+        if: steps.collect.outputs.skip != 'true'
+        with:
+          path: dist
+      - uses: actions/deploy-pages@v4
+        if: steps.collect.outputs.skip != 'true'
+        id: deployment

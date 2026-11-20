@@ -127,3 +127,57 @@ test("research-card contract preserves evidence and distinguishes an empty publi
   s.modules.observations.data[0].evidence[0].url = "javascript:alert(1)";
   assert.equal(parseSnapshot(s).modules.observations?.status, "failed");
 });
+test("temperature bounds fail independently and valid weights are preserved", () => {
+  const s = snapshot();
+  s.modules.temperature = {
+    status: "succeeded",
+    data: {
+      score: 36.4,
+      label: "偏冷",
+      as_of_date: "2026-11-20",
+      basis: "完整日终",
+      calibration: "未经验证",
+      components: [{ name: "趋势", score: 36.4, weight: 1, detail: "测试" }],
+    },
+  };
+  assert.equal(parseSnapshot(s).modules.temperature?.data?.score, 36.4);
+  s.modules.temperature.data.score = 101;
+  assert.equal(parseSnapshot(s).modules.temperature?.status, "failed");
+  assert.equal(parseSnapshot(s).modules.news.data?.length, 1);
+});
+test("public derived benchmark series remains comparable after raw history trimming", () => {
+  const s = snapshot();
+  s.modules.industry.data.benchmark.series = [
+    { date: "2026-11-16", cumulative_return_pct: 0 },
+    { date: "2026-11-17", cumulative_return_pct: 1 },
+    { date: "2026-11-18", cumulative_return_pct: 2 },
+    { date: "2026-11-19", cumulative_return_pct: 3 },
+  ];
+  s.modules.cn_market.data.benchmark =
+    s.modules.cn_market.data.benchmark.slice(-2);
+  const p = parseSnapshot(s);
+  const points = comparisonData(p, p.modules.industry.data!.industries[0]);
+  assert.equal(points.dates.length, 4);
+  assert.equal(points.benchmark.at(-1)?.value, 3);
+});
+test("tracking requires paper label and keeps versioned signal identifiers", () => {
+  const s = snapshot();
+  s.modules.tracking = {
+    status: "succeeded",
+    data: [
+      {
+        id: "600000-2026-11-20-research-v1.0",
+        code: "600000",
+        name: "测试",
+        status: "watching",
+        created_at: s.published_at,
+        note: "纸面",
+        modelled: true,
+        horizons: {},
+      },
+    ],
+  };
+  assert.equal(parseSnapshot(s).modules.tracking?.data?.length, 1);
+  s.modules.tracking.data[0].modelled = false;
+  assert.equal(parseSnapshot(s).modules.tracking?.status, "failed");
+});
