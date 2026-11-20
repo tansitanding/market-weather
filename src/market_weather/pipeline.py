@@ -11,6 +11,7 @@ from .metrics import rank_industries
 from .providers import (CST, SOURCES, Fetcher, sw_universe, sw_history, cn_history,
                         yahoo_quote, rss_news, pbc_news, merge_news)
 from .storage import atomic_json, publish
+from .news import curate_news
 from .analysis import temperature, macro_review, industry_research, stock_card, track_signals, RULE
 from .providers import market_universe, sw_components, stock_history
 
@@ -109,11 +110,11 @@ def collect(root, now=None, replay=None, settings=None):
         if quote['freshness'] == 'stale':
             modules['global']['status'] = 'partial'
     old_news = prior['modules'].get('news', {}).get('data', [])
-    news = merge_news(old_news, incoming, now, settings['news_retention_days'])
+    news = curate_news(merge_news(old_news, incoming, now, settings['news_retention_days']))
     # Preserve news as a retained set, but do not call retention a successful fetch.
     modules['news'] = {'status': 'succeeded' if len(source_news_count) == 3 and news else ('partial' if incoming and news else 'failed'),
                        'collected_at': now.isoformat(), 'carried_forward': False, 'data': news, 'sources': source_news_count,
-                       'dedup_scope': 'exact title and canonical URL; semantic clustering deferred'}
+                       'dedup_scope': 'canonical URL and conservative title similarity within two days'}
     for name, module in list(modules.items()):
         if module['status'] == 'failed' and name in prior['modules'] and prior['modules'][name].get('data'):
             old = prior['modules'][name]

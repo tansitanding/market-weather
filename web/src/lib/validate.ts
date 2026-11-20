@@ -242,6 +242,20 @@ function news(v: unknown): NewsItem[] {
       return {
         event_id: code(r.event_id),
         title: str(r.title, 2000),
+        importance_score:
+          r.importance_score == null ? undefined : num(r.importance_score),
+        importance_reason:
+          r.importance_reason == null
+            ? undefined
+            : str(r.importance_reason, 80),
+        related_sources:
+          r.related_sources == null
+            ? []
+            : list(r.related_sources, 8).flatMap((value) => {
+                const link = obj(value),
+                  url = safeURL(link.url);
+                return url ? [{ source: str(link.source, 80), url }] : [];
+              }),
         url,
         source: str(r.source, 80),
         published_at: precision === "day" ? null : stamp(r.published_at),

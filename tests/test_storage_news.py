@@ -4,6 +4,7 @@ import unittest
 from datetime import datetime,timezone
 from pathlib import Path
 from market_weather.storage import publish
+from market_weather.news import curate_news
 from market_weather.providers import merge_news,news_item,rss_news,yahoo_quote
 NOW=datetime(2026,11,20,8,tzinfo=timezone.utc)
 def snap(id,time,status='succeeded'):
@@ -36,6 +37,23 @@ class NewsTests(unittest.TestCase):
         self.assertEqual(len(results),1)
         self.assertEqual(len(results[0]['sources']),2)
         self.assertNotIn('utm_',first['url'])
+    def test_priority_and_duplicate_coverage_prefer_official_source(self):
+        official = news_item('pbc', '央行宣布下调金融机构存款准备金率：降准0.5个百分点', 'https://a.example/news', NOW, published_at=NOW)
+        duplicate = self.item('【快讯】央行宣布下调金融机构存款准备金率：降准0.5个百分点', 'https://b.example/news')
+        routine = self.item('分行优化支付服务', 'https://c.example/news')
+        result = curate_news([routine, duplicate, official])
+        by_source = {item['source']: item for item in result}
+        self.assertEqual(len(result), 2)
+        self.assertEqual(by_source['pbc']['importance_reason'], '货币政策与利率决议')
+        self.assertEqual(by_source['pbc']['related_sources'][0]['url'], 'https://b.example/news')
+        self.assertEqual(by_source['test']['importance_score'], 0)
+
+    def test_different_numbers_and_periods_remain_separate(self):
+        a = self.item('统计部门公布月度居民消费价格同比上涨0.3%', 'https://a.example/news')
+        b = self.item('统计部门公布月度居民消费价格同比上涨0.4%', 'https://b.example/news')
+        c = dict(a, url='https://c.example/news', published_date='2026-11-01')
+        self.assertEqual(len(curate_news([a, b, c])), 3)
+
     def test_date_precision_no_invented_midnight(self):
         item=news_item('pbc','test','https://example.com/n',NOW,published_date='2026-11-20')
         self.assertIsNone(item['published_at'])

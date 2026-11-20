@@ -15,6 +15,7 @@ from email.utils import parsedate_to_datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
 from .metrics import validate_bars, number
+from .news import OFFICIAL
 
 CST = ZoneInfo('Asia/Shanghai')
 SW_BASE = 'https://www.swsresearch.com/institute-sw/api/index_publish/'
@@ -206,19 +207,23 @@ def pbc_news(fetch, now):
 
 
 def merge_news(previous, incoming, now, retention_days=30):
-    merged = {r['event_id']: dict(r) for r in previous}
+    merged = {(r['event_id'], r['published_date']): dict(r) for r in previous}
     for item in incoming:
-        old = merged.get(item['event_id'])
+        key = (item['event_id'], item['published_date'])
+        old = merged.get(key)
         if old:
             origins = {(s['source'], s['url']): s for s in old.get('sources', []) + item['sources']}
-            item = dict(item, sources=list(origins.values()), first_seen_at=old.get('first_seen_at', old['collected_at']))
+            primary = old if old['source'] in OFFICIAL and item['source'] not in OFFICIAL else item
+            item = dict(primary, sources=list(origins.values()),
+                        related_sources=old.get('related_sources', []),
+                        first_seen_at=old.get('first_seen_at', old['collected_at']))
             revisions = list(old.get('revisions', []))
             if old.get('revision_hash') != item['revision_hash']:
                 revisions.append({'revision_hash': old.get('revision_hash'), 'collected_at': old['collected_at'], 'title': old['title']})
             item['revisions'] = revisions
         else:
             item = dict(item, first_seen_at=item['collected_at'], revisions=[])
-        merged[item['event_id']] = item
+        merged[key] = item
     today = now.astimezone(CST).date()
     results = [r for r in merged.values() if 0 <= (today - datetime.fromisoformat(r['published_date']).date()).days <= retention_days]
     return sorted(results, key=lambda r: (r['published_date'], r['published_at'] or '', r['event_id']), reverse=True)

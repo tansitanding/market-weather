@@ -68,6 +68,10 @@ export interface IndustryModule {
   industries: IndustryRecord[];
 }
 export interface NewsItem {
+  importance_score?: number;
+  importance_reason?: string;
+  related_sources?: { source: string; url: string }[];
+
   event_id: string;
   title: string;
   url: string;

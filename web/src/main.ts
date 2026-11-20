@@ -42,7 +42,8 @@ const store = new SnapshotStore(
 let hash = location.hash;
 let route = parseRoute(hash);
 let selectedIndustryDate = "";
-let newsCount = 6;
+let newsCount = 10;
+let newsMode: "important" | "recent" = "important";
 let newsFilter = "all";
 let managerOpen = false;
 const scrolls = new Map<string, number>();
@@ -108,18 +109,64 @@ function sourceTag(source: string) {
   return e(sourceNames[source] ?? source);
 }
 function article(n: NewsItem) {
-  return `<article class="story"><div class="story-meta"><span>${sourceTag(n.source)}</span><time>${n.published_at ? e(timeLabel(n.published_at)) + " 北京" : e(n.published_date) + " · 日期精度到日"}</time></div>${external(n.url, n.title, "news-link")}${n.event_occurred_at ? `<small>事件时间 ${e(timeLabel(n.event_occurred_at))}</small>` : ""}</article>`;
+  const related = n.related_sources ?? [];
+  return `<article class="story"><div class="story-meta"><span>${sourceTag(n.source)}</span><time>${n.published_at ? e(timeLabel(n.published_at)) + " 北京" : e(n.published_date)}</time></div>${external(n.url, n.title, "news-link")}
+    ${n.importance_reason ? `<small>关注原因 · ${e(n.importance_reason)}</small>` : ""}
+    ${related.length ? fold("news-" + n.event_id + "-" + n.published_date, "同事件其他来源 · " + related.length, related.map((r) => external(r.url, sourceNames[r.source] ?? r.source)).join(" ")) : ""}
+    </article>`;
 }
-function newsSection(snapshot: Snapshot, limit: number, filters = false) {
+function newsSection(snapshot: Snapshot, limit: number) {
   const m = snapshot.modules.news;
   const all = dataOf(m) ?? [];
+  const cutoff = Date.parse(snapshot.published_at) - 7 * 86400000;
+  const important = (n: NewsItem) =>
+    (n.importance_score ?? 0) > 0 &&
+    Date.parse(n.published_date + "T23:59:59+08:00") >= cutoff;
+  const matchesSource = (n: NewsItem) =>
+    newsFilter === "all" ||
+    n.source === newsFilter ||
+    n.related_sources?.some((r) => r.source === newsFilter);
   const rows = all.filter(
-    (n) => newsFilter === "all" || n.source === newsFilter,
+    (n) => matchesSource(n) && (newsMode === "recent" || important(n)),
   );
-  const sources = [...new Set(all.map((n) => n.source))];
+  if (newsMode === "important")
+    rows.sort((a, b) => (b.importance_score ?? 0) - (a.importance_score ?? 0));
+  const sources = [
+    ...new Set(
+      all.flatMap((n) => [
+        n.source,
+        ...(n.related_sources ?? []).map((r) => r.source),
+      ]),
+    ),
+  ];
+  const toggle = `<div class="segment" role="group" aria-label="资讯浏览方式">
+    <button data-action="news-mode" data-value="important" aria-pressed="${newsMode === "important"}">重要资讯</button>
+    <button data-action="news-mode" data-value="recent" aria-pressed="${newsMode === "recent"}">全部 · 按时间</button>
+    </div>`;
+  const filter = `<label class="filter">资讯来源<select id="news-source" aria-label="资讯来源"><option value="all">全部来源</option>${sources.map((source) => `<option value="${e(source)}" ${newsFilter === source ? "selected" : ""}>${sourceTag(source)}</option>`).join("")}</select></label>`;
+  const body = rows.length
+    ? rows.slice(0, limit).map(article).join("")
+    : empty(
+        newsMode === "important" ? "暂无符合条件的重要资讯" : "暂无可用资讯",
+        newsMode === "important"
+          ? "可切换到全部资讯查看已采集报道。"
+          : "当前来源暂无可展示条目。",
+      );
   return card(
-    "最新资讯",
-    `${moduleNote(m, "资讯")}${filters ? `<label class="filter">资讯来源<select id="news-source" aria-label="资讯来源"><option value="all">全部来源</option>${sources.map((s) => `<option value="${e(s)}" ${newsFilter === s ? "selected" : ""}>${sourceTag(s)}</option>`).join("")}</select></label>` : ""}${rows.length ? rows.slice(0, limit).map(article).join("") : empty("暂无可用资讯", all.length ? "所选来源暂时没有条目。" : "资料尚未提供，或未通过来源校验。")}${rows.length > limit ? `<button class="text-button full" data-action="more-news">再看 ${Math.min(6, rows.length - limit)} 条资讯</button>` : ""}<p class="caption">按发布时间排序 · 标题与原文链接 · 不将转载数量当作利好</p>`,
+    "市场资讯",
+    moduleNote(m, "资讯") +
+      toggle +
+      filter +
+      `<p class="caption">${newsMode === "important" ? "按近 7 天事件的市场相关性与来源排序，同等级优先最新。" : "按发布时间倒序。"} 同一事件合并展示。</p>` +
+      body +
+      (rows.length > limit
+        ? `<button class="text-button full" data-action="more-news">再看 ${Math.min(10, rows.length - limit)} 条资讯</button>`
+        : "") +
+      fold(
+        "news-method",
+        "怎么筛选重要资讯？",
+        "<p>根据公开标题识别货币政策、关键经济数据、监管与贸易政策、市场事件。同类消息优先采用官方来源，合并相近时间的高度相似标题。标题差异较大的转载可能分开显示。</p>",
+      ),
   );
 }
 function globalRow(q: GlobalQuote) {
@@ -235,7 +282,7 @@ function home(snapshot: Snapshot) {
             '<a class="section-link" href="#/global">查看全球行情与宏观资讯</a>',
         )
       : ""
-  }${newsSection(snapshot, newsCount, true)}`;
+  }${newsSection(snapshot, newsCount)}`;
 }
 function latestIndustryDay(data?: IndustryModule) {
   const days = data?.daily_returns ?? [];
@@ -419,7 +466,7 @@ function globalPage(snapshot: Snapshot) {
         "<p>美股、港股、美元和期货交易时间不同。每项显示来源市场时间与北京时间，不将页面刷新时间当行情时间，不保证实时。</p><p>美债收益率使用百分比，变动使用基点（bp）。黄金与原油为连续期货观测，不等于现货报价。</p>",
       ),
     ) +
-    newsSection(snapshot, newsCount, true)
+    newsSection(snapshot, newsCount)
   );
 }
 function observe(snapshot: Snapshot) {
@@ -526,7 +573,7 @@ function render(preserve = true) {
     content =
       heading("NOT FOUND", "页面不存在") +
       '<a class="section-link" href="#/">返回市场总览</a>';
-  app.innerHTML = `<a class="skip-link" href="#main-content">跳到主要内容</a><div class="app-shell"><header><a class="brand" href="#/" aria-label="股市气象站首页"><span aria-hidden="true">◒</span><div><b>股市气象站</b><small>最新资料 · 公开阅读</small></div></a><button class="refresh" data-action="refresh" ${state.loading ? "disabled" : ""}>${state.loading ? "读取中…" : "刷新资料"}</button></header>${banner}<main id="main-content" tabindex="-1"><div class="snapshot-meta">${snapshot ? `<span>上次发布 ${e(timeLabel(snapshot.published_at))} 北京时间</span><small>${state.fromCache ? "本机缓存 · " : ""}交易日 08:45 / 11:45 / 17:30 采集</small>` : state.loading ? "<span>正在读取资料快照</span>" : "<span>暂无有效资料快照</span>"}</div>${content}<footer><p>行情时间独立标注 · 无需登录阅读</p><button id="manager-open" class="text-button" data-action="manager">采集管理</button><small>固定规则研究，未经收益优势验证。</small></footer></main>${nav()}</div>${managerOpen ? `<div class="sheet-backdrop"><section class="sheet" role="dialog" aria-modal="true" aria-labelledby="manager-title"><div class="handle"></div><span class="badge">所有者管理入口</span><h2 id="manager-title">手动采集与发布</h2><p>“刷新资料”只读取最新已发布快照，不触发新的行情或新闻采集。</p><p class="muted">定时采集由 GitHub Actions 运行，可能排队延迟。所有者可打开任务页，点击 Run workflow 立即采集；只有管理任务需要 GitHub 登录，阅读网页无需登录。</p>${external("https://github.com/tansitanding/market-weather/actions/workflows/refresh.yml", "打开采集任务 →", "primary full manager-link")}<button id="close-manager" class="primary full" data-action="close-manager">知道了，继续阅读</button></section></div>` : ""}`;
+  app.innerHTML = `<a class="skip-link" href="#main-content">跳到主要内容</a><div class="app-shell"><header><a class="brand" href="#/" aria-label="股市气象站首页"><span aria-hidden="true">◒</span><div><b>股市气象站</b><small>最新资料 · 公开阅读</small></div></a><div class="header-actions"><button id="read-update" class="refresh" data-action="refresh" ${state.loading ? "disabled" : ""}>${state.loading ? "读取中…" : "读取更新"}</button><button id="manager-open" class="refresh" data-action="manager">手动采集</button></div></header>${banner}<main id="main-content" tabindex="-1"><div class="snapshot-meta">${snapshot ? `<span>上次发布 ${e(timeLabel(snapshot.published_at))} 北京时间</span><small>${state.fromCache ? "本机缓存 · " : ""}交易日 08:45 / 11:45 / 17:30 采集</small>${state.checkedAt ? `<small>最近检查 ${e(timeLabel(state.checkedAt))} 北京时间</small>` : ""}` : state.loading ? "<span>正在读取资料快照</span>" : "<span>暂无有效资料快照</span>"}</div>${content}<footer><p>行情时间独立标注 · 无需登录阅读</p><button class="text-button" data-action="manager">手动采集</button><small>固定规则研究，未经收益优势验证。</small></footer></main>${nav()}</div>${managerOpen ? `<div class="sheet-backdrop"><section class="sheet" role="dialog" aria-modal="true" aria-labelledby="manager-title"><div class="handle"></div><span class="badge">所有者管理入口</span><h2 id="manager-title">手动采集与发布</h2><p>“读取更新”检查已发布资料。要重新采集行情和资讯，请启动下面的云端任务。</p><p class="muted">定时采集由 GitHub Actions 运行，可能排队延迟。用仓库所有者账号登录 GitHub，在任务页点 Run workflow。任务完成后回到本页点“读取更新”。</p>${external("https://github.com/tansitanding/market-weather/actions/workflows/refresh.yml", "前往 GitHub 启动采集", "primary full manager-link")}<button id="close-manager" class="primary full" data-action="close-manager">知道了，继续阅读</button></section></div>` : ""}`;
   document.title =
     (route.page === "industry"
       ? "行业分析"
@@ -565,13 +612,20 @@ app.addEventListener("click", (event) => {
   if (!el) return;
   switch (el.dataset.action) {
     case "refresh":
-      void store.refresh();
+      void store.refresh().then(() => {
+        if (!store.state.error) store.acceptPending();
+      });
       break;
     case "accept":
       store.acceptPending();
       break;
+    case "news-mode":
+      newsMode = el.dataset.value === "recent" ? "recent" : "important";
+      newsCount = 10;
+      render();
+      break;
     case "more-news":
-      newsCount += 6;
+      newsCount += 10;
       render();
       break;
     case "manager":
@@ -591,7 +645,7 @@ app.addEventListener("change", (event) => {
   }
   if (target.id === "news-source") {
     newsFilter = target.value;
-    newsCount = 6;
+    newsCount = 10;
     render();
   }
 });

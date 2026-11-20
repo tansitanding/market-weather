@@ -1013,3 +1013,14 @@ footer small {
   max-height: 300px;
   overflow: auto;
 }
+.header-actions {
+  display: flex;
+  gap: 6px;
+}
+.header-actions .refresh {
+  padding-inline: 9px;
+  white-space: nowrap;
+}
+.story details {
+  margin-top: 6px;
+}
