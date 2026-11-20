@@ -87,6 +87,9 @@ def industry_research(industry, now):
 def stock_card(security, bars, benchmark, industry_name, now):
     if len(bars)<31 or len(benchmark)<31:return None
     dates=[r['date'] for r in benchmark[-31:]];by={r['date']:r for r in bars}
+    try:
+        if dates!=cn_sessions(dates[0],dates[-1]):return None
+    except ValueError:return None
     if any(d not in by for d in dates):return None
     rows=[by[d] for d in dates];last=rows[-1];closes=[r['close'] for r in rows]
     ma=statistics.mean(closes[-20:]);ret30=(closes[-1]/closes[0]-1)*100;ret5=(closes[-1]/closes[-6]-1)*100
@@ -142,6 +145,9 @@ def track_signals(previous, cards, histories, benchmark):
                     r['status']='cancelled';r['note']='下一交易日停牌、缺报价或开盘偏离超过3%，取消模型入场';continue
                 r.update(status='model_position',entry_date=entry['date'],entry_price=entry['open'],risk_price=max(0,entry['open']-1.5*r['atr14']))
         if r.get('entry_date'):
+            expected_dates=[d for d in sessions if d>=r['entry_date']]
+            if any(d not in by for d in expected_dates):
+                r['note']='模型期间有停牌或缺失报价，暂停新增统计；不把复牌日当作连续交易日';continue
             future=[b for b in bars if b['date']>=r['entry_date']]
             # A-share T+1: a model position cannot sell on entry day.
             stop=next((b for b in future[1:] if b['low']<=r['risk_price']),None)

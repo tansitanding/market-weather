@@ -12,6 +12,7 @@ export interface DataModule<T> {
   error?: SourceError;
   explanation?: string;
   pool_count?: number;
+  validated_count?: number;
   market_gate?: string;
 }
 export interface Bar {
@@ -154,6 +155,12 @@ export interface TrackedSignal {
   note: string;
   horizons: Record<
     string,
-    { date: string; net_return_pct: number; exit_reason: string }
+    {
+      date: string;
+      net_return_pct: number;
+      benchmark_return_pct?: number | null;
+      excess_pp?: number | null;
+      exit_reason: string;
+    }
   >;
 }

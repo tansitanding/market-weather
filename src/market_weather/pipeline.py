@@ -156,15 +156,20 @@ def collect(root, now=None, replay=None, settings=None):
                 candidate=stock_card(sec,result['data'],benchmark,sec['industry'],now)
                 if candidate and sec['industry']!='历史观察':cards.append(candidate)
     # Broad-market trend is a research gate, not an automatic order.
-    trend_ok = bool(benchmark and len(benchmark)>=20 and benchmark[-1]['close']>sum(r['close'] for r in benchmark[-20:])/20)
+    trend_known=len(benchmark)>=31
+    trend_ok = bool(trend_known and benchmark[-1]['close']>sum(r['close'] for r in benchmark[-20:])/20)
     selected=[];seen_industries=set()
     if trend_ok:
         for card in sorted(cards,key=lambda c:(-c['return_30d_pct'],c['code'])):
             if card['industry'] not in seen_industries:selected.append(card);seen_industries.add(card['industry'])
             if len(selected)>=3:break
-    modules['observations']={'status':'succeeded' if breadth else 'partial','data':selected,'collected_at':now.isoformat(),
-                             'pool_count':len(pool),'market_gate':'open' if trend_ok else 'closed',
-                             'explanation':'沪深300收盘低于20日均线，本期不新增个股候选。' if not trend_ok else '仅在满足行业规则的有限成分池中筛选，允许无候选。'}
+    research_complete=bool(breadth and trend_known and len(stock_histories)==len(pool) and pool)
+    explanation=('沪深300收盘未高于20日均线，本期不新增个股候选。' if not trend_ok else '仅在满足行业规则的有限成分池中筛选，允许无候选。') if trend_known else '缺少完整基准日线，暂停新增个股候选。'
+    if len(stock_histories)<len(pool):explanation+=' 部分成分日线未取得，仅使用通过校验的资料。'
+    if not pool:explanation+=' 当前没有可验证的研究成分池。'
+    modules['observations']={'status':'succeeded' if research_complete else 'partial','data':selected,'collected_at':now.isoformat(),
+                             'pool_count':len(pool),'validated_count':len(stock_histories),'market_gate':('open' if trend_ok else 'closed') if trend_known else 'unknown',
+                             'explanation':explanation}
     tracking=track_signals(previous_tracking,selected,stock_histories,benchmark)
     modules['tracking']={'status':'succeeded','data':tracking,'collected_at':now.isoformat()}
     atomic_json(tracking_path,tracking)

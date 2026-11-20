@@ -206,14 +206,14 @@ function trackingSection(snapshot: Snapshot) {
   };
   return card(
     "5 / 10 / 20 日纸面跟踪",
-    `<p class="caption">保存原始信号和规则版本；仅为纸面模拟，非用户成交。包含0.1%往返成本，未模拟全部滑点与涨跌停排队。</p>${
+    `<p class="caption">保存原始信号和规则版本；仅为纸面模拟，非用户成交。包含0.1%往返成本，未模拟全部滑点与涨跌停排队。基准采用模型入场前一交易日收盘至各窗口收盘，非同步成交。</p>${
       rows.length
         ? rows
             .slice(-15)
             .reverse()
             .map(
               (r) =>
-                `<article class="story"><strong>${e(r.name)} · ${e(r.code)}</strong><span class="badge">${e(labels[r.status] ?? r.status)}</span><small>建立于 ${e(timeLabel(r.created_at))}</small><div class="metrics">${[5, 10, 20].map((n) => metric(n + "日净收益", r.horizons[String(n)] ? signed(r.horizons[String(n)].net_return_pct) : "待观察")).join("")}</div><p class="caption">${e(r.note)}</p></article>`,
+                `<article class="story"><strong>${e(r.name)} · ${e(r.code)}</strong><span class="badge">${e(labels[r.status] ?? r.status)}</span><small>建立于 ${e(timeLabel(r.created_at))}</small><div class="metrics">${[5, 10, 20].map((n) => metric(n + "日净收益", r.horizons[String(n)] ? signed(r.horizons[String(n)].net_return_pct) + `<small>相对基准 ${signed(r.horizons[String(n)].excess_pp, "pp")}</small>` : "待观察")).join("")}</div><p class="caption">${e(r.note)}</p></article>`,
             )
             .join("")
         : empty(
@@ -444,6 +444,9 @@ function observe(snapshot: Snapshot) {
       "研究周期基线：5 / 10 / 20 个交易日",
     ) +
     moduleNote(m, "研究资料") +
+    (m?.pool_count != null
+      ? `<p class="caption">本期成分研究池 ${m.pool_count} 只 · 取得日线 ${m.validated_count ?? "—"} 只</p>`
+      : "") +
     (rows.length
       ? card(
           "已发布研究卡",

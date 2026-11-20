@@ -376,6 +376,8 @@ function trackingData(v: unknown): TrackedSignal[] {
             {
               date: day(h.date),
               net_return_pct: num(h.net_return_pct),
+              benchmark_return_pct: nullable(h.benchmark_return_pct),
+              excess_pp: nullable(h.excess_pp),
               exit_reason: str(h.exit_reason),
             },
           ];
@@ -401,6 +403,8 @@ function moduleData<T>(v: unknown, decode: (v: unknown) => T): DataModule<T> {
         typeof r.explanation === "string"
           ? str(r.explanation, 1500)
           : undefined,
+      validated_count:
+        r.validated_count == null ? undefined : num(r.validated_count),
       pool_count:
         typeof r.pool_count === "number" ? num(r.pool_count) : undefined,
       market_gate:
