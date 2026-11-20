@@ -57,3 +57,10 @@ class AnalysisTests(unittest.TestCase):
    self.assertEqual(len(out['modules']['industry']['data']['benchmark']['series']),31)
    self.assertNotIn('evidence',out)
    self.assertEqual(len(x['modules']['cn_market']['data']['benchmark']),len(b))
+
+ def test_reexport_of_carried_public_state_keeps_comparison_base(self):
+  b=bars();series=[dict(date=r['date'],cumulative_return_pct=i) for i,r in enumerate(b[-31:])]
+  x=dict(rule_version='test',modules=dict(cn_market=dict(data=dict(benchmark=b[-2:],indices={})),industry=dict(data=dict(window_start=DAYS[-31],as_of_date=DAYS[-1],benchmark=dict(series=series)))))
+  with tempfile.TemporaryDirectory() as d:
+   out=export_snapshot(x,d)
+   self.assertEqual(out['modules']['industry']['data']['benchmark']['series'],series)

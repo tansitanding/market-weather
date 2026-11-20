@@ -11,7 +11,7 @@ def export_snapshot(snapshot, output):
     market=s['modules'].get('cn_market',{}).get('data')
     if industry and market:
         rows=[r for r in market['benchmark'] if industry['window_start']<=r['date']<=industry['as_of_date']]
-        if rows:
+        if rows and rows[0]['date']==industry['window_start'] and rows[-1]['date']==industry['as_of_date']:
             industry['benchmark']['series']=[{'date':r['date'],'cumulative_return_pct':round((r['close']/rows[0]['close']-1)*100,6)} for r in rows]
     if market:
         market['benchmark']=market['benchmark'][-2:]
