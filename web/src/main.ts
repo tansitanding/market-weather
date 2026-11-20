@@ -377,7 +377,7 @@ function industryDetail(snapshot: Snapshot, code: string) {
           `<a class="section-link" href="#/observe/${encodeURIComponent(x.code)}">${e(x.name)} · ${e(x.state)}</a>`,
       )
       .join("") || '<p class="muted">本行业暂无满足当前规则的个股候选。</p>',
-  )}}`;
+  )}`;
 }
 function globalPage(snapshot: Snapshot) {
   const m = snapshot.modules.global,
