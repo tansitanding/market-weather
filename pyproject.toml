@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "market-weather"
+version = "0.1.0"
+description = "Mobile-first public market research dashboard and auditable collection pipeline"
+requires-python = ">=3.9"
+dependencies = []
+
+[project.scripts]
+market-weather = "market_weather.pipeline:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

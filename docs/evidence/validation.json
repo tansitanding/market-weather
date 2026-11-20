@@ -1,0 +1,91 @@
+{
+  "captured_at": "2026-11-20T07:44:01.384406+00:00",
+  "snapshot_id": "20261120T074401-7e4f05ee",
+  "schema_version": "1.0",
+  "captured_settings_sha256": "0e503f75d70af4ec369bde7b4198fc4c99fe79d08e78239c5a8eaaf9dc099c7b",
+  "source_run": ".local/data/runs/20261120T074401-7e4f05ee",
+  "industry_count": 31,
+  "window_start": "2026-10-08",
+  "as_of_date": "2026-11-19",
+  "missing_session_dates": [
+    "2026-10-15",
+    "2026-11-10"
+  ],
+  "heat_status": "unavailable",
+  "global_count": 9,
+  "news_count": 55,
+  "news_sources": {
+    "cns": {
+      "parsed": 30,
+      "excluded": 0
+    },
+    "pbc": {
+      "parsed": 15,
+      "excluded": 0
+    },
+    "fed": {
+      "parsed": 20,
+      "excluded": 0
+    }
+  },
+  "module_status": {
+    "industry": "partial",
+    "cn_market": "succeeded",
+    "global": "succeeded",
+    "news": "succeeded"
+  },
+  "offline_replay": "passed",
+  "python_tests": 21,
+  "frontend_build": "passed",
+  "remote_repository": "https://github.com/tansitanding/market-weather",
+  "public_data_license": "unverified_no_market_data_export",
+  "raw_sha256": {
+    "em_000001.raw": "35b4437daf634eb0736802102c1377e7a8e05ebe41c1e6994c37760f15c96e7e",
+    "em_000300.raw": "66e03b966e4cbf58d4ab9d920fcce80b3a76a34c60400d50a46fc8fcdcdc5f27",
+    "news_cns.raw": "5d22c2b26e089127335a819a76d0944c4d8198ca186ebd78719b6a558a0e6a7c",
+    "news_fed.raw": "e06ed627f6fa071162b75adb70e830b2f5c343a52b30aa0e345055023dd3aaf5",
+    "news_pbc.raw": "dc515718c1e401cdec7e4bce4523f2aec1d82d82121cd710d66cd0388c45e1d9",
+    "sw_801010.raw": "d48ff475a252706ff4ae61487753c53deb2672e750f766d1f6fcfb91e932f0bf",
+    "sw_801030.raw": "2d7dec87eabe2563c4fcfe87ae77b338a2e94d170e7695ceb0eddc266efb7635",
+    "sw_801040.raw": "6e5d7afb3507402bc009c3b4c052ca52bc15a4c5daf668390fb079b71d37b475",
+    "sw_801050.raw": "d7d94a6a85c9fe9ffe859139e9f6980eec1e84f81c7a4f5e3b64648288c7d24e",
+    "sw_801080.raw": "d8f177505c8258e5017a93410a26c8436ca6858cc85748906609bc2269242633",
+    "sw_801110.raw": "dc137fc819176e2b6d413bb371a1bdf7d28cb4ebbb9b46e93b91fa62bdc7b005",
+    "sw_801120.raw": "d7fadb37334c1c5562f360e7cd7b75d22a0248d3b7f68975ab099ef66d86a0e3",
+    "sw_801130.raw": "9908825b7b62d97ccaf553bbc051896a946d58d4bd6527241109d271fa03be56",
+    "sw_801140.raw": "bd1fb4a6ad429aa737ab5043a42321ca5862eda5c83fb47449f852ba5b0c1bf7",
+    "sw_801150.raw": "563e44b004a2970ee190f19f3577faea93d2489d68de3459df4731a14b5b8bef",
+    "sw_801160.raw": "33c8156ac9354b695f22b3429232d70b201dff5f7124d179ced7904ccac5cafb",
+    "sw_801170.raw": "8d7a3d8d833fbc2b44be1d5d8704d29bb0bcb79f31302534c12684b6e771aadc",
+    "sw_801180.raw": "0871203c400dda84278994b28de5d702083f7c6db1005e711245b5442c63a634",
+    "sw_801200.raw": "77badd7175759fe1287f5c9679ef92398e4a725047316a0e0eb0554d504020d0",
+    "sw_801210.raw": "fdbf66cb75de56ef95bc399d4aafa2dd43972641edee490fd21d3e3e818d0719",
+    "sw_801230.raw": "7cc88c43822ea88789448efa173c7f31226a427e42a53774c9a465088a3aa1df",
+    "sw_801710.raw": "c927a9d35993d342b6cd15a407ffee3405a42a85be994498bfd00039df355c32",
+    "sw_801720.raw": "ba94affe5f652828df4ccd59820061eee3713dc8dabe611eb5cfea29bf1c3a4b",
+    "sw_801730.raw": "264fd10f8005a3f0cc2c70e3adb6771abdaf84dbe6510cdc5af4bde168cbf996",
+    "sw_801740.raw": "5b88ac96fc13ae579a3b3755374ec93c8b9e62a95adcb1b8f56d2b4b11be3a3e",
+    "sw_801750.raw": "8f4a6c5eda7feeb5d4aa69b261a28fe04bd2e19d64f19d15e3aa94eb6d400e74",
+    "sw_801760.raw": "1df628e895d4697504bc1825b5a133e831e7f6738b567e91f404c7cefbf46131",
+    "sw_801770.raw": "28c5bfd61114285340db36b5be73a9d2d6359d9db7b87b1ddb278007421f87fc",
+    "sw_801780.raw": "6143265282e89a058b8ab2e9940696c58aeea35ca87baf644b68d249ac87a93c",
+    "sw_801790.raw": "495df95e833cbfc5e8a3a7620b439923fcc5438bbdb670c388f28afc56ff4c09",
+    "sw_801880.raw": "7f464ea995ebd33cf7c88d936570b6370441d43637ab00f8c3c5f71cc17d623b",
+    "sw_801890.raw": "108f830656ad27dd76b8802a60ba53fc4361e61aefb761b2d3f7deae67e93940",
+    "sw_801950.raw": "23d250b2e8c5379f968086b07107c893f5e8e7baa08d925afdccd4b184679b9c",
+    "sw_801960.raw": "7d7878ba58ed840bc224128a91e4cf87f2ae2e445f73e31d6df0a2e6375a3988",
+    "sw_801970.raw": "b493bdd04e1b2ffad48bf5535dc85d2c322129ac79d7ae9a04dff48bfdd1c295",
+    "sw_801980.raw": "9560a1ed90b632bfb73f58712ff74674beb17457075777ac08840a328987cfbb",
+    "sw_universe.raw": "fa8394389e7e591a71dc1e82c3b7dfc2af5adb94891cb92cf32d07904487a53c",
+    "yahoo_CL_F.raw": "c9e253db77d043b02184f079835d501705285fd676ae96e36756dab0cf94aa9a",
+    "yahoo_DX_Y_NYB.raw": "9b06b7cc3aeeb6a45aa96611e0426bf17111360e8519b566aef3e58ee17cc464",
+    "yahoo_GC_F.raw": "075e0fbeba2060e93bddef71af76440da56507feee36ff4d38c7747042a76c99",
+    "yahoo_HSTECH_HK.raw": "ed59a71a7e13270be5a8aa96abe9bb468ba094bbb71f388715dbfe9e40465511",
+    "yahoo__DJI.raw": "28283151a9157d710d5a4476a1f65a8b885f2d362437c47627d5d868822e617c",
+    "yahoo__GSPC.raw": "5f60b047bda50a8ab65d49b462ade717b04f56147b547df026f4b246b544ba0f",
+    "yahoo__HSI.raw": "c2f68a77ef4cf9f30ba3046afcaaa5ad16631f98c0ff4f4c2321bf8ecfad35aa",
+    "yahoo__IXIC.raw": "2594f5294efa2abf3b4ca9d32e5fcb3a1b804e9e7f14dba767397340176cec56",
+    "yahoo__TNX.raw": "c56b4fdc05127b23ca867bba1a658c6552b7ed8b7740d90734b45ae7355ed6ad"
+  },
+  "remote_upload_status": "pending"
+}

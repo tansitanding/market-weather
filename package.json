@@ -1,0 +1,13 @@
+{
+  "name": "market-weather",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite web --host 127.0.0.1",
+    "typecheck": "tsc --noEmit",
+    "build": "npm run typecheck && vite build web --base=./ --outDir ../dist",
+    "test:data": "PYTHONPATH=src python3 -m unittest discover -s tests -v"
+  },
+  "devDependencies": {"typescript": "7.0.2", "vite": "8.3.8"}
+}

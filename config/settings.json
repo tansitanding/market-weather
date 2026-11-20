@@ -1,0 +1,26 @@
+{
+  "schema_version": "1.0",
+  "timezone": "Asia/Shanghai",
+  "schedule_local": [
+    "08:45",
+    "11:45",
+    "17:30"
+  ],
+  "schedule_enabled": false,
+  "industry_classification": "SW2021_L1",
+  "industry_expected_count": 31,
+  "return_sessions": 30,
+  "history_limit": 180,
+  "research_horizon_sessions": [
+    5,
+    10,
+    20
+  ],
+  "news_retention_days": 30,
+  "provider_timeout_seconds": 15,
+  "provider_attempts": 2,
+  "public_data_export_enabled": false,
+  "publication_note": "Source connectivity verified locally; redistribution permissions are not presumed.",
+  "industry_definition_source": "https://www.swsresearch.com/institute_sw/allIndex/downloadCenter/industryType",
+  "metrics_version": "sw31-return30-transaction-share30-5v25-v1"
+}
