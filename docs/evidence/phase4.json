@@ -1,0 +1,80 @@
+{
+  "phase": 4,
+  "verified_at": "2026-11-20T08:27:39.499438+00:00",
+  "scope": "local mobile frontend; no production deployment or generation",
+  "snapshot_used": "20261120T074401-7e4f05ee",
+  "source_as_of": {
+    "industry": "2026-11-19",
+    "cn_market": "2026-11-20"
+  },
+  "python_tests_passed": 21,
+  "web_tests_passed": 23,
+  "typecheck": "passed",
+  "production_build": "passed",
+  "responsive": {
+    "widths_css_px": [
+      360,
+      390,
+      430
+    ],
+    "pages": [
+      "home",
+      "industry",
+      "industry-detail",
+      "global",
+      "observe"
+    ],
+    "checks": 15,
+    "horizontal_overflow": false,
+    "controls_below_44px": 0
+  },
+  "browser_checks": {
+    "all_31_industry_links": true,
+    "industry_heat_unavailable_state": true,
+    "chart_segments_for_two_gaps": 3,
+    "benchmark_segments": 1,
+    "deep_link_reload_under_project_subpath": true,
+    "news_page_size_before_after": [
+      6,
+      12
+    ],
+    "source_filter": "PBC-only, day precision preserved",
+    "global_quote_count": 9,
+    "yield_bp_and_continuous_futures_labels": true,
+    "missing_source_empty_state": true,
+    "invalid_schema_error_state": true,
+    "long_title_overflow": false,
+    "injected_html_rendered_as_text": true,
+    "over_24_hour_notice": true,
+    "scroll_restore_before_after": [
+      2381,
+      2381
+    ],
+    "manager_no_fake_execution": true,
+    "modal_focus_return": "manager-open",
+    "watch_pool": "not enabled, no synthetic securities"
+  },
+  "raw_data_embedded_in_dist": false,
+  "raw_data_committed": false,
+  "public_data_export_enabled": false,
+  "screenshots_local_only": [
+    "home.jpg",
+    "industry.jpg",
+    "industry-detail.jpg",
+    "industry-unavailable.jpg",
+    "global.jpg",
+    "observe.jpg"
+  ],
+  "remaining": [
+    "industry data missing 2026-10-15 and 2026-11-10; heat/drawdown disabled",
+    "market temperature / AI analysis / recommendations deferred to phase 5",
+    "management identity / scheduled collection / domain publication deferred to phase 6"
+  ],
+  "offline_replay": "passed",
+  "production_gzip_kb": {
+    "javascript": 12.5,
+    "css": 3.42,
+    "html": 0.42
+  },
+  "offline_review_artifact": "generated, syntax checked; file-protocol opening blocked by browser tool policy, direct-open rendering not verified"
+}

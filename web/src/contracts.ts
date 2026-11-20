@@ -1,5 +1,8 @@
-export type ModuleStatus = 'succeeded' | 'partial' | 'failed' | 'stale';
-export interface SourceError { code: string; message: string }
+export type ModuleStatus = "succeeded" | "partial" | "failed" | "stale";
+export interface SourceError {
+  code: string;
+  message: string;
+}
 export interface DataModule<T> {
   status: ModuleStatus;
   data?: T;
@@ -8,50 +11,98 @@ export interface DataModule<T> {
   carried_forward?: boolean;
   error?: SourceError;
 }
+export interface Bar {
+  date: string;
+  close: number;
+  amount: number | null;
+}
+export interface CNMarket {
+  benchmark: Bar[];
+  indices: Record<string, Bar[]>;
+}
 export interface IndustryRecord {
-  code: string; name: string;
-  return_30d_pct: number; excess_30d_pp: number;
-  return_5d_pct: number; max_drawdown_30d_pct: number | null;
+  code: string;
+  name: string;
+  return_30d_pct: number;
+  excess_30d_pp: number;
+  return_5d_pct: number;
+  max_drawdown_30d_pct: number | null;
   missing_session_dates: string[];
   transaction_heat_30d_share_pct?: number;
   heat_rising_5v25_pct?: number;
-  series: {date: string; cumulative_return_pct: number}[];
+  series: { date: string; cumulative_return_pct: number }[];
 }
 export interface IndustryModule {
-  status: 'succeeded' | 'partial'; classification: 'SW2021_L1';
-  expected_count: number; valid_count: number;
-  as_of_date: string; window_start: string; return_intervals: number;
-  heat_status: 'succeeded' | 'unavailable'; heat_reason: string | null;
-  freshness: 'stale' | 'lags_benchmark' | 'latest_available';
-  rankings: { return_top: string[]; transaction_heat_top: string[]; heat_rising_top: string[] };
+  status: "succeeded" | "partial";
+  classification: "SW2021_L1";
+  expected_count: number;
+  valid_count: number;
+  as_of_date: string;
+  window_start: string;
+  return_intervals: number;
+  heat_status: "succeeded" | "unavailable";
+  heat_reason: string | null;
+  freshness: "stale" | "lags_benchmark" | "latest_available";
+  missing_session_dates: string[];
+  benchmark: { code: string; name: string; return_30d_pct: number };
+  rankings: {
+    return_top: string[];
+    transaction_heat_top: string[];
+    heat_rising_top: string[];
+  };
   industries: IndustryRecord[];
-  recommendations: never[];
 }
 export interface NewsItem {
-  event_id: string; title: string; url: string; source: string;
-  published_at: string | null; published_date: string;
-  date_precision: 'second' | 'day'; collected_at: string;
+  event_id: string;
+  title: string;
+  url: string;
+  source: string;
+  published_at: string | null;
+  published_date: string;
+  date_precision: "second" | "day";
+  collected_at: string;
   event_occurred_at: string | null;
 }
 export interface GlobalQuote {
-  symbol: string; name: string; asset_type: string; price: number;
-  unit: string; observed_at: string; market_date: string;
-  exchange_timezone: string; source: string;
+  symbol: string;
+  name: string;
+  asset_type: string;
+  price: number;
+  unit: string;
+  currency?: string;
+  observed_at: string;
+  market_date: string;
+  exchange_timezone: string;
+  source: string;
   change_vs_previous_day_close_pct: number | null;
   change_bp: number | null;
-  freshness: 'stale' | 'latest_available';
+  freshness: "stale" | "latest_available";
   is_live_guaranteed: false;
 }
+export interface ResearchCard {
+  code: string;
+  name: string;
+  state: string;
+  conclusion: string;
+  trigger: string;
+  invalidation: string;
+  risks: string[];
+  evidence: { title: string; url: string; published_at: string }[];
+  published_at: string;
+}
 export interface Snapshot {
-  schema_version: '1.0'; snapshot_id: string;
-  started_at: string; published_at: string;
+  schema_version: "1.0";
+  snapshot_id: string;
+  started_at: string;
+  published_at: string;
   public_access_requires_login: false;
-  timezone: 'Asia/Shanghai';
-  analysis_status: 'phase_5_not_implemented';
+  timezone: "Asia/Shanghai";
+  analysis_status: string;
   modules: {
     industry: DataModule<IndustryModule>;
     news: DataModule<NewsItem[]>;
     global: DataModule<GlobalQuote[]>;
-    cn_market: DataModule<unknown>;
+    cn_market: DataModule<CNMarket>;
+    observations?: DataModule<ResearchCard[]>;
   };
 }
