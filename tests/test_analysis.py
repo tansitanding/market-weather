@@ -1,7 +1,7 @@
 import copy,json,tempfile,unittest
 from pathlib import Path
 from datetime import datetime,timezone
-from market_weather.analysis import temperature, stock_card, track_signals, industry_research, investment_plan
+from market_weather.analysis import temperature, stock_card, track_signals, industry_research, investment_plan, global_review
 from market_weather.calendar import cn_sessions
 from market_weather.export import export_snapshot
 DAYS=cn_sessions('2026-07-01','2026-09-23')
@@ -74,9 +74,16 @@ class AnalysisTests(unittest.TestCase):
   daily[3]['rows'] = []
   result = industry_research(dict(daily_returns=daily,expected_count=2),datetime.now(timezone.utc))
   self.assertEqual([r['code'] for r in result], ['A'])
-  self.assertIn('3 日数据齐全', result[0]['conclusion'])
+  self.assertEqual(result[0]['state'], '优先观察')
+  self.assertIn('3/5 个完整榜单', result[0]['conclusion'])
   daily[0]['rows'] = []
-  self.assertEqual(industry_research(dict(daily_returns=daily,expected_count=2),datetime.now(timezone.utc)), [])
+  tentative = industry_research(dict(daily_returns=daily,expected_count=2),datetime.now(timezone.utc))
+  self.assertEqual(tentative[0]['state'], '初步观察')
+  daily[-1]['rows'] = daily[-1]['rows'][:1]
+  partial = industry_research(dict(daily_returns=daily,expected_count=2),datetime.now(timezone.utc))
+  self.assertEqual(partial[0]['as_of_date'], daily[-1]['date'])
+  self.assertIn('1/2 个行业', partial[0]['conclusion'])
+  self.assertEqual(partial[0]['state'], '初步观察')
 
  def test_investment_plan_needs_same_day_breadth_and_sector_strength(self):
   benchmark = bars()
@@ -87,3 +94,15 @@ class AnalysisTests(unittest.TestCase):
   weak = dict(as_of_date=day,breadth=dict(advancing=30,valid_count=100))
   self.assertEqual(investment_plan(benchmark,weak,['行业A'],day,0)['stance'],'防守观察')
   self.assertEqual(investment_plan(benchmark,dict(weak,as_of_date=benchmark[-2]['date']),[],None,0)['stance'],'等待确认')
+
+ def test_global_heat_preserves_partial_coverage_and_ignores_stale_and_misaligned_indexes(self):
+  def q(symbol, value, day='2026-11-19', freshness='latest_available'):
+   return dict(symbol=symbol, market_date=day, change_vs_previous_day_close_pct=value, freshness=freshness)
+  quotes = [q('^GSPC',-2),q('^IXIC',-3),q('^DJI',8,'2026-11-18'),
+            q('^HSI',-1,'2026-11-20'),q('HSTECH.HK',9,freshness='stale')]
+  review = global_review(quotes)
+  self.assertEqual(review['label'],'偏冷')
+  self.assertEqual(review['score'],29)
+  self.assertEqual([m['coverage'] for m in review['markets']],[2,1])
+  self.assertTrue(any('相对标普 -1.00' in n['text'] for n in review['notes']))
+  self.assertIsNone(global_review(quotes[:3])['score'])

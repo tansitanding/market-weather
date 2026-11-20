@@ -1144,3 +1144,67 @@ footer small {
 #journal-error:empty {
   display: none;
 }
+
+.global-climate-summary {
+  background: #1b3548;
+  color: #fff;
+  border-radius: 12px;
+  padding: 14px;
+}
+.global-climate-summary > div:first-child {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.global-climate-summary strong {
+  font-size: 23px;
+}
+.global-climate-summary .caption {
+  color: #d5e2eb;
+}
+.global-tiles {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px;
+  margin-top: 10px;
+}
+.global-tile {
+  min-width: 0;
+  display: grid;
+  gap: 5px;
+  padding: 11px;
+  border-radius: 10px;
+  background: #eef2f5;
+}
+.global-tile.warm {
+  background: #fff0ed;
+}
+.global-tile.cool {
+  background: #ebf7f1;
+}
+.global-tile b {
+  font-size: 23px;
+}
+.global-tile span,
+.global-tile small {
+  font-size: 11px;
+}
+.global-tile .climate-scale {
+  margin-block: 5px;
+}
+.global-tile .climate-scale i {
+  background: #1b3548;
+}
+.global-insight {
+  padding-block: 10px;
+  border-bottom: 1px solid var(--line);
+}
+.global-insight h3,
+.global-insight p {
+  margin: 0;
+}
+.global-insight p {
+  margin-top: 5px;
+}

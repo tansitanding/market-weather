@@ -256,18 +256,28 @@ function sectorReviews(snapshot: Snapshot, code?: string) {
   const rows = (
     dataOf(snapshot.modules.industry)?.recommendations ?? []
   ).filter(
-    (r) => r.rule_version === "sector-daily-v1.0" && (!code || r.code === code),
+    (r) =>
+      ["sector-daily-v1.0", "sector-daily-v2.0"].includes(r.rule_version) &&
+      (!code || r.code === code),
   );
   return card(
-    "行业研究观察",
+    "行业建议",
     rows.length
       ? rows
           .map(
             (r) =>
               `<article class="sector-review"><a class="section-link" href="#/industry/${encodeURIComponent(r.code)}">${e(r.name)}</a><span class="badge">${e(r.state)}</span><p>${e(r.conclusion)}</p>${fold("sector-" + r.code, "查看条件、风险与版本", `<h3>观察条件</h3><p>${e(r.trigger)}</p><h3>失效条件</h3><p>${e(r.invalidation)}</p><ul>${r.risks.map((v) => `<li>${e(v)}</li>`).join("")}</ul><small>${e(r.rule_version)} · ${e(timeLabel(r.published_at))}</small>`)}</article>`,
           )
-          .join("")
-      : empty("暂无行业入选", "最新完整榜单中暂无满足近期持续上榜条件的行业。"),
+          .join("") +
+          (code
+            ? ""
+            : '<p class="caption">初步观察依据可见样本，优先观察需要当日完整覆盖且近五个交易日至少三次上涨上榜。</p>')
+      : empty(
+          code ? "保持观察" : "暂缓追涨",
+          code
+            ? "目前没有该行业的领先证据。等日涨幅和排名改善，再验证成交与成分股扩散。"
+            : "现有可核验榜单暂无上涨的领先行业，或日涨幅暂缺。先等下一次收盘，观察上涨行业是否增多。",
+        ),
   );
 }
 function trackingSection(snapshot: Snapshot) {
@@ -403,7 +413,7 @@ function industryPage(snapshot: Snapshot) {
     card("Top 10 上榜次数", frequencyChart(data)) +
     card(
       "计算口径",
-      "<p>每日涨幅按当日收盘相对上一交易日收盘计算。前后任一日缺数据时留空。行业建议基于最新完整榜单，要求当日上涨且进入前十，并在最近五个交易日内至少三次上涨上榜。</p>",
+      "<p>每日涨幅按当日收盘相对上一交易日收盘计算。前后任一日缺数据时留空。行业建议使用最近有数据的交易日。日榜覆盖或延续性不足时降为初步观察，并注明样本范围。</p>",
     )
   );
 }
@@ -461,6 +471,41 @@ function industryDetail(snapshot: Snapshot, code: string) {
       .join("") || '<p class="muted">本行业暂无满足当前规则的个股候选。</p>',
   )}`;
 }
+function globalClimate(snapshot: Snapshot) {
+  const data = dataOf(snapshot.modules.macro)?.global_review;
+  if (!data) return macroSummary(snapshot);
+  const { score, label, markets, notes } = data;
+  const meter = (value: number) =>
+    `<div class="climate-scale" aria-hidden="true"><i style="left:${value}%"></i></div>`;
+  const tiles = markets
+    .map(
+      (
+        m,
+      ) => `<article class="global-tile ${m.average_pct > 0.5 ? "warm" : m.average_pct < -0.5 ? "cool" : "flat"}">
+    <strong>${e(m.name)}</strong><b class="${direction(m.average_pct)}">${signed(m.average_pct)}</b><span>样本平均涨跌</span>
+    ${meter(m.score)}<small>${e(m.date)} · ${m.advancing}/${m.coverage} 上涨 · 覆盖 ${m.coverage}/${m.expected}</small></article>`,
+    )
+    .join("");
+  return (
+    card(
+      "全球市场冷暖",
+      `<div class="global-climate-summary"><div><strong>${e(label)}</strong>${score === null ? "" : `<b>${decimal(score, 1)} / 100</b>`}</div>${score === null ? '<p class="caption">综合冷暖需要同时覆盖美股和港股，并至少取得三只指数。样本不足时保留分市场走势。</p>' : meter(score) + '<div class="scale-labels"><span>冷</span><span>中性</span><span>暖</span></div>'}</div>
+    ${tiles ? `<div class="global-tiles">${tiles}</div>` : ""}
+    <p class="caption">由美股和港股指数样本计算，围绕 50 分按平均涨跌映射，两地等权。两地时间各自标注。覆盖不足时仅代表已取得的样本。美元、美债和商品另作分析。</p>`,
+    ) +
+    card(
+      "跨资产研判",
+      notes.length
+        ? notes
+            .map(
+              (n) =>
+                `<article class="global-insight"><h3>${e(n.title)}</h3><p>${e(n.text)}</p></article>`,
+            )
+            .join("")
+        : empty("等待可比较的行情", "取得相应市场的变化数据后再分析。"),
+    )
+  );
+}
 function globalPage(snapshot: Snapshot) {
   const m = snapshot.modules.global,
     rows = dataOf(m) ?? [];
@@ -484,7 +529,7 @@ function globalPage(snapshot: Snapshot) {
       "全球与宏观",
       "各市场独立标注时间，均为最近可用观测。",
     ) +
-    macroSummary(snapshot) +
+    globalClimate(snapshot) +
     moduleNote(m, "国际行情") +
     (rows.length
       ? groups

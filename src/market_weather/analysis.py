@@ -66,42 +66,118 @@ def macro_review(quotes, news, industry):
         if hits:related[row['code']]=hits
     return {'method':'规则解读与关键词关联，无生成式AI调用','facts':facts,'interpretation':interpretation,
             'counter_evidence':'需继续验证国内成交、行业扩散与公告；新闻关联不等于已证实的利好或因果。',
-            'industry_news':related,'news_coverage_note':'只依据已采集公开标题，来源覆盖有限。'}
+            'global_review':global_review(quotes),'industry_news':related,'news_coverage_note':'只依据已采集公开标题，来源覆盖有限。'}
 
 
 def industry_research(industry, now):
     daily = industry.get('daily_returns', [])
-    complete = [day for day in daily if len(day['rows']) == industry['expected_count']]
-    if not complete:
+    latest = next((day for day in reversed(daily) if day['rows']), None)
+    if not latest:
         return []
-    latest = complete[-1]
+    expected = industry['expected_count']
     recent = [day for day in daily if day['date'] <= latest['date']][-5:]
-    covered = [day for day in recent if len(day['rows']) == industry['expected_count']]
-    if len(covered) < 3:
-        return []
-    recent_leaders = [
+    complete = [day for day in recent if len(day['rows']) == expected]
+    complete_leaders = [
         {row['code'] for row in day['rows'][:10] if row['change_pct'] > 0}
-        for day in covered
+        for day in complete
     ]
-    results = []
+    coverage = len(latest['rows'])
+    ranked = []
     for rank, row in enumerate(latest['rows'][:10], start=1):
-        appearances = sum(row['code'] in leaders for leaders in recent_leaders)
-        if row['change_pct'] <= 0 or appearances < 3:
+        if row['change_pct'] <= 0:
             continue
-        results.append((appearances, rank, {
-            'code': row['code'], 'name': row['name'], 'state': '优先观察',
-            'conclusion': (
-                f"{latest['date']} 日涨幅 {row['change_pct']:+.2f}%，排名第 {rank}。"
-                f"截至该日的近 5 个交易日中，有 {len(covered)} 日数据齐全，"
-                f"其中 {appearances} 日上涨且进入 Top 10。"
-            ),
-            'trigger': '下一交易日仍处于涨幅前列，并核验成交与成分股是否同步走强。',
-            'invalidation': '后续收盘转弱或跌出涨幅前十，降低观察优先级。',
-            'risks': ['连续上榜也可能来自短期轮动', '权重股拉动不代表多数成分股上涨'],
-            'published_at': now.isoformat(), 'rule_version': 'sector-daily-v1.0',
+        appearances = sum(row['code'] in leaders for leaders in complete_leaders)
+        samples = [item['change_pct'] for day in recent for item in day['rows']
+                   if item['code'] == row['code']]
+        positive = sum(change > 0 for change in samples)
+        confirmed = coverage == expected and appearances >= 3
+        state = '优先观察' if confirmed else '初步观察'
+        evidence = (f"近5日有 {len(complete)}/5 个完整榜单，其中 {appearances} 次上涨上榜。"
+                    f"该行业有 {len(samples)}/5 日涨幅可核验，其中 {positive} 日上涨。")
+        risks = ['短期上涨可能来自行业轮动', '需核验成交及上涨能否扩散到成分股']
+        if not confirmed:
+            risks.append('持续性尚待确认，先跟踪，等待完整榜单及后续收盘验证。')
+        rank_text = f"在可比较的 {coverage}/{expected} 个行业中排名第 {rank}"
+        ranked.append((not confirmed, -appearances, -positive, rank, {
+            'code': row['code'], 'name': row['name'], 'state': state,
+            'as_of_date': latest['date'],
+            'conclusion': f"{latest['date']} 日涨幅 {row['change_pct']:+.2f}%，{rank_text}。{evidence}",
+            'trigger': '下一次完整收盘仍上涨并进入前十，同时复核成交与成分股上涨范围。',
+            'invalidation': '收盘转弱、完整榜单排名回落，或强势仅集中在个别权重股时，下调观察优先级。',
+            'risks': risks, 'published_at': now.isoformat(), 'rule_version': 'sector-daily-v2.0',
         }))
-    results.sort(key=lambda item: (-item[0], item[1]))
-    return [card for _, _, card in results[:3]]
+    ranked.sort(key=lambda item: item[:4])
+    return [item[-1] for item in ranked[:3]]
+
+
+def global_review(quotes):
+    """Keep equity direction, financial conditions and commodities distinct."""
+    by_symbol = {q['symbol']: q for q in quotes if q.get('freshness') != 'stale'}
+    percent = 'change_vs_previous_day_close_pct'
+    markets = []
+    for name, symbols in [('美股', ['^GSPC', '^IXIC', '^DJI']), ('港股', ['^HSI', 'HSTECH.HK'])]:
+        available = [by_symbol[s] for s in symbols if s in by_symbol and by_symbol[s].get(percent) is not None]
+        if not available:
+            continue
+        day = max(q['market_date'] for q in available)
+        aligned = [q for q in available if q['market_date'] == day]
+        moves = [q[percent] for q in aligned]
+        average = statistics.mean(moves)
+        markets.append({
+            'name': name, 'date': day, 'average_pct': round(average, 4),
+            'score': round(clamp(50 + average * 12), 1), 'coverage': len(aligned),
+            'expected': len(symbols), 'advancing': sum(move > 0 for move in moves),
+        })
+
+    # Require both markets and at least three index observations in total.
+    sufficient = len(markets) == 2 and sum(m['coverage'] for m in markets) >= 3
+    score = round(statistics.mean(m['score'] for m in markets), 1) if sufficient else None
+    label = ('样本不足' if score is None else '偏冷' if score < 44 else
+             '偏暖' if score > 56 else '中性')
+    notes = []
+    if len(markets) == 2:
+        us, hk = markets
+        direction = lambda v: '走强' if v > .25 else '走弱' if v < -.25 else '横盘'
+        us_direction, hk_direction = direction(us['average_pct']), direction(hk['average_pct'])
+        message = f"美股样本{us_direction}，港股样本{hk_direction}。"
+        if us_direction == hk_direction == '走弱':
+            message += '两地同向走弱，先关注下一交易日跌幅是否收窄、领跌板块是否减少。'
+        elif us_direction == hk_direction == '走强':
+            message += '两地表现同步改善，继续观察涨势能否从权重指数扩散。'
+        else:
+            message += '跨市场信号尚未同向确认，分别核对各自下一次收盘的表现。'
+        notes.append({'title': '美港股联动', 'text': message})
+    sp, tech = by_symbol.get('^GSPC', {}), by_symbol.get('^IXIC', {})
+    if sp.get(percent) is not None and tech.get(percent) is not None and sp['market_date'] == tech['market_date']:
+        spread = tech[percent] - sp[percent]
+        implication = ('科技成长相对承压，观察科技板块跌幅是否收窄。' if spread < -.2 else
+                       '科技成长相对占优，观察领涨能否扩散。' if spread > .2 else
+                       '两者差异较小，成长风格方向仍需更多证据。')
+        notes.append({'title': '美股风格', 'text': f"纳指相对标普 {spread:+.2f} 个百分点（{sp['market_date']}）。{implication}"})
+
+    dollar, rates = by_symbol.get('DX-Y.NYB', {}), by_symbol.get('^TNX', {})
+    macro = []
+    if dollar.get(percent) is not None:
+        macro.append(f"美元指数 {dollar[percent]:+.2f}%（{dollar['market_date']}）")
+    if rates.get('change_bp') is not None:
+        macro.append(f"美国10年期收益率 {rates['change_bp']:+.1f} 基点（{rates['market_date']}）")
+    if macro:
+        context = '分别观察美元变化对非美资产、利率变化对估值的压力。'
+        if len(macro) == 2 and dollar['market_date'] == rates['market_date']:
+            dx, bp = dollar[percent], rates['change_bp']
+            if dx > 0 and bp > 0:
+                context = '美元与收益率同向上行，需留意非美资产与高估值板块承压。'
+            elif dx < 0 and bp < 0:
+                context = '美元与收益率同向回落，估值压力可能减轻，仍需股市回升确认。'
+            else:
+                context = '两项变化方向分化，金融条件信号不一致。'
+        notes.append({'title': '美元与利率', 'text': '，'.join(macro) + '。' + context})
+
+    gold, oil = by_symbol.get('GC=F', {}), by_symbol.get('CL=F', {})
+    if gold.get(percent) is not None and oil.get(percent) is not None and gold['market_date'] == oil['market_date']:
+        relation = '金油分化' if gold[percent] * oil[percent] < 0 else '金油表现接近' if abs(gold[percent]-oil[percent]) < .5 else '金油涨跌幅差距较大'
+        notes.append({'title': '商品线索', 'text': f"黄金 {gold[percent]:+.2f}%，WTI {oil[percent]:+.2f}%（{gold['market_date']}）。{relation}，分别核查美元、避险需求及原油供需。"})
+    return {'score': score, 'label': label, 'markets': markets, 'notes': notes}
 
 
 def stock_card(security, bars, benchmark, industry_name, now):

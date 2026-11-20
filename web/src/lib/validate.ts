@@ -13,6 +13,7 @@ import type {
   Temperature,
   SectorReview,
   MacroReview,
+  GlobalReview,
   TrackedSignal,
 } from "../contracts.ts";
 type Obj = Record<string, unknown>;
@@ -345,6 +346,7 @@ function sectorReviews(v: unknown): SectorReview[] {
     const r = obj(x);
     return {
       code: code(r.code),
+      as_of_date: r.as_of_date == null ? undefined : day(r.as_of_date),
       name: str(r.name),
       state: str(r.state),
       conclusion: str(r.conclusion, 3000),
@@ -378,10 +380,52 @@ function temperatureData(v: unknown): Temperature {
     components,
   };
 }
+function globalReviewData(v: unknown): GlobalReview {
+  const r = obj(v);
+  const heat = (value: unknown) => {
+    const s = num(value);
+    if (s < 0 || s > 100) throw Error("冷暖分数无效");
+    return s;
+  };
+  return {
+    score: r.score == null ? null : heat(r.score),
+    label: str(r.label, 40),
+    markets: list(r.markets, 2).map((x) => {
+      const m = obj(x);
+      const coverage = num(m.coverage),
+        expected = num(m.expected),
+        advancing = num(m.advancing);
+      if (
+        ![coverage, expected, advancing].every(Number.isInteger) ||
+        coverage < 1 ||
+        coverage > expected ||
+        advancing < 0 ||
+        advancing > coverage
+      )
+        throw Error("指数覆盖无效");
+      return {
+        name: str(m.name, 20),
+        date: day(m.date),
+        average_pct: num(m.average_pct),
+        score: heat(m.score),
+        coverage,
+        expected,
+        advancing,
+      };
+    }),
+    notes: list(r.notes, 6).map((x) => {
+      const n = obj(x);
+      return { title: str(n.title, 50), text: str(n.text, 500) };
+    }),
+  };
+}
 function macroData(v: unknown): MacroReview {
   const r = obj(v);
   return {
     method: str(r.method),
+    ...(r.global_review
+      ? { global_review: globalReviewData(r.global_review) }
+      : {}),
     interpretation: str(r.interpretation, 3000),
     counter_evidence: str(r.counter_evidence, 3000),
     facts: list(r.facts, 20).map((x) => {

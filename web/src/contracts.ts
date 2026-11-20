@@ -139,6 +139,7 @@ export interface Temperature {
   components: { name: string; score: number; weight: number; detail: string }[];
 }
 export interface SectorReview {
+  as_of_date?: string;
   code: string;
   name: string;
   state: string;
@@ -149,7 +150,22 @@ export interface SectorReview {
   published_at: string;
   rule_version: string;
 }
+export interface GlobalReview {
+  score: number | null;
+  label: string;
+  markets: {
+    name: string;
+    date: string;
+    average_pct: number;
+    score: number;
+    coverage: number;
+    expected: number;
+    advancing: number;
+  }[];
+  notes: { title: string; text: string }[];
+}
 export interface MacroReview {
+  global_review?: GlobalReview;
   method: string;
   facts: { title: string; text: string; as_of: string; source_url: string }[];
   interpretation: string;

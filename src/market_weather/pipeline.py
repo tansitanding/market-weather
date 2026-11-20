@@ -140,10 +140,11 @@ def collect(root, now=None, replay=None, settings=None):
     industry_cards = industry_research(industry_value,now) if industry_value else []
     if industry_value:
         industry_value['recommendations']=industry_cards
-        industry_value['recommendation_status']='rules_v1'
+        industry_value['recommendation_status']='sector-daily-v2.0'
     security_map={r['code']:r for r in (breadth or {}).get('securities',[])}
     pool={}
-    for sector in industry_cards:
+    actionable_sectors = [card for card in industry_cards if card['state'] == '优先观察']
+    for sector in actionable_sectors:
         result=guarded(lambda c=sector['code']:sw_components(fetch,c))
         evidence['components:'+sector['code']]={k:v for k,v in result.items() if k!='data'}
         matching=[security_map[x['code']] for x in result.get('data',[]) if x['code'] in security_map]
@@ -178,12 +179,10 @@ def collect(root, now=None, replay=None, settings=None):
     modules['observations']={'status':'succeeded' if research_complete else 'partial','data':selected,'collected_at':now.isoformat(),
                              'pool_count':len(pool),'validated_count':len(stock_histories),'market_gate':('open' if trend_ok else 'closed') if trend_known else 'unknown',
                              'explanation':explanation}
-    industry_days = industry_value.get('daily_returns', []) if industry_value else []
-    sector_date = next((day['date'] for day in reversed(industry_days)
-                        if len(day['rows']) == settings['industry_expected_count']), None)
+    sector_date = actionable_sectors[0]['as_of_date'] if actionable_sectors else None
     modules['investment'] = guarded(lambda: investment_plan(
         benchmark, modules['temperature'].get('data'),
-        [card['name'] for card in industry_cards], sector_date, len(selected),
+        [card['name'] for card in actionable_sectors], sector_date, len(selected),
     ))
     tracking=track_signals(previous_tracking,selected,stock_histories,benchmark)
     modules['tracking']={'status':'succeeded','data':tracking,'collected_at':now.isoformat()}
