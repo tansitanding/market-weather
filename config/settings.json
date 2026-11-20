@@ -6,7 +6,7 @@
     "11:45",
     "17:30"
   ],
-  "schedule_enabled": false,
+  "schedule_enabled": true,
   "industry_classification": "SW2021_L1",
   "industry_expected_count": 31,
   "return_sessions": 30,
@@ -19,8 +19,9 @@
   "news_retention_days": 30,
   "provider_timeout_seconds": 15,
   "provider_attempts": 4,
-  "public_data_export_enabled": false,
-  "publication_note": "Source connectivity verified locally; redistribution permissions are not presumed.",
+  "public_data_export_enabled": true,
+  "publication_note": "Publish bounded observations, derived metrics and source links; raw responses remain local and vendor redistribution rights are not presumed.",
   "industry_definition_source": "https://www.swsresearch.com/institute_sw/allIndex/downloadCenter/industryType",
-  "metrics_version": "sw31-return30-transaction-share30-5v25-v1"
+  "metrics_version": "sw31-return30-transaction-share30-5v25-v1",
+  "public_export_mode": "bounded_research_brief"
 }
