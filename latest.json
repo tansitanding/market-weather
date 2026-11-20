@@ -1,22 +1,22 @@
 {
   "schema_version": "1.0",
-  "snapshot_id": "20261120T085442-428fe4ce",
-  "started_at": "2026-11-20T08:54:42.693394+00:00",
-  "published_at": "2026-11-20T08:56:39.855406+00:00",
+  "snapshot_id": "20261120T085709-b8bf3ddd",
+  "started_at": "2026-11-20T08:57:09.663109+00:00",
+  "published_at": "2026-11-20T08:59:14.941431+00:00",
   "trigger": "local_manual_validation",
   "timezone": "Asia/Shanghai",
   "public_access_requires_login": false,
   "analysis_status": "rules_v1",
   "modules": {
     "industry": {
-      "status": "stale",
+      "status": "partial",
       "source_as_of_date": "2026-11-19",
-      "collected_at": "2026-11-20T08:50:18.326349+00:00",
+      "collected_at": "2026-11-20T08:57:09.663109+00:00",
       "data": {
         "status": "partial",
         "classification": "SW2021_L1",
         "expected_count": 31,
-        "valid_count": 31,
+        "valid_count": 11,
         "window_start": "2026-10-08",
         "as_of_date": "2026-11-19",
         "return_intervals": 30,
@@ -163,10 +163,10 @@
         "rankings": {
           "return_top": [
             "801120",
-            "801110",
-            "801780",
             "801790",
-            "801170"
+            "801170",
+            "801200",
+            "801150"
           ],
           "transaction_heat_top": [],
           "heat_rising_top": []
@@ -299,266 +299,6 @@
               {
                 "date": "2026-11-19",
                 "cumulative_return_pct": 9.104672
-              }
-            ]
-          },
-          {
-            "code": "801110",
-            "name": "家用电器",
-            "return_30d_pct": 6.524304,
-            "excess_30d_pp": 14.074626,
-            "return_5d_pct": 4.091669,
-            "max_drawdown_30d_pct": null,
-            "missing_session_dates": [
-              "2026-10-15",
-              "2026-11-10"
-            ],
-            "series": [
-              {
-                "date": "2026-10-08",
-                "cumulative_return_pct": 0.0
-              },
-              {
-                "date": "2026-10-09",
-                "cumulative_return_pct": 0.647418
-              },
-              {
-                "date": "2026-10-12",
-                "cumulative_return_pct": 1.034742
-              },
-              {
-                "date": "2026-10-13",
-                "cumulative_return_pct": 0.548249
-              },
-              {
-                "date": "2026-10-14",
-                "cumulative_return_pct": 0.136583
-              },
-              {
-                "date": "2026-10-16",
-                "cumulative_return_pct": -0.23755
-              },
-              {
-                "date": "2026-10-19",
-                "cumulative_return_pct": 1.528669
-              },
-              {
-                "date": "2026-10-20",
-                "cumulative_return_pct": 0.636026
-              },
-              {
-                "date": "2026-10-21",
-                "cumulative_return_pct": -1.02263
-              },
-              {
-                "date": "2026-10-22",
-                "cumulative_return_pct": -0.942767
-              },
-              {
-                "date": "2026-10-23",
-                "cumulative_return_pct": 0.200137
-              },
-              {
-                "date": "2026-10-26",
-                "cumulative_return_pct": -0.270407
-              },
-              {
-                "date": "2026-10-27",
-                "cumulative_return_pct": -1.700027
-              },
-              {
-                "date": "2026-10-28",
-                "cumulative_return_pct": -0.0843
-              },
-              {
-                "date": "2026-10-29",
-                "cumulative_return_pct": -0.059837
-              },
-              {
-                "date": "2026-10-30",
-                "cumulative_return_pct": 0.543212
-              },
-              {
-                "date": "2026-11-02",
-                "cumulative_return_pct": 0.804746
-              },
-              {
-                "date": "2026-11-03",
-                "cumulative_return_pct": 1.745474
-              },
-              {
-                "date": "2026-11-04",
-                "cumulative_return_pct": 1.789243
-              },
-              {
-                "date": "2026-11-05",
-                "cumulative_return_pct": 2.615574
-              },
-              {
-                "date": "2026-11-06",
-                "cumulative_return_pct": 3.029398
-              },
-              {
-                "date": "2026-11-09",
-                "cumulative_return_pct": 3.462169
-              },
-              {
-                "date": "2026-11-11",
-                "cumulative_return_pct": 3.138281
-              },
-              {
-                "date": "2026-11-12",
-                "cumulative_return_pct": 2.337012
-              },
-              {
-                "date": "2026-11-13",
-                "cumulative_return_pct": 3.836902
-              },
-              {
-                "date": "2026-11-16",
-                "cumulative_return_pct": 4.765639
-              },
-              {
-                "date": "2026-11-17",
-                "cumulative_return_pct": 5.622668
-              },
-              {
-                "date": "2026-11-18",
-                "cumulative_return_pct": 5.793426
-              },
-              {
-                "date": "2026-11-19",
-                "cumulative_return_pct": 6.524304
-              }
-            ]
-          },
-          {
-            "code": "801780",
-            "name": "银行",
-            "return_30d_pct": 6.137763,
-            "excess_30d_pp": 13.688085,
-            "return_5d_pct": 3.33111,
-            "max_drawdown_30d_pct": null,
-            "missing_session_dates": [
-              "2026-10-15",
-              "2026-11-10"
-            ],
-            "series": [
-              {
-                "date": "2026-10-08",
-                "cumulative_return_pct": 0.0
-              },
-              {
-                "date": "2026-10-09",
-                "cumulative_return_pct": -1.066362
-              },
-              {
-                "date": "2026-10-12",
-                "cumulative_return_pct": 1.232827
-              },
-              {
-                "date": "2026-10-13",
-                "cumulative_return_pct": 0.784762
-              },
-              {
-                "date": "2026-10-14",
-                "cumulative_return_pct": 0.659266
-              },
-              {
-                "date": "2026-10-16",
-                "cumulative_return_pct": 0.433938
-              },
-              {
-                "date": "2026-10-19",
-                "cumulative_return_pct": 2.033128
-              },
-              {
-                "date": "2026-10-20",
-                "cumulative_return_pct": 1.118397
-              },
-              {
-                "date": "2026-10-21",
-                "cumulative_return_pct": 0.426404
-              },
-              {
-                "date": "2026-10-22",
-                "cumulative_return_pct": 0.152808
-              },
-              {
-                "date": "2026-10-23",
-                "cumulative_return_pct": -1.150419
-              },
-              {
-                "date": "2026-10-26",
-                "cumulative_return_pct": 0.588395
-              },
-              {
-                "date": "2026-10-27",
-                "cumulative_return_pct": 1.824282
-              },
-              {
-                "date": "2026-10-28",
-                "cumulative_return_pct": 1.236594
-              },
-              {
-                "date": "2026-10-29",
-                "cumulative_return_pct": 3.234404
-              },
-              {
-                "date": "2026-10-30",
-                "cumulative_return_pct": 3.766055
-              },
-              {
-                "date": "2026-11-02",
-                "cumulative_return_pct": 2.897708
-              },
-              {
-                "date": "2026-11-03",
-                "cumulative_return_pct": 2.471775
-              },
-              {
-                "date": "2026-11-04",
-                "cumulative_return_pct": 1.60696
-              },
-              {
-                "date": "2026-11-05",
-                "cumulative_return_pct": 1.003967
-              },
-              {
-                "date": "2026-11-06",
-                "cumulative_return_pct": 2.063266
-              },
-              {
-                "date": "2026-11-09",
-                "cumulative_return_pct": 2.998246
-              },
-              {
-                "date": "2026-11-11",
-                "cumulative_return_pct": 2.343454
-              },
-              {
-                "date": "2026-11-12",
-                "cumulative_return_pct": 2.716174
-              },
-              {
-                "date": "2026-11-13",
-                "cumulative_return_pct": 4.214591
-              },
-              {
-                "date": "2026-11-16",
-                "cumulative_return_pct": 6.200158
-              },
-              {
-                "date": "2026-11-17",
-                "cumulative_return_pct": 6.526965
-              },
-              {
-                "date": "2026-11-18",
-                "cumulative_return_pct": 6.235476
-              },
-              {
-                "date": "2026-11-19",
-                "cumulative_return_pct": 6.137763
               }
             ]
           },
@@ -823,786 +563,6 @@
             ]
           },
           {
-            "code": "801160",
-            "name": "公用事业",
-            "return_30d_pct": -2.488432,
-            "excess_30d_pp": 5.06189,
-            "return_5d_pct": 0.20444,
-            "max_drawdown_30d_pct": null,
-            "missing_session_dates": [
-              "2026-10-15",
-              "2026-11-10"
-            ],
-            "series": [
-              {
-                "date": "2026-10-08",
-                "cumulative_return_pct": 0.0
-              },
-              {
-                "date": "2026-10-09",
-                "cumulative_return_pct": 0.063228
-              },
-              {
-                "date": "2026-10-12",
-                "cumulative_return_pct": -0.178004
-              },
-              {
-                "date": "2026-10-13",
-                "cumulative_return_pct": -0.763565
-              },
-              {
-                "date": "2026-10-14",
-                "cumulative_return_pct": 0.235191
-              },
-              {
-                "date": "2026-10-16",
-                "cumulative_return_pct": -1.532768
-              },
-              {
-                "date": "2026-10-19",
-                "cumulative_return_pct": -1.094201
-              },
-              {
-                "date": "2026-10-20",
-                "cumulative_return_pct": -1.510215
-              },
-              {
-                "date": "2026-10-21",
-                "cumulative_return_pct": -1.852128
-              },
-              {
-                "date": "2026-10-22",
-                "cumulative_return_pct": -2.910487
-              },
-              {
-                "date": "2026-10-23",
-                "cumulative_return_pct": -3.495242
-              },
-              {
-                "date": "2026-10-26",
-                "cumulative_return_pct": -2.839204
-              },
-              {
-                "date": "2026-10-27",
-                "cumulative_return_pct": -3.695798
-              },
-              {
-                "date": "2026-10-28",
-                "cumulative_return_pct": -3.42396
-              },
-              {
-                "date": "2026-10-29",
-                "cumulative_return_pct": -2.826317
-              },
-              {
-                "date": "2026-10-30",
-                "cumulative_return_pct": -4.051806
-              },
-              {
-                "date": "2026-11-02",
-                "cumulative_return_pct": -3.921324
-              },
-              {
-                "date": "2026-11-03",
-                "cumulative_return_pct": -3.132387
-              },
-              {
-                "date": "2026-11-04",
-                "cumulative_return_pct": -3.164605
-              },
-              {
-                "date": "2026-11-05",
-                "cumulative_return_pct": -2.974117
-              },
-              {
-                "date": "2026-11-06",
-                "cumulative_return_pct": -1.809842
-              },
-              {
-                "date": "2026-11-09",
-                "cumulative_return_pct": -1.773597
-              },
-              {
-                "date": "2026-11-11",
-                "cumulative_return_pct": -2.519442
-              },
-              {
-                "date": "2026-11-12",
-                "cumulative_return_pct": -2.687377
-              },
-              {
-                "date": "2026-11-13",
-                "cumulative_return_pct": -2.70107
-              },
-              {
-                "date": "2026-11-16",
-                "cumulative_return_pct": -2.178334
-              },
-              {
-                "date": "2026-11-17",
-                "cumulative_return_pct": -2.322107
-              },
-              {
-                "date": "2026-11-18",
-                "cumulative_return_pct": -1.931464
-              },
-              {
-                "date": "2026-11-19",
-                "cumulative_return_pct": -2.488432
-              }
-            ]
-          },
-          {
-            "code": "801010",
-            "name": "农林牧渔",
-            "return_30d_pct": -2.622611,
-            "excess_30d_pp": 4.927711,
-            "return_5d_pct": -3.423712,
-            "max_drawdown_30d_pct": null,
-            "missing_session_dates": [
-              "2026-10-15",
-              "2026-11-10"
-            ],
-            "series": [
-              {
-                "date": "2026-10-08",
-                "cumulative_return_pct": 0.0
-              },
-              {
-                "date": "2026-10-09",
-                "cumulative_return_pct": 1.849514
-              },
-              {
-                "date": "2026-10-12",
-                "cumulative_return_pct": 1.184888
-              },
-              {
-                "date": "2026-10-13",
-                "cumulative_return_pct": 0.820823
-              },
-              {
-                "date": "2026-10-14",
-                "cumulative_return_pct": -0.254017
-              },
-              {
-                "date": "2026-10-16",
-                "cumulative_return_pct": -1.340296
-              },
-              {
-                "date": "2026-10-19",
-                "cumulative_return_pct": -2.06606
-              },
-              {
-                "date": "2026-10-20",
-                "cumulative_return_pct": -2.040816
-              },
-              {
-                "date": "2026-10-21",
-                "cumulative_return_pct": -0.13332
-              },
-              {
-                "date": "2026-10-22",
-                "cumulative_return_pct": -1.709489
-              },
-              {
-                "date": "2026-10-23",
-                "cumulative_return_pct": -1.739072
-              },
-              {
-                "date": "2026-10-26",
-                "cumulative_return_pct": -2.337038
-              },
-              {
-                "date": "2026-10-27",
-                "cumulative_return_pct": -3.633552
-              },
-              {
-                "date": "2026-10-28",
-                "cumulative_return_pct": -4.362472
-              },
-              {
-                "date": "2026-10-29",
-                "cumulative_return_pct": -4.460292
-              },
-              {
-                "date": "2026-10-30",
-                "cumulative_return_pct": -5.557221
-              },
-              {
-                "date": "2026-11-02",
-                "cumulative_return_pct": -3.518771
-              },
-              {
-                "date": "2026-11-03",
-                "cumulative_return_pct": -1.157672
-              },
-              {
-                "date": "2026-11-04",
-                "cumulative_return_pct": -0.876044
-              },
-              {
-                "date": "2026-11-05",
-                "cumulative_return_pct": 0.536434
-              },
-              {
-                "date": "2026-11-06",
-                "cumulative_return_pct": 1.143078
-              },
-              {
-                "date": "2026-11-09",
-                "cumulative_return_pct": 1.213288
-              },
-              {
-                "date": "2026-11-11",
-                "cumulative_return_pct": 0.379054
-              },
-              {
-                "date": "2026-11-12",
-                "cumulative_return_pct": 0.829501
-              },
-              {
-                "date": "2026-11-13",
-                "cumulative_return_pct": 1.645985
-              },
-              {
-                "date": "2026-11-16",
-                "cumulative_return_pct": 1.335958
-              },
-              {
-                "date": "2026-11-17",
-                "cumulative_return_pct": 0.271767
-              },
-              {
-                "date": "2026-11-18",
-                "cumulative_return_pct": -0.597572
-              },
-              {
-                "date": "2026-11-19",
-                "cumulative_return_pct": -2.622611
-              }
-            ]
-          },
-          {
-            "code": "801950",
-            "name": "煤炭",
-            "return_30d_pct": -4.204922,
-            "excess_30d_pp": 3.3454,
-            "return_5d_pct": 1.068926,
-            "max_drawdown_30d_pct": null,
-            "missing_session_dates": [
-              "2026-10-15",
-              "2026-11-10"
-            ],
-            "series": [
-              {
-                "date": "2026-10-08",
-                "cumulative_return_pct": 0.0
-              },
-              {
-                "date": "2026-10-09",
-                "cumulative_return_pct": 1.567826
-              },
-              {
-                "date": "2026-10-12",
-                "cumulative_return_pct": 0.786289
-              },
-              {
-                "date": "2026-10-13",
-                "cumulative_return_pct": 1.446082
-              },
-              {
-                "date": "2026-10-14",
-                "cumulative_return_pct": 2.869003
-              },
-              {
-                "date": "2026-10-16",
-                "cumulative_return_pct": 1.427375
-              },
-              {
-                "date": "2026-10-19",
-                "cumulative_return_pct": 2.257907
-              },
-              {
-                "date": "2026-10-20",
-                "cumulative_return_pct": 0.868837
-              },
-              {
-                "date": "2026-10-21",
-                "cumulative_return_pct": -1.042545
-              },
-              {
-                "date": "2026-10-22",
-                "cumulative_return_pct": -2.776953
-              },
-              {
-                "date": "2026-10-23",
-                "cumulative_return_pct": -2.749338
-              },
-              {
-                "date": "2026-10-26",
-                "cumulative_return_pct": -2.634423
-              },
-              {
-                "date": "2026-10-27",
-                "cumulative_return_pct": -2.929875
-              },
-              {
-                "date": "2026-10-28",
-                "cumulative_return_pct": -2.636205
-              },
-              {
-                "date": "2026-10-29",
-                "cumulative_return_pct": -0.486086
-              },
-              {
-                "date": "2026-10-30",
-                "cumulative_return_pct": 0.141045
-              },
-              {
-                "date": "2026-11-02",
-                "cumulative_return_pct": -1.191014
-              },
-              {
-                "date": "2026-11-03",
-                "cumulative_return_pct": -1.264357
-              },
-              {
-                "date": "2026-11-04",
-                "cumulative_return_pct": -2.235637
-              },
-              {
-                "date": "2026-11-05",
-                "cumulative_return_pct": -6.122837
-              },
-              {
-                "date": "2026-11-06",
-                "cumulative_return_pct": -5.871331
-              },
-              {
-                "date": "2026-11-09",
-                "cumulative_return_pct": -3.288575
-              },
-              {
-                "date": "2026-11-11",
-                "cumulative_return_pct": -4.366456
-              },
-              {
-                "date": "2026-11-12",
-                "cumulative_return_pct": -5.21807
-              },
-              {
-                "date": "2026-11-13",
-                "cumulative_return_pct": -4.189778
-              },
-              {
-                "date": "2026-11-16",
-                "cumulative_return_pct": -2.377276
-              },
-              {
-                "date": "2026-11-17",
-                "cumulative_return_pct": -3.530282
-              },
-              {
-                "date": "2026-11-18",
-                "cumulative_return_pct": -3.377062
-              },
-              {
-                "date": "2026-11-19",
-                "cumulative_return_pct": -4.204922
-              }
-            ]
-          },
-          {
-            "code": "801760",
-            "name": "传媒",
-            "return_30d_pct": -4.500154,
-            "excess_30d_pp": 3.050167,
-            "return_5d_pct": -12.702017,
-            "max_drawdown_30d_pct": null,
-            "missing_session_dates": [
-              "2026-10-15",
-              "2026-11-10"
-            ],
-            "series": [
-              {
-                "date": "2026-10-08",
-                "cumulative_return_pct": 0.0
-              },
-              {
-                "date": "2026-10-09",
-                "cumulative_return_pct": 5.285406
-              },
-              {
-                "date": "2026-10-12",
-                "cumulative_return_pct": 6.828139
-              },
-              {
-                "date": "2026-10-13",
-                "cumulative_return_pct": 7.219994
-              },
-              {
-                "date": "2026-10-14",
-                "cumulative_return_pct": 8.423326
-              },
-              {
-                "date": "2026-10-16",
-                "cumulative_return_pct": 3.827522
-              },
-              {
-                "date": "2026-10-19",
-                "cumulative_return_pct": 3.937056
-              },
-              {
-                "date": "2026-10-20",
-                "cumulative_return_pct": 4.555693
-              },
-              {
-                "date": "2026-10-21",
-                "cumulative_return_pct": 4.504782
-              },
-              {
-                "date": "2026-10-22",
-                "cumulative_return_pct": -0.492132
-              },
-              {
-                "date": "2026-10-23",
-                "cumulative_return_pct": 3.273681
-              },
-              {
-                "date": "2026-10-26",
-                "cumulative_return_pct": 4.231719
-              },
-              {
-                "date": "2026-10-27",
-                "cumulative_return_pct": 1.751003
-              },
-              {
-                "date": "2026-10-28",
-                "cumulative_return_pct": 3.761185
-              },
-              {
-                "date": "2026-10-29",
-                "cumulative_return_pct": 2.011725
-              },
-              {
-                "date": "2026-10-30",
-                "cumulative_return_pct": -3.488121
-              },
-              {
-                "date": "2026-11-02",
-                "cumulative_return_pct": 4.01265
-              },
-              {
-                "date": "2026-11-03",
-                "cumulative_return_pct": 4.557235
-              },
-              {
-                "date": "2026-11-04",
-                "cumulative_return_pct": 7.061092
-              },
-              {
-                "date": "2026-11-05",
-                "cumulative_return_pct": 10.888615
-              },
-              {
-                "date": "2026-11-06",
-                "cumulative_return_pct": 9.456958
-              },
-              {
-                "date": "2026-11-09",
-                "cumulative_return_pct": 8.609997
-              },
-              {
-                "date": "2026-11-11",
-                "cumulative_return_pct": 13.108608
-              },
-              {
-                "date": "2026-11-12",
-                "cumulative_return_pct": 9.395248
-              },
-              {
-                "date": "2026-11-13",
-                "cumulative_return_pct": 8.608454
-              },
-              {
-                "date": "2026-11-16",
-                "cumulative_return_pct": 6.21876
-              },
-              {
-                "date": "2026-11-17",
-                "cumulative_return_pct": 1.207961
-              },
-              {
-                "date": "2026-11-18",
-                "cumulative_return_pct": -0.998149
-              },
-              {
-                "date": "2026-11-19",
-                "cumulative_return_pct": -4.500154
-              }
-            ]
-          },
-          {
-            "code": "801960",
-            "name": "石油石化",
-            "return_30d_pct": -6.09071,
-            "excess_30d_pp": 1.459612,
-            "return_5d_pct": -0.107805,
-            "max_drawdown_30d_pct": null,
-            "missing_session_dates": [
-              "2026-10-15",
-              "2026-11-10"
-            ],
-            "series": [
-              {
-                "date": "2026-10-08",
-                "cumulative_return_pct": 0.0
-              },
-              {
-                "date": "2026-10-09",
-                "cumulative_return_pct": -0.204154
-              },
-              {
-                "date": "2026-10-12",
-                "cumulative_return_pct": -1.878215
-              },
-              {
-                "date": "2026-10-13",
-                "cumulative_return_pct": -0.950773
-              },
-              {
-                "date": "2026-10-14",
-                "cumulative_return_pct": 0.741151
-              },
-              {
-                "date": "2026-10-16",
-                "cumulative_return_pct": -1.020404
-              },
-              {
-                "date": "2026-10-19",
-                "cumulative_return_pct": -0.818438
-              },
-              {
-                "date": "2026-10-20",
-                "cumulative_return_pct": -0.587671
-              },
-              {
-                "date": "2026-10-21",
-                "cumulative_return_pct": -1.343769
-              },
-              {
-                "date": "2026-10-22",
-                "cumulative_return_pct": -2.994863
-              },
-              {
-                "date": "2026-10-23",
-                "cumulative_return_pct": -2.549371
-              },
-              {
-                "date": "2026-10-26",
-                "cumulative_return_pct": -0.196863
-              },
-              {
-                "date": "2026-10-27",
-                "cumulative_return_pct": -1.364914
-              },
-              {
-                "date": "2026-10-28",
-                "cumulative_return_pct": -0.985042
-              },
-              {
-                "date": "2026-10-29",
-                "cumulative_return_pct": -0.046299
-              },
-              {
-                "date": "2026-10-30",
-                "cumulative_return_pct": 0.862185
-              },
-              {
-                "date": "2026-11-02",
-                "cumulative_return_pct": 1.2231
-              },
-              {
-                "date": "2026-11-03",
-                "cumulative_return_pct": 0.867289
-              },
-              {
-                "date": "2026-11-04",
-                "cumulative_return_pct": -0.084213
-              },
-              {
-                "date": "2026-11-05",
-                "cumulative_return_pct": -2.422504
-              },
-              {
-                "date": "2026-11-06",
-                "cumulative_return_pct": -2.746962
-              },
-              {
-                "date": "2026-11-09",
-                "cumulative_return_pct": -3.317499
-              },
-              {
-                "date": "2026-11-11",
-                "cumulative_return_pct": -5.191704
-              },
-              {
-                "date": "2026-11-12",
-                "cumulative_return_pct": -5.989362
-              },
-              {
-                "date": "2026-11-13",
-                "cumulative_return_pct": -5.466583
-              },
-              {
-                "date": "2026-11-16",
-                "cumulative_return_pct": -5.236545
-              },
-              {
-                "date": "2026-11-17",
-                "cumulative_return_pct": -5.714848
-              },
-              {
-                "date": "2026-11-18",
-                "cumulative_return_pct": -5.404972
-              },
-              {
-                "date": "2026-11-19",
-                "cumulative_return_pct": -6.09071
-              }
-            ]
-          },
-          {
-            "code": "801130",
-            "name": "纺织服饰",
-            "return_30d_pct": -7.349654,
-            "excess_30d_pp": 0.200668,
-            "return_5d_pct": -6.204362,
-            "max_drawdown_30d_pct": null,
-            "missing_session_dates": [
-              "2026-10-15",
-              "2026-11-10"
-            ],
-            "series": [
-              {
-                "date": "2026-10-08",
-                "cumulative_return_pct": 0.0
-              },
-              {
-                "date": "2026-10-09",
-                "cumulative_return_pct": 1.923654
-              },
-              {
-                "date": "2026-10-12",
-                "cumulative_return_pct": 0.298924
-              },
-              {
-                "date": "2026-10-13",
-                "cumulative_return_pct": 0.972837
-              },
-              {
-                "date": "2026-10-14",
-                "cumulative_return_pct": 0.223526
-              },
-              {
-                "date": "2026-10-16",
-                "cumulative_return_pct": -1.952346
-              },
-              {
-                "date": "2026-10-19",
-                "cumulative_return_pct": -1.919651
-              },
-              {
-                "date": "2026-10-20",
-                "cumulative_return_pct": -1.804886
-              },
-              {
-                "date": "2026-10-21",
-                "cumulative_return_pct": -2.497481
-              },
-              {
-                "date": "2026-10-22",
-                "cumulative_return_pct": -4.902883
-              },
-              {
-                "date": "2026-10-23",
-                "cumulative_return_pct": -3.575075
-              },
-              {
-                "date": "2026-10-26",
-                "cumulative_return_pct": -3.51569
-              },
-              {
-                "date": "2026-10-27",
-                "cumulative_return_pct": -4.834157
-              },
-              {
-                "date": "2026-10-28",
-                "cumulative_return_pct": -4.05015
-              },
-              {
-                "date": "2026-10-29",
-                "cumulative_return_pct": -5.383296
-              },
-              {
-                "date": "2026-10-30",
-                "cumulative_return_pct": -6.85256
-              },
-              {
-                "date": "2026-11-02",
-                "cumulative_return_pct": -4.788118
-              },
-              {
-                "date": "2026-11-03",
-                "cumulative_return_pct": -4.086181
-              },
-              {
-                "date": "2026-11-04",
-                "cumulative_return_pct": -3.630456
-              },
-              {
-                "date": "2026-11-05",
-                "cumulative_return_pct": -1.945006
-              },
-              {
-                "date": "2026-11-06",
-                "cumulative_return_pct": -2.373374
-              },
-              {
-                "date": "2026-11-09",
-                "cumulative_return_pct": -2.15452
-              },
-              {
-                "date": "2026-11-11",
-                "cumulative_return_pct": -0.106758
-              },
-              {
-                "date": "2026-11-12",
-                "cumulative_return_pct": -1.22105
-              },
-              {
-                "date": "2026-11-13",
-                "cumulative_return_pct": -2.137839
-              },
-              {
-                "date": "2026-11-16",
-                "cumulative_return_pct": -3.026603
-              },
-              {
-                "date": "2026-11-17",
-                "cumulative_return_pct": -4.006779
-              },
-              {
-                "date": "2026-11-18",
-                "cumulative_return_pct": -5.594144
-              },
-              {
-                "date": "2026-11-19",
-                "cumulative_return_pct": -7.349654
-              }
-            ]
-          },
-          {
             "code": "801200",
             "name": "商贸零售",
             "return_30d_pct": -8.425654,
@@ -1863,136 +823,6 @@
             ]
           },
           {
-            "code": "801750",
-            "name": "计算机",
-            "return_30d_pct": -8.92971,
-            "excess_30d_pp": -1.379389,
-            "return_5d_pct": -5.90922,
-            "max_drawdown_30d_pct": null,
-            "missing_session_dates": [
-              "2026-10-15",
-              "2026-11-10"
-            ],
-            "series": [
-              {
-                "date": "2026-10-08",
-                "cumulative_return_pct": 0.0
-              },
-              {
-                "date": "2026-10-09",
-                "cumulative_return_pct": 2.331871
-              },
-              {
-                "date": "2026-10-12",
-                "cumulative_return_pct": 1.435297
-              },
-              {
-                "date": "2026-10-13",
-                "cumulative_return_pct": 1.715735
-              },
-              {
-                "date": "2026-10-14",
-                "cumulative_return_pct": 0.032864
-              },
-              {
-                "date": "2026-10-16",
-                "cumulative_return_pct": -2.800485
-              },
-              {
-                "date": "2026-10-19",
-                "cumulative_return_pct": -1.950407
-              },
-              {
-                "date": "2026-10-20",
-                "cumulative_return_pct": -0.037002
-              },
-              {
-                "date": "2026-10-21",
-                "cumulative_return_pct": 0.510972
-              },
-              {
-                "date": "2026-10-22",
-                "cumulative_return_pct": -2.293408
-              },
-              {
-                "date": "2026-10-23",
-                "cumulative_return_pct": 2.267604
-              },
-              {
-                "date": "2026-10-26",
-                "cumulative_return_pct": 2.234253
-              },
-              {
-                "date": "2026-10-27",
-                "cumulative_return_pct": -1.990331
-              },
-              {
-                "date": "2026-10-28",
-                "cumulative_return_pct": -1.181394
-              },
-              {
-                "date": "2026-10-29",
-                "cumulative_return_pct": -4.126236
-              },
-              {
-                "date": "2026-10-30",
-                "cumulative_return_pct": -8.832579
-              },
-              {
-                "date": "2026-11-02",
-                "cumulative_return_pct": -4.309543
-              },
-              {
-                "date": "2026-11-03",
-                "cumulative_return_pct": -5.509681
-              },
-              {
-                "date": "2026-11-04",
-                "cumulative_return_pct": -2.4402
-              },
-              {
-                "date": "2026-11-05",
-                "cumulative_return_pct": -0.076926
-              },
-              {
-                "date": "2026-11-06",
-                "cumulative_return_pct": -2.585044
-              },
-              {
-                "date": "2026-11-09",
-                "cumulative_return_pct": -2.930723
-              },
-              {
-                "date": "2026-11-11",
-                "cumulative_return_pct": -0.891705
-              },
-              {
-                "date": "2026-11-12",
-                "cumulative_return_pct": -3.210187
-              },
-              {
-                "date": "2026-11-13",
-                "cumulative_return_pct": -3.769359
-              },
-              {
-                "date": "2026-11-16",
-                "cumulative_return_pct": -6.000935
-              },
-              {
-                "date": "2026-11-17",
-                "cumulative_return_pct": -6.776521
-              },
-              {
-                "date": "2026-11-18",
-                "cumulative_return_pct": -6.103421
-              },
-              {
-                "date": "2026-11-19",
-                "cumulative_return_pct": -8.92971
-              }
-            ]
-          },
-          {
             "code": "801880",
             "name": "汽车",
             "return_30d_pct": -9.242894,
@@ -2119,136 +949,6 @@
               {
                 "date": "2026-11-19",
                 "cumulative_return_pct": -9.242894
-              }
-            ]
-          },
-          {
-            "code": "801210",
-            "name": "社会服务",
-            "return_30d_pct": -9.471382,
-            "excess_30d_pp": -1.92106,
-            "return_5d_pct": -5.536429,
-            "max_drawdown_30d_pct": null,
-            "missing_session_dates": [
-              "2026-10-15",
-              "2026-11-10"
-            ],
-            "series": [
-              {
-                "date": "2026-10-08",
-                "cumulative_return_pct": 0.0
-              },
-              {
-                "date": "2026-10-09",
-                "cumulative_return_pct": 1.164163
-              },
-              {
-                "date": "2026-10-12",
-                "cumulative_return_pct": -0.189806
-              },
-              {
-                "date": "2026-10-13",
-                "cumulative_return_pct": 0.444041
-              },
-              {
-                "date": "2026-10-14",
-                "cumulative_return_pct": -0.633429
-              },
-              {
-                "date": "2026-10-16",
-                "cumulative_return_pct": -3.50376
-              },
-              {
-                "date": "2026-10-19",
-                "cumulative_return_pct": -4.287615
-              },
-              {
-                "date": "2026-10-20",
-                "cumulative_return_pct": -3.536322
-              },
-              {
-                "date": "2026-10-21",
-                "cumulative_return_pct": -4.007219
-              },
-              {
-                "date": "2026-10-22",
-                "cumulative_return_pct": -7.06346
-              },
-              {
-                "date": "2026-10-23",
-                "cumulative_return_pct": -5.305805
-              },
-              {
-                "date": "2026-10-26",
-                "cumulative_return_pct": -4.718992
-              },
-              {
-                "date": "2026-10-27",
-                "cumulative_return_pct": -6.988038
-              },
-              {
-                "date": "2026-10-28",
-                "cumulative_return_pct": -6.442972
-              },
-              {
-                "date": "2026-10-29",
-                "cumulative_return_pct": -8.010681
-              },
-              {
-                "date": "2026-10-30",
-                "cumulative_return_pct": -9.322904
-              },
-              {
-                "date": "2026-11-02",
-                "cumulative_return_pct": -6.146435
-              },
-              {
-                "date": "2026-11-03",
-                "cumulative_return_pct": -5.966787
-              },
-              {
-                "date": "2026-11-04",
-                "cumulative_return_pct": -4.582621
-              },
-              {
-                "date": "2026-11-05",
-                "cumulative_return_pct": -2.369933
-              },
-              {
-                "date": "2026-11-06",
-                "cumulative_return_pct": -3.641105
-              },
-              {
-                "date": "2026-11-09",
-                "cumulative_return_pct": -4.277456
-              },
-              {
-                "date": "2026-11-11",
-                "cumulative_return_pct": -2.864904
-              },
-              {
-                "date": "2026-11-12",
-                "cumulative_return_pct": -4.165577
-              },
-              {
-                "date": "2026-11-13",
-                "cumulative_return_pct": -5.332244
-              },
-              {
-                "date": "2026-11-16",
-                "cumulative_return_pct": -5.929911
-              },
-              {
-                "date": "2026-11-17",
-                "cumulative_return_pct": -6.972871
-              },
-              {
-                "date": "2026-11-18",
-                "cumulative_return_pct": -7.394368
-              },
-              {
-                "date": "2026-11-19",
-                "cumulative_return_pct": -9.471382
               }
             ]
           },
@@ -2383,266 +1083,6 @@
             ]
           },
           {
-            "code": "801720",
-            "name": "建筑装饰",
-            "return_30d_pct": -10.282548,
-            "excess_30d_pp": -2.732227,
-            "return_5d_pct": -4.485401,
-            "max_drawdown_30d_pct": null,
-            "missing_session_dates": [
-              "2026-10-15",
-              "2026-11-10"
-            ],
-            "series": [
-              {
-                "date": "2026-10-08",
-                "cumulative_return_pct": 0.0
-              },
-              {
-                "date": "2026-10-09",
-                "cumulative_return_pct": 0.149321
-              },
-              {
-                "date": "2026-10-12",
-                "cumulative_return_pct": -0.201557
-              },
-              {
-                "date": "2026-10-13",
-                "cumulative_return_pct": 0.034824
-              },
-              {
-                "date": "2026-10-14",
-                "cumulative_return_pct": -0.671679
-              },
-              {
-                "date": "2026-10-16",
-                "cumulative_return_pct": -2.150112
-              },
-              {
-                "date": "2026-10-19",
-                "cumulative_return_pct": -2.770611
-              },
-              {
-                "date": "2026-10-20",
-                "cumulative_return_pct": -2.820736
-              },
-              {
-                "date": "2026-10-21",
-                "cumulative_return_pct": -2.81757
-              },
-              {
-                "date": "2026-10-22",
-                "cumulative_return_pct": -4.769819
-              },
-              {
-                "date": "2026-10-23",
-                "cumulative_return_pct": -4.597283
-              },
-              {
-                "date": "2026-10-26",
-                "cumulative_return_pct": -4.725498
-              },
-              {
-                "date": "2026-10-27",
-                "cumulative_return_pct": -6.437673
-              },
-              {
-                "date": "2026-10-28",
-                "cumulative_return_pct": -5.914787
-              },
-              {
-                "date": "2026-10-29",
-                "cumulative_return_pct": -7.06081
-              },
-              {
-                "date": "2026-10-30",
-                "cumulative_return_pct": -8.759794
-              },
-              {
-                "date": "2026-11-02",
-                "cumulative_return_pct": -7.591611
-              },
-              {
-                "date": "2026-11-03",
-                "cumulative_return_pct": -7.278723
-              },
-              {
-                "date": "2026-11-04",
-                "cumulative_return_pct": -5.594513
-              },
-              {
-                "date": "2026-11-05",
-                "cumulative_return_pct": -4.711252
-              },
-              {
-                "date": "2026-11-06",
-                "cumulative_return_pct": -5.587653
-              },
-              {
-                "date": "2026-11-09",
-                "cumulative_return_pct": -5.816647
-              },
-              {
-                "date": "2026-11-11",
-                "cumulative_return_pct": -5.401926
-              },
-              {
-                "date": "2026-11-12",
-                "cumulative_return_pct": -6.069384
-              },
-              {
-                "date": "2026-11-13",
-                "cumulative_return_pct": -7.705052
-              },
-              {
-                "date": "2026-11-16",
-                "cumulative_return_pct": -8.344018
-              },
-              {
-                "date": "2026-11-17",
-                "cumulative_return_pct": -8.908587
-              },
-              {
-                "date": "2026-11-18",
-                "cumulative_return_pct": -9.229389
-              },
-              {
-                "date": "2026-11-19",
-                "cumulative_return_pct": -10.282548
-              }
-            ]
-          },
-          {
-            "code": "801980",
-            "name": "美容护理",
-            "return_30d_pct": -11.74818,
-            "excess_30d_pp": -4.197859,
-            "return_5d_pct": -3.444703,
-            "max_drawdown_30d_pct": null,
-            "missing_session_dates": [
-              "2026-10-15",
-              "2026-11-10"
-            ],
-            "series": [
-              {
-                "date": "2026-10-08",
-                "cumulative_return_pct": 0.0
-              },
-              {
-                "date": "2026-10-09",
-                "cumulative_return_pct": 1.735428
-              },
-              {
-                "date": "2026-10-12",
-                "cumulative_return_pct": 0.63499
-              },
-              {
-                "date": "2026-10-13",
-                "cumulative_return_pct": 0.36096
-              },
-              {
-                "date": "2026-10-14",
-                "cumulative_return_pct": -0.873327
-              },
-              {
-                "date": "2026-10-16",
-                "cumulative_return_pct": -1.116846
-              },
-              {
-                "date": "2026-10-19",
-                "cumulative_return_pct": -1.132389
-              },
-              {
-                "date": "2026-10-20",
-                "cumulative_return_pct": -0.611099
-              },
-              {
-                "date": "2026-10-21",
-                "cumulative_return_pct": -2.536218
-              },
-              {
-                "date": "2026-10-22",
-                "cumulative_return_pct": -3.398607
-              },
-              {
-                "date": "2026-10-23",
-                "cumulative_return_pct": -1.577113
-              },
-              {
-                "date": "2026-10-26",
-                "cumulative_return_pct": -0.563028
-              },
-              {
-                "date": "2026-10-27",
-                "cumulative_return_pct": -3.387957
-              },
-              {
-                "date": "2026-10-28",
-                "cumulative_return_pct": -3.789791
-              },
-              {
-                "date": "2026-10-29",
-                "cumulative_return_pct": -7.055413
-              },
-              {
-                "date": "2026-10-30",
-                "cumulative_return_pct": -8.278475
-              },
-              {
-                "date": "2026-11-02",
-                "cumulative_return_pct": -7.762077
-              },
-              {
-                "date": "2026-11-03",
-                "cumulative_return_pct": -6.595722
-              },
-              {
-                "date": "2026-11-04",
-                "cumulative_return_pct": -6.131137
-              },
-              {
-                "date": "2026-11-05",
-                "cumulative_return_pct": -4.730762
-              },
-              {
-                "date": "2026-11-06",
-                "cumulative_return_pct": -6.022619
-              },
-              {
-                "date": "2026-11-09",
-                "cumulative_return_pct": -6.979422
-              },
-              {
-                "date": "2026-11-11",
-                "cumulative_return_pct": -7.185808
-              },
-              {
-                "date": "2026-11-12",
-                "cumulative_return_pct": -8.599712
-              },
-              {
-                "date": "2026-11-13",
-                "cumulative_return_pct": -9.739873
-              },
-              {
-                "date": "2026-11-16",
-                "cumulative_return_pct": -9.462964
-              },
-              {
-                "date": "2026-11-17",
-                "cumulative_return_pct": -9.861632
-              },
-              {
-                "date": "2026-11-18",
-                "cumulative_return_pct": -11.110312
-              },
-              {
-                "date": "2026-11-19",
-                "cumulative_return_pct": -11.74818
-              }
-            ]
-          },
-          {
             "code": "801140",
             "name": "轻工制造",
             "return_30d_pct": -12.538856,
@@ -2769,396 +1209,6 @@
               {
                 "date": "2026-11-19",
                 "cumulative_return_pct": -12.538856
-              }
-            ]
-          },
-          {
-            "code": "801740",
-            "name": "国防军工",
-            "return_30d_pct": -14.199916,
-            "excess_30d_pp": -6.649594,
-            "return_5d_pct": -8.505368,
-            "max_drawdown_30d_pct": null,
-            "missing_session_dates": [
-              "2026-10-15",
-              "2026-11-10"
-            ],
-            "series": [
-              {
-                "date": "2026-10-08",
-                "cumulative_return_pct": 0.0
-              },
-              {
-                "date": "2026-10-09",
-                "cumulative_return_pct": -1.704263
-              },
-              {
-                "date": "2026-10-12",
-                "cumulative_return_pct": -3.927755
-              },
-              {
-                "date": "2026-10-13",
-                "cumulative_return_pct": -1.340306
-              },
-              {
-                "date": "2026-10-14",
-                "cumulative_return_pct": -2.488075
-              },
-              {
-                "date": "2026-10-16",
-                "cumulative_return_pct": -3.574357
-              },
-              {
-                "date": "2026-10-19",
-                "cumulative_return_pct": -2.105485
-              },
-              {
-                "date": "2026-10-20",
-                "cumulative_return_pct": -2.417892
-              },
-              {
-                "date": "2026-10-21",
-                "cumulative_return_pct": -2.901719
-              },
-              {
-                "date": "2026-10-22",
-                "cumulative_return_pct": -5.023974
-              },
-              {
-                "date": "2026-10-23",
-                "cumulative_return_pct": -3.265676
-              },
-              {
-                "date": "2026-10-26",
-                "cumulative_return_pct": -3.868752
-              },
-              {
-                "date": "2026-10-27",
-                "cumulative_return_pct": -7.864206
-              },
-              {
-                "date": "2026-10-28",
-                "cumulative_return_pct": -6.902142
-              },
-              {
-                "date": "2026-10-29",
-                "cumulative_return_pct": -6.961145
-              },
-              {
-                "date": "2026-10-30",
-                "cumulative_return_pct": -10.777725
-              },
-              {
-                "date": "2026-11-02",
-                "cumulative_return_pct": -8.921917
-              },
-              {
-                "date": "2026-11-03",
-                "cumulative_return_pct": -9.019428
-              },
-              {
-                "date": "2026-11-04",
-                "cumulative_return_pct": -6.233231
-              },
-              {
-                "date": "2026-11-05",
-                "cumulative_return_pct": -5.47861
-              },
-              {
-                "date": "2026-11-06",
-                "cumulative_return_pct": -6.756186
-              },
-              {
-                "date": "2026-11-09",
-                "cumulative_return_pct": -5.891012
-              },
-              {
-                "date": "2026-11-11",
-                "cumulative_return_pct": -5.936972
-              },
-              {
-                "date": "2026-11-12",
-                "cumulative_return_pct": -6.223914
-              },
-              {
-                "date": "2026-11-13",
-                "cumulative_return_pct": -7.739367
-              },
-              {
-                "date": "2026-11-16",
-                "cumulative_return_pct": -11.232982
-              },
-              {
-                "date": "2026-11-17",
-                "cumulative_return_pct": -11.695692
-              },
-              {
-                "date": "2026-11-18",
-                "cumulative_return_pct": -13.123571
-              },
-              {
-                "date": "2026-11-19",
-                "cumulative_return_pct": -14.199916
-              }
-            ]
-          },
-          {
-            "code": "801030",
-            "name": "基础化工",
-            "return_30d_pct": -15.351515,
-            "excess_30d_pp": -7.801194,
-            "return_5d_pct": -5.842489,
-            "max_drawdown_30d_pct": null,
-            "missing_session_dates": [
-              "2026-10-15",
-              "2026-11-10"
-            ],
-            "series": [
-              {
-                "date": "2026-10-08",
-                "cumulative_return_pct": 0.0
-              },
-              {
-                "date": "2026-10-09",
-                "cumulative_return_pct": 0.725962
-              },
-              {
-                "date": "2026-10-12",
-                "cumulative_return_pct": -2.161906
-              },
-              {
-                "date": "2026-10-13",
-                "cumulative_return_pct": -2.282738
-              },
-              {
-                "date": "2026-10-14",
-                "cumulative_return_pct": -4.038318
-              },
-              {
-                "date": "2026-10-16",
-                "cumulative_return_pct": -6.309675
-              },
-              {
-                "date": "2026-10-19",
-                "cumulative_return_pct": -6.206277
-              },
-              {
-                "date": "2026-10-20",
-                "cumulative_return_pct": -5.808911
-              },
-              {
-                "date": "2026-10-21",
-                "cumulative_return_pct": -6.373602
-              },
-              {
-                "date": "2026-10-22",
-                "cumulative_return_pct": -9.338715
-              },
-              {
-                "date": "2026-10-23",
-                "cumulative_return_pct": -7.943453
-              },
-              {
-                "date": "2026-10-26",
-                "cumulative_return_pct": -8.596529
-              },
-              {
-                "date": "2026-10-27",
-                "cumulative_return_pct": -10.0424
-              },
-              {
-                "date": "2026-10-28",
-                "cumulative_return_pct": -8.563839
-              },
-              {
-                "date": "2026-10-29",
-                "cumulative_return_pct": -10.622831
-              },
-              {
-                "date": "2026-10-30",
-                "cumulative_return_pct": -12.428052
-              },
-              {
-                "date": "2026-11-02",
-                "cumulative_return_pct": -11.260409
-              },
-              {
-                "date": "2026-11-03",
-                "cumulative_return_pct": -11.377367
-              },
-              {
-                "date": "2026-11-04",
-                "cumulative_return_pct": -9.180834
-              },
-              {
-                "date": "2026-11-05",
-                "cumulative_return_pct": -7.072686
-              },
-              {
-                "date": "2026-11-06",
-                "cumulative_return_pct": -8.782257
-              },
-              {
-                "date": "2026-11-09",
-                "cumulative_return_pct": -9.318375
-              },
-              {
-                "date": "2026-11-11",
-                "cumulative_return_pct": -8.24614
-              },
-              {
-                "date": "2026-11-12",
-                "cumulative_return_pct": -10.099063
-              },
-              {
-                "date": "2026-11-13",
-                "cumulative_return_pct": -11.996784
-              },
-              {
-                "date": "2026-11-16",
-                "cumulative_return_pct": -13.194695
-              },
-              {
-                "date": "2026-11-17",
-                "cumulative_return_pct": -13.321823
-              },
-              {
-                "date": "2026-11-18",
-                "cumulative_return_pct": -14.202277
-              },
-              {
-                "date": "2026-11-19",
-                "cumulative_return_pct": -15.351515
-              }
-            ]
-          },
-          {
-            "code": "801970",
-            "name": "环保",
-            "return_30d_pct": -15.757426,
-            "excess_30d_pp": -8.207104,
-            "return_5d_pct": -6.025609,
-            "max_drawdown_30d_pct": null,
-            "missing_session_dates": [
-              "2026-10-15",
-              "2026-11-10"
-            ],
-            "series": [
-              {
-                "date": "2026-10-08",
-                "cumulative_return_pct": 0.0
-              },
-              {
-                "date": "2026-10-09",
-                "cumulative_return_pct": 0.556689
-              },
-              {
-                "date": "2026-10-12",
-                "cumulative_return_pct": -1.760516
-              },
-              {
-                "date": "2026-10-13",
-                "cumulative_return_pct": -2.273596
-              },
-              {
-                "date": "2026-10-14",
-                "cumulative_return_pct": -3.972736
-              },
-              {
-                "date": "2026-10-16",
-                "cumulative_return_pct": -6.379313
-              },
-              {
-                "date": "2026-10-19",
-                "cumulative_return_pct": -6.566132
-              },
-              {
-                "date": "2026-10-20",
-                "cumulative_return_pct": -6.323321
-              },
-              {
-                "date": "2026-10-21",
-                "cumulative_return_pct": -6.908545
-              },
-              {
-                "date": "2026-10-22",
-                "cumulative_return_pct": -8.94579
-              },
-              {
-                "date": "2026-10-23",
-                "cumulative_return_pct": -8.031076
-              },
-              {
-                "date": "2026-10-26",
-                "cumulative_return_pct": -8.375641
-              },
-              {
-                "date": "2026-10-27",
-                "cumulative_return_pct": -10.233066
-              },
-              {
-                "date": "2026-10-28",
-                "cumulative_return_pct": -9.073387
-              },
-              {
-                "date": "2026-10-29",
-                "cumulative_return_pct": -10.648161
-              },
-              {
-                "date": "2026-10-30",
-                "cumulative_return_pct": -12.810311
-              },
-              {
-                "date": "2026-11-02",
-                "cumulative_return_pct": -11.41805
-              },
-              {
-                "date": "2026-11-03",
-                "cumulative_return_pct": -12.054958
-              },
-              {
-                "date": "2026-11-04",
-                "cumulative_return_pct": -10.193764
-              },
-              {
-                "date": "2026-11-05",
-                "cumulative_return_pct": -8.775122
-              },
-              {
-                "date": "2026-11-06",
-                "cumulative_return_pct": -9.508401
-              },
-              {
-                "date": "2026-11-09",
-                "cumulative_return_pct": -9.887424
-              },
-              {
-                "date": "2026-11-11",
-                "cumulative_return_pct": -8.731513
-              },
-              {
-                "date": "2026-11-12",
-                "cumulative_return_pct": -10.355818
-              },
-              {
-                "date": "2026-11-13",
-                "cumulative_return_pct": -11.652785
-              },
-              {
-                "date": "2026-11-16",
-                "cumulative_return_pct": -13.181796
-              },
-              {
-                "date": "2026-11-17",
-                "cumulative_return_pct": -14.065823
-              },
-              {
-                "date": "2026-11-18",
-                "cumulative_return_pct": -14.290329
-              },
-              {
-                "date": "2026-11-19",
-                "cumulative_return_pct": -15.757426
               }
             ]
           },
@@ -3293,136 +1343,6 @@
             ]
           },
           {
-            "code": "801890",
-            "name": "机械设备",
-            "return_30d_pct": -17.748433,
-            "excess_30d_pp": -10.198112,
-            "return_5d_pct": -10.222282,
-            "max_drawdown_30d_pct": null,
-            "missing_session_dates": [
-              "2026-10-15",
-              "2026-11-10"
-            ],
-            "series": [
-              {
-                "date": "2026-10-08",
-                "cumulative_return_pct": 0.0
-              },
-              {
-                "date": "2026-10-09",
-                "cumulative_return_pct": -0.979778
-              },
-              {
-                "date": "2026-10-12",
-                "cumulative_return_pct": -2.804227
-              },
-              {
-                "date": "2026-10-13",
-                "cumulative_return_pct": -2.292888
-              },
-              {
-                "date": "2026-10-14",
-                "cumulative_return_pct": -4.645934
-              },
-              {
-                "date": "2026-10-16",
-                "cumulative_return_pct": -7.839212
-              },
-              {
-                "date": "2026-10-19",
-                "cumulative_return_pct": -7.492567
-              },
-              {
-                "date": "2026-10-20",
-                "cumulative_return_pct": -5.817526
-              },
-              {
-                "date": "2026-10-21",
-                "cumulative_return_pct": -6.011805
-              },
-              {
-                "date": "2026-10-22",
-                "cumulative_return_pct": -8.309624
-              },
-              {
-                "date": "2026-10-23",
-                "cumulative_return_pct": -5.06605
-              },
-              {
-                "date": "2026-10-26",
-                "cumulative_return_pct": -6.6405
-              },
-              {
-                "date": "2026-10-27",
-                "cumulative_return_pct": -9.553207
-              },
-              {
-                "date": "2026-10-28",
-                "cumulative_return_pct": -6.245038
-              },
-              {
-                "date": "2026-10-29",
-                "cumulative_return_pct": -9.274116
-              },
-              {
-                "date": "2026-10-30",
-                "cumulative_return_pct": -12.851515
-              },
-              {
-                "date": "2026-11-02",
-                "cumulative_return_pct": -11.102016
-              },
-              {
-                "date": "2026-11-03",
-                "cumulative_return_pct": -13.409697
-              },
-              {
-                "date": "2026-11-04",
-                "cumulative_return_pct": -9.11534
-              },
-              {
-                "date": "2026-11-05",
-                "cumulative_return_pct": -7.509332
-              },
-              {
-                "date": "2026-11-06",
-                "cumulative_return_pct": -10.196695
-              },
-              {
-                "date": "2026-11-09",
-                "cumulative_return_pct": -9.564548
-              },
-              {
-                "date": "2026-11-11",
-                "cumulative_return_pct": -5.893462
-              },
-              {
-                "date": "2026-11-12",
-                "cumulative_return_pct": -8.383095
-              },
-              {
-                "date": "2026-11-13",
-                "cumulative_return_pct": -11.068486
-              },
-              {
-                "date": "2026-11-16",
-                "cumulative_return_pct": -14.352986
-              },
-              {
-                "date": "2026-11-17",
-                "cumulative_return_pct": -16.104457
-              },
-              {
-                "date": "2026-11-18",
-                "cumulative_return_pct": -16.361359
-              },
-              {
-                "date": "2026-11-19",
-                "cumulative_return_pct": -17.748433
-              }
-            ]
-          },
-          {
             "code": "801180",
             "name": "房地产",
             "return_30d_pct": -17.985717,
@@ -3549,396 +1469,6 @@
               {
                 "date": "2026-11-19",
                 "cumulative_return_pct": -17.985717
-              }
-            ]
-          },
-          {
-            "code": "801710",
-            "name": "建筑材料",
-            "return_30d_pct": -19.049641,
-            "excess_30d_pp": -11.49932,
-            "return_5d_pct": -6.789991,
-            "max_drawdown_30d_pct": null,
-            "missing_session_dates": [
-              "2026-10-15",
-              "2026-11-10"
-            ],
-            "series": [
-              {
-                "date": "2026-10-08",
-                "cumulative_return_pct": 0.0
-              },
-              {
-                "date": "2026-10-09",
-                "cumulative_return_pct": -0.882998
-              },
-              {
-                "date": "2026-10-12",
-                "cumulative_return_pct": -2.315498
-              },
-              {
-                "date": "2026-10-13",
-                "cumulative_return_pct": -2.307143
-              },
-              {
-                "date": "2026-10-14",
-                "cumulative_return_pct": -5.264221
-              },
-              {
-                "date": "2026-10-16",
-                "cumulative_return_pct": -7.194354
-              },
-              {
-                "date": "2026-10-19",
-                "cumulative_return_pct": -7.875618
-              },
-              {
-                "date": "2026-10-20",
-                "cumulative_return_pct": -7.408445
-              },
-              {
-                "date": "2026-10-21",
-                "cumulative_return_pct": -6.848848
-              },
-              {
-                "date": "2026-10-22",
-                "cumulative_return_pct": -9.439706
-              },
-              {
-                "date": "2026-10-23",
-                "cumulative_return_pct": -9.24215
-              },
-              {
-                "date": "2026-10-26",
-                "cumulative_return_pct": -11.117106
-              },
-              {
-                "date": "2026-10-27",
-                "cumulative_return_pct": -13.325559
-              },
-              {
-                "date": "2026-10-28",
-                "cumulative_return_pct": -12.417496
-              },
-              {
-                "date": "2026-10-29",
-                "cumulative_return_pct": -15.273968
-              },
-              {
-                "date": "2026-10-30",
-                "cumulative_return_pct": -17.216459
-              },
-              {
-                "date": "2026-11-02",
-                "cumulative_return_pct": -15.769164
-              },
-              {
-                "date": "2026-11-03",
-                "cumulative_return_pct": -16.129987
-              },
-              {
-                "date": "2026-11-04",
-                "cumulative_return_pct": -13.41868
-              },
-              {
-                "date": "2026-11-05",
-                "cumulative_return_pct": -11.54616
-              },
-              {
-                "date": "2026-11-06",
-                "cumulative_return_pct": -13.710402
-              },
-              {
-                "date": "2026-11-09",
-                "cumulative_return_pct": -13.959827
-              },
-              {
-                "date": "2026-11-11",
-                "cumulative_return_pct": -11.86695
-              },
-              {
-                "date": "2026-11-12",
-                "cumulative_return_pct": -13.152719
-              },
-              {
-                "date": "2026-11-13",
-                "cumulative_return_pct": -15.979426
-              },
-              {
-                "date": "2026-11-16",
-                "cumulative_return_pct": -17.954292
-              },
-              {
-                "date": "2026-11-17",
-                "cumulative_return_pct": -18.488129
-              },
-              {
-                "date": "2026-11-18",
-                "cumulative_return_pct": -18.494569
-              },
-              {
-                "date": "2026-11-19",
-                "cumulative_return_pct": -19.049641
-              }
-            ]
-          },
-          {
-            "code": "801050",
-            "name": "有色金属",
-            "return_30d_pct": -20.874619,
-            "excess_30d_pp": -13.324298,
-            "return_5d_pct": -9.889393,
-            "max_drawdown_30d_pct": null,
-            "missing_session_dates": [
-              "2026-10-15",
-              "2026-11-10"
-            ],
-            "series": [
-              {
-                "date": "2026-10-08",
-                "cumulative_return_pct": 0.0
-              },
-              {
-                "date": "2026-10-09",
-                "cumulative_return_pct": 2.166511
-              },
-              {
-                "date": "2026-10-12",
-                "cumulative_return_pct": -1.042104
-              },
-              {
-                "date": "2026-10-13",
-                "cumulative_return_pct": -0.516547
-              },
-              {
-                "date": "2026-10-14",
-                "cumulative_return_pct": -2.497068
-              },
-              {
-                "date": "2026-10-16",
-                "cumulative_return_pct": -5.308556
-              },
-              {
-                "date": "2026-10-19",
-                "cumulative_return_pct": -5.435104
-              },
-              {
-                "date": "2026-10-20",
-                "cumulative_return_pct": -6.266071
-              },
-              {
-                "date": "2026-10-21",
-                "cumulative_return_pct": -6.555477
-              },
-              {
-                "date": "2026-10-22",
-                "cumulative_return_pct": -9.332672
-              },
-              {
-                "date": "2026-10-23",
-                "cumulative_return_pct": -7.439833
-              },
-              {
-                "date": "2026-10-26",
-                "cumulative_return_pct": -10.023642
-              },
-              {
-                "date": "2026-10-27",
-                "cumulative_return_pct": -10.59304
-              },
-              {
-                "date": "2026-10-28",
-                "cumulative_return_pct": -10.048656
-              },
-              {
-                "date": "2026-10-29",
-                "cumulative_return_pct": -11.759002
-              },
-              {
-                "date": "2026-10-30",
-                "cumulative_return_pct": -13.745441
-              },
-              {
-                "date": "2026-11-02",
-                "cumulative_return_pct": -14.092271
-              },
-              {
-                "date": "2026-11-03",
-                "cumulative_return_pct": -13.89243
-              },
-              {
-                "date": "2026-11-04",
-                "cumulative_return_pct": -9.297168
-              },
-              {
-                "date": "2026-11-05",
-                "cumulative_return_pct": -7.405809
-              },
-              {
-                "date": "2026-11-06",
-                "cumulative_return_pct": -10.182466
-              },
-              {
-                "date": "2026-11-09",
-                "cumulative_return_pct": -9.784532
-              },
-              {
-                "date": "2026-11-11",
-                "cumulative_return_pct": -9.466213
-              },
-              {
-                "date": "2026-11-12",
-                "cumulative_return_pct": -12.190825
-              },
-              {
-                "date": "2026-11-13",
-                "cumulative_return_pct": -14.466939
-              },
-              {
-                "date": "2026-11-16",
-                "cumulative_return_pct": -17.281923
-              },
-              {
-                "date": "2026-11-17",
-                "cumulative_return_pct": -17.292951
-              },
-              {
-                "date": "2026-11-18",
-                "cumulative_return_pct": -19.615327
-              },
-              {
-                "date": "2026-11-19",
-                "cumulative_return_pct": -20.874619
-              }
-            ]
-          },
-          {
-            "code": "801230",
-            "name": "综合",
-            "return_30d_pct": -21.225541,
-            "excess_30d_pp": -13.675219,
-            "return_5d_pct": -6.926249,
-            "max_drawdown_30d_pct": null,
-            "missing_session_dates": [
-              "2026-10-15",
-              "2026-11-10"
-            ],
-            "series": [
-              {
-                "date": "2026-10-08",
-                "cumulative_return_pct": 0.0
-              },
-              {
-                "date": "2026-10-09",
-                "cumulative_return_pct": 0.074377
-              },
-              {
-                "date": "2026-10-12",
-                "cumulative_return_pct": -2.569549
-              },
-              {
-                "date": "2026-10-13",
-                "cumulative_return_pct": -1.150286
-              },
-              {
-                "date": "2026-10-14",
-                "cumulative_return_pct": -2.937777
-              },
-              {
-                "date": "2026-10-16",
-                "cumulative_return_pct": -5.696073
-              },
-              {
-                "date": "2026-10-19",
-                "cumulative_return_pct": -7.524776
-              },
-              {
-                "date": "2026-10-20",
-                "cumulative_return_pct": -5.941396
-              },
-              {
-                "date": "2026-10-21",
-                "cumulative_return_pct": -5.809224
-              },
-              {
-                "date": "2026-10-22",
-                "cumulative_return_pct": -10.197965
-              },
-              {
-                "date": "2026-10-23",
-                "cumulative_return_pct": -9.581
-              },
-              {
-                "date": "2026-10-26",
-                "cumulative_return_pct": -8.625558
-              },
-              {
-                "date": "2026-10-27",
-                "cumulative_return_pct": -12.012525
-              },
-              {
-                "date": "2026-10-28",
-                "cumulative_return_pct": -12.044958
-              },
-              {
-                "date": "2026-10-29",
-                "cumulative_return_pct": -14.744972
-              },
-              {
-                "date": "2026-10-30",
-                "cumulative_return_pct": -16.977994
-              },
-              {
-                "date": "2026-11-02",
-                "cumulative_return_pct": -16.167161
-              },
-              {
-                "date": "2026-11-03",
-                "cumulative_return_pct": -18.571861
-              },
-              {
-                "date": "2026-11-04",
-                "cumulative_return_pct": -15.153436
-              },
-              {
-                "date": "2026-11-05",
-                "cumulative_return_pct": -13.2923
-              },
-              {
-                "date": "2026-11-06",
-                "cumulative_return_pct": -16.352738
-              },
-              {
-                "date": "2026-11-09",
-                "cumulative_return_pct": -15.874285
-              },
-              {
-                "date": "2026-11-11",
-                "cumulative_return_pct": -13.408133
-              },
-              {
-                "date": "2026-11-12",
-                "cumulative_return_pct": -15.3634
-              },
-              {
-                "date": "2026-11-13",
-                "cumulative_return_pct": -16.855577
-              },
-              {
-                "date": "2026-11-16",
-                "cumulative_return_pct": -20.418366
-              },
-              {
-                "date": "2026-11-17",
-                "cumulative_return_pct": -21.297967
-              },
-              {
-                "date": "2026-11-18",
-                "cumulative_return_pct": -19.567295
-              },
-              {
-                "date": "2026-11-19",
-                "cumulative_return_pct": -21.225541
               }
             ]
           },
@@ -4071,136 +1601,6 @@
                 "cumulative_return_pct": -22.223577
               }
             ]
-          },
-          {
-            "code": "801770",
-            "name": "通信",
-            "return_30d_pct": -35.576209,
-            "excess_30d_pp": -28.025887,
-            "return_5d_pct": -12.582086,
-            "max_drawdown_30d_pct": null,
-            "missing_session_dates": [
-              "2026-10-15",
-              "2026-11-10"
-            ],
-            "series": [
-              {
-                "date": "2026-10-08",
-                "cumulative_return_pct": 0.0
-              },
-              {
-                "date": "2026-10-09",
-                "cumulative_return_pct": -0.855409
-              },
-              {
-                "date": "2026-10-12",
-                "cumulative_return_pct": -5.306868
-              },
-              {
-                "date": "2026-10-13",
-                "cumulative_return_pct": -3.617298
-              },
-              {
-                "date": "2026-10-14",
-                "cumulative_return_pct": -7.406717
-              },
-              {
-                "date": "2026-10-16",
-                "cumulative_return_pct": -11.632095
-              },
-              {
-                "date": "2026-10-19",
-                "cumulative_return_pct": -11.487947
-              },
-              {
-                "date": "2026-10-20",
-                "cumulative_return_pct": -11.407848
-              },
-              {
-                "date": "2026-10-21",
-                "cumulative_return_pct": -10.880784
-              },
-              {
-                "date": "2026-10-22",
-                "cumulative_return_pct": -16.380868
-              },
-              {
-                "date": "2026-10-23",
-                "cumulative_return_pct": -14.817255
-              },
-              {
-                "date": "2026-10-26",
-                "cumulative_return_pct": -17.329981
-              },
-              {
-                "date": "2026-10-27",
-                "cumulative_return_pct": -20.031948
-              },
-              {
-                "date": "2026-10-28",
-                "cumulative_return_pct": -16.025619
-              },
-              {
-                "date": "2026-10-29",
-                "cumulative_return_pct": -22.371482
-              },
-              {
-                "date": "2026-10-30",
-                "cumulative_return_pct": -27.399838
-              },
-              {
-                "date": "2026-11-02",
-                "cumulative_return_pct": -26.879347
-              },
-              {
-                "date": "2026-11-03",
-                "cumulative_return_pct": -31.869946
-              },
-              {
-                "date": "2026-11-04",
-                "cumulative_return_pct": -27.066601
-              },
-              {
-                "date": "2026-11-05",
-                "cumulative_return_pct": -28.524741
-              },
-              {
-                "date": "2026-11-06",
-                "cumulative_return_pct": -32.049405
-              },
-              {
-                "date": "2026-11-09",
-                "cumulative_return_pct": -31.291827
-              },
-              {
-                "date": "2026-11-11",
-                "cumulative_return_pct": -24.017029
-              },
-              {
-                "date": "2026-11-12",
-                "cumulative_return_pct": -26.303673
-              },
-              {
-                "date": "2026-11-13",
-                "cumulative_return_pct": -29.967135
-              },
-              {
-                "date": "2026-11-16",
-                "cumulative_return_pct": -34.914322
-              },
-              {
-                "date": "2026-11-17",
-                "cumulative_return_pct": -36.389887
-              },
-              {
-                "date": "2026-11-18",
-                "cumulative_return_pct": -35.363274
-              },
-              {
-                "date": "2026-11-19",
-                "cumulative_return_pct": -35.576209
-              }
-            ]
           }
         ],
         "recommendations": [
@@ -4216,37 +1616,7 @@
               "行业指数可能被少数权重股拉动",
               "历史成交缺日，热度与完整回撤不可计算"
             ],
-            "published_at": "2026-11-20T08:54:42.693394+00:00",
-            "rule_version": "research-v1.0"
-          },
-          {
-            "code": "801110",
-            "name": "家用电器",
-            "state": "待补量能证据",
-            "conclusion": "30日收益 +6.52%，相对沪深300 +14.07 个百分点；5日仍为正。",
-            "trigger": "相对强度保持，成交份额持续且上涨扩散；缺少量能证据时仅观察。",
-            "invalidation": "5日强度转负、相对趋势转弱或原有催化被证伪。",
-            "risks": [
-              "近期涨幅不代表未来收益",
-              "行业指数可能被少数权重股拉动",
-              "历史成交缺日，热度与完整回撤不可计算"
-            ],
-            "published_at": "2026-11-20T08:54:42.693394+00:00",
-            "rule_version": "research-v1.0"
-          },
-          {
-            "code": "801780",
-            "name": "银行",
-            "state": "待补量能证据",
-            "conclusion": "30日收益 +6.14%，相对沪深300 +13.69 个百分点；5日仍为正。",
-            "trigger": "相对强度保持，成交份额持续且上涨扩散；缺少量能证据时仅观察。",
-            "invalidation": "5日强度转负、相对趋势转弱或原有催化被证伪。",
-            "risks": [
-              "近期涨幅不代表未来收益",
-              "行业指数可能被少数权重股拉动",
-              "历史成交缺日，热度与完整回撤不可计算"
-            ],
-            "published_at": "2026-11-20T08:54:42.693394+00:00",
+            "published_at": "2026-11-20T08:57:09.663109+00:00",
             "rule_version": "research-v1.0"
           }
         ],
@@ -4254,12 +1624,11 @@
         "age_calendar_days": 1,
         "freshness": "lags_benchmark"
       },
-      "carried_forward": true,
-      "last_attempt_at": "2026-11-20T08:54:42.693394+00:00"
+      "carried_forward": false
     },
     "cn_market": {
       "status": "succeeded",
-      "collected_at": "2026-11-20T08:54:42.693394+00:00",
+      "collected_at": "2026-11-20T08:57:09.663109+00:00",
       "carried_forward": false,
       "data": {
         "benchmark": [
@@ -4293,25 +1662,25 @@
     },
     "global": {
       "status": "succeeded",
-      "collected_at": "2026-11-20T08:54:42.693394+00:00",
+      "collected_at": "2026-11-20T08:57:09.663109+00:00",
       "carried_forward": false,
       "data": [
         {
           "symbol": "CL=F",
           "name": "WTI原油期货连续",
           "asset_type": "continuous_futures",
-          "price": 81.39,
+          "price": 81.71,
           "unit": "USD",
           "currency": "USD",
           "market_date": "2026-11-20",
-          "observed_at": "2026-11-20T08:44:53+00:00",
+          "observed_at": "2026-11-20T08:48:54+00:00",
           "exchange_timezone": "America/New_York",
           "source": "yahoo",
-          "change_vs_previous_day_close_pct": -2.187236,
+          "change_vs_previous_day_close_pct": -1.802667,
           "change_bp": null,
           "change_unit": "percent",
           "availability": "latest_available_observation",
-          "age_hours": 0.164,
+          "age_hours": 0.138,
           "is_live_guaranteed": false,
           "freshness": "latest_available"
         },
@@ -4319,18 +1688,18 @@
           "symbol": "DX-Y.NYB",
           "name": "美元指数",
           "asset_type": "index",
-          "price": 103.847,
+          "price": 103.852,
           "unit": "index_points",
           "currency": "USD",
           "market_date": "2026-11-20",
-          "observed_at": "2026-11-20T08:44:53+00:00",
+          "observed_at": "2026-11-20T08:48:54+00:00",
           "exchange_timezone": "America/New_York",
           "source": "yahoo",
-          "change_vs_previous_day_close_pct": -0.051012,
+          "change_vs_previous_day_close_pct": -0.0462,
           "change_bp": null,
           "change_unit": "percent",
           "availability": "latest_available_observation",
-          "age_hours": 0.164,
+          "age_hours": 0.138,
           "is_live_guaranteed": false,
           "freshness": "latest_available"
         },
@@ -4338,18 +1707,18 @@
           "symbol": "GC=F",
           "name": "黄金期货连续",
           "asset_type": "continuous_futures",
-          "price": 3584.3,
+          "price": 3583.7,
           "unit": "USD",
           "currency": "USD",
           "market_date": "2026-11-20",
-          "observed_at": "2026-11-20T08:44:53+00:00",
+          "observed_at": "2026-11-20T08:48:52+00:00",
           "exchange_timezone": "America/New_York",
           "source": "yahoo",
-          "change_vs_previous_day_close_pct": -2.745896,
+          "change_vs_previous_day_close_pct": -2.762176,
           "change_bp": null,
           "change_unit": "percent",
           "availability": "latest_available_observation",
-          "age_hours": 0.164,
+          "age_hours": 0.138,
           "is_live_guaranteed": false,
           "freshness": "latest_available"
         },
@@ -4368,7 +1737,7 @@
           "change_bp": null,
           "change_unit": "percent",
           "availability": "latest_available_observation",
-          "age_hours": 0.764,
+          "age_hours": 0.804,
           "is_live_guaranteed": false,
           "freshness": "latest_available"
         },
@@ -4387,7 +1756,7 @@
           "change_bp": null,
           "change_unit": "percent",
           "availability": "latest_available_observation",
-          "age_hours": 10.925,
+          "age_hours": 10.966,
           "is_live_guaranteed": false,
           "freshness": "latest_available"
         },
@@ -4406,7 +1775,7 @@
           "change_bp": null,
           "change_unit": "percent",
           "availability": "latest_available_observation",
-          "age_hours": 10.924,
+          "age_hours": 10.964,
           "is_live_guaranteed": false,
           "freshness": "latest_available"
         },
@@ -4425,7 +1794,7 @@
           "change_bp": null,
           "change_unit": "percent",
           "availability": "latest_available_observation",
-          "age_hours": 0.764,
+          "age_hours": 0.804,
           "is_live_guaranteed": false,
           "freshness": "latest_available"
         },
@@ -4444,7 +1813,7 @@
           "change_bp": null,
           "change_unit": "percent",
           "availability": "latest_available_observation",
-          "age_hours": 10.645,
+          "age_hours": 10.686,
           "is_live_guaranteed": false,
           "freshness": "latest_available"
         },
@@ -4463,7 +1832,7 @@
           "change_bp": -1.399998,
           "change_unit": "bp",
           "availability": "latest_available_observation",
-          "age_hours": 12.913,
+          "age_hours": 12.954,
           "is_live_guaranteed": false,
           "freshness": "latest_available"
         }
@@ -4471,9 +1840,22 @@
     },
     "news": {
       "status": "succeeded",
-      "collected_at": "2026-11-20T08:54:42.693394+00:00",
+      "collected_at": "2026-11-20T08:57:09.663109+00:00",
       "carried_forward": false,
       "data": [
+        {
+          "event_id": "a438f1bcff15f0d39519",
+          "title": "首批落地！工行支持港交所扩大衍生品市场合资格非现金抵押品范围",
+          "source": "cns",
+          "url": "https://www.chinanews.com.cn/cj/2026/11-20/10735279.shtml",
+          "published_at": "2026-11-20T08:55:37+00:00",
+          "published_date": "2026-11-20",
+          "date_precision": "second",
+          "event_occurred_at": null,
+          "collected_at": "2026-11-20T08:57:09.663109+00:00",
+          "analysis": null,
+          "dedup_method": "exact_normalized_title"
+        },
         {
           "event_id": "935d73627864bde217f2",
           "title": "证券监管部门联合公安机关依法处罚编造传播资本市场虚假信息行为 公布4起典型案例",
@@ -4483,7 +1865,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:54:42.693394+00:00",
+          "collected_at": "2026-11-20T08:57:09.663109+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -4496,7 +1878,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:54:42.693394+00:00",
+          "collected_at": "2026-11-20T08:57:09.663109+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -4509,7 +1891,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:54:42.693394+00:00",
+          "collected_at": "2026-11-20T08:57:09.663109+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -4522,7 +1904,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:54:42.693394+00:00",
+          "collected_at": "2026-11-20T08:57:09.663109+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -4535,7 +1917,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:54:42.693394+00:00",
+          "collected_at": "2026-11-20T08:57:09.663109+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -4548,7 +1930,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:54:42.693394+00:00",
+          "collected_at": "2026-11-20T08:57:09.663109+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -4561,7 +1943,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:54:42.693394+00:00",
+          "collected_at": "2026-11-20T08:57:09.663109+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -4574,7 +1956,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:54:42.693394+00:00",
+          "collected_at": "2026-11-20T08:57:09.663109+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -4587,7 +1969,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:54:42.693394+00:00",
+          "collected_at": "2026-11-20T08:57:09.663109+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -4600,7 +1982,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:54:42.693394+00:00",
+          "collected_at": "2026-11-20T08:57:09.663109+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -4613,7 +1995,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:54:42.693394+00:00",
+          "collected_at": "2026-11-20T08:57:09.663109+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -4626,7 +2008,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:54:42.693394+00:00",
+          "collected_at": "2026-11-20T08:57:09.663109+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -4639,7 +2021,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:54:42.693394+00:00",
+          "collected_at": "2026-11-20T08:57:09.663109+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -4652,7 +2034,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:54:42.693394+00:00",
+          "collected_at": "2026-11-20T08:57:09.663109+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -4665,7 +2047,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:54:42.693394+00:00",
+          "collected_at": "2026-11-20T08:57:09.663109+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -4678,7 +2060,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:54:42.693394+00:00",
+          "collected_at": "2026-11-20T08:57:09.663109+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -4691,7 +2073,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:54:42.693394+00:00",
+          "collected_at": "2026-11-20T08:57:09.663109+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -4704,7 +2086,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:54:42.693394+00:00",
+          "collected_at": "2026-11-20T08:57:09.663109+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -4717,7 +2099,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:54:42.693394+00:00",
+          "collected_at": "2026-11-20T08:57:09.663109+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -4730,7 +2112,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:54:42.693394+00:00",
+          "collected_at": "2026-11-20T08:57:09.663109+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -4743,7 +2125,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:54:42.693394+00:00",
+          "collected_at": "2026-11-20T08:57:09.663109+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -4756,7 +2138,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:54:42.693394+00:00",
+          "collected_at": "2026-11-20T08:57:09.663109+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -4769,7 +2151,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:54:42.693394+00:00",
+          "collected_at": "2026-11-20T08:57:09.663109+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -4782,7 +2164,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:54:42.693394+00:00",
+          "collected_at": "2026-11-20T08:57:09.663109+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -4795,7 +2177,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:54:42.693394+00:00",
+          "collected_at": "2026-11-20T08:57:09.663109+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -4808,7 +2190,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:54:42.693394+00:00",
+          "collected_at": "2026-11-20T08:57:09.663109+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -4821,7 +2203,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:54:42.693394+00:00",
+          "collected_at": "2026-11-20T08:57:09.663109+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -4834,7 +2216,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:54:42.693394+00:00",
+          "collected_at": "2026-11-20T08:57:09.663109+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -4847,7 +2229,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:54:42.693394+00:00",
+          "collected_at": "2026-11-20T08:57:09.663109+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -4964,7 +2346,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:54:42.693394+00:00",
+          "collected_at": "2026-11-20T08:57:09.663109+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -4977,7 +2359,7 @@
           "published_date": "2026-11-20",
           "date_precision": "day",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:54:42.693394+00:00",
+          "collected_at": "2026-11-20T08:57:09.663109+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -4990,7 +2372,7 @@
           "published_date": "2026-11-19",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:54:42.693394+00:00",
+          "collected_at": "2026-11-20T08:57:09.663109+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -5003,7 +2385,7 @@
           "published_date": "2026-11-18",
           "date_precision": "day",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:54:42.693394+00:00",
+          "collected_at": "2026-11-20T08:57:09.663109+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -5016,7 +2398,7 @@
           "published_date": "2026-11-14",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:54:42.693394+00:00",
+          "collected_at": "2026-11-20T08:57:09.663109+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -5029,7 +2411,7 @@
           "published_date": "2026-11-13",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:54:42.693394+00:00",
+          "collected_at": "2026-11-20T08:57:09.663109+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -5042,7 +2424,7 @@
           "published_date": "2026-11-13",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:54:42.693394+00:00",
+          "collected_at": "2026-11-20T08:57:09.663109+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -5055,7 +2437,7 @@
           "published_date": "2026-11-13",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:54:42.693394+00:00",
+          "collected_at": "2026-11-20T08:57:09.663109+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -5068,7 +2450,7 @@
           "published_date": "2026-11-13",
           "date_precision": "day",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:54:42.693394+00:00",
+          "collected_at": "2026-11-20T08:57:09.663109+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -5081,7 +2463,7 @@
           "published_date": "2026-11-12",
           "date_precision": "day",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:54:42.693394+00:00",
+          "collected_at": "2026-11-20T08:57:09.663109+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -5094,7 +2476,7 @@
           "published_date": "2026-11-11",
           "date_precision": "day",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:54:42.693394+00:00",
+          "collected_at": "2026-11-20T08:57:09.663109+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -5107,7 +2489,7 @@
           "published_date": "2026-11-11",
           "date_precision": "day",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:54:42.693394+00:00",
+          "collected_at": "2026-11-20T08:57:09.663109+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -5120,7 +2502,7 @@
           "published_date": "2026-11-11",
           "date_precision": "day",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:54:42.693394+00:00",
+          "collected_at": "2026-11-20T08:57:09.663109+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -5133,7 +2515,7 @@
           "published_date": "2026-11-10",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:54:42.693394+00:00",
+          "collected_at": "2026-11-20T08:57:09.663109+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -5146,7 +2528,7 @@
           "published_date": "2026-11-06",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:54:42.693394+00:00",
+          "collected_at": "2026-11-20T08:57:09.663109+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -5159,7 +2541,7 @@
           "published_date": "2026-11-05",
           "date_precision": "day",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:54:42.693394+00:00",
+          "collected_at": "2026-11-20T08:57:09.663109+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -5172,7 +2554,7 @@
           "published_date": "2026-11-05",
           "date_precision": "day",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:54:42.693394+00:00",
+          "collected_at": "2026-11-20T08:57:09.663109+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -5185,7 +2567,7 @@
           "published_date": "2026-11-05",
           "date_precision": "day",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:54:42.693394+00:00",
+          "collected_at": "2026-11-20T08:57:09.663109+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -5198,7 +2580,7 @@
           "published_date": "2026-11-05",
           "date_precision": "day",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:54:42.693394+00:00",
+          "collected_at": "2026-11-20T08:57:09.663109+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -5211,7 +2593,7 @@
           "published_date": "2026-11-04",
           "date_precision": "day",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:54:42.693394+00:00",
+          "collected_at": "2026-11-20T08:57:09.663109+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -5224,7 +2606,7 @@
           "published_date": "2026-11-03",
           "date_precision": "day",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:54:42.693394+00:00",
+          "collected_at": "2026-11-20T08:57:09.663109+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -5237,7 +2619,7 @@
           "published_date": "2026-11-03",
           "date_precision": "day",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:54:42.693394+00:00",
+          "collected_at": "2026-11-20T08:57:09.663109+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -5250,7 +2632,7 @@
           "published_date": "2026-11-03",
           "date_precision": "day",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:54:42.693394+00:00",
+          "collected_at": "2026-11-20T08:57:09.663109+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -5263,7 +2645,7 @@
           "published_date": "2026-10-30",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:54:42.693394+00:00",
+          "collected_at": "2026-11-20T08:57:09.663109+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -5276,7 +2658,7 @@
           "published_date": "2026-10-29",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:54:42.693394+00:00",
+          "collected_at": "2026-11-20T08:57:09.663109+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         }
@@ -5339,12 +2721,12 @@
           "unchanged": 23,
           "completed_session": true,
           "source": "sina",
-          "collected_at": "2026-11-20T08:54:42.693394+00:00"
+          "collected_at": "2026-11-20T08:57:09.663109+00:00"
         },
         "rule_version": "research-v1.0",
         "calibration": "研究规则，未经收益优势验证；不是上涨概率"
       },
-      "collected_at": "2026-11-20T08:54:42.693394+00:00"
+      "collected_at": "2026-11-20T08:57:09.663109+00:00"
     },
     "macro": {
       "status": "succeeded",
@@ -5366,7 +2748,7 @@
           {
             "title": "美元指数",
             "text": "相对前一完整收盘 -0.05%",
-            "as_of": "2026-11-20T08:44:53+00:00",
+            "as_of": "2026-11-20T08:48:54+00:00",
             "source_url": "https://finance.yahoo.com/quote/DX-Y.NYB/"
           },
           {
@@ -5379,73 +2761,6 @@
         "interpretation": "隔夜美股走弱，可能压制风险偏好；国内政策与资金节奏可能形成反向影响。",
         "counter_evidence": "需继续验证国内成交、行业扩散与公告；新闻关联不等于已证实的利好或因果。",
         "industry_news": {
-          "801780": [
-            {
-              "event_id": "d666d764d2e74a692422",
-              "title": "宁波银行深圳分行用心用情优化支付服务  多措并举礼迎八方宾朋",
-              "source": "cns",
-              "url": "https://www.chinanews.com.cn/cj/2026/11-20/10735251.shtml",
-              "published_at": "2026-11-20T07:19:32+00:00",
-              "published_date": "2026-11-20",
-              "date_precision": "second",
-              "event_occurred_at": null,
-              "collected_at": "2026-11-20T08:54:42.693394+00:00",
-              "analysis": null,
-              "dedup_method": "exact_normalized_title"
-            },
-            {
-              "event_id": "41f89affc2886e739461",
-              "title": "中国工商银行成功落地首批人民币购售便利化交易",
-              "source": "cns",
-              "url": "https://www.chinanews.com.cn/cj/2026/11-20/10735242.shtml",
-              "published_at": "2026-11-20T07:17:36+00:00",
-              "published_date": "2026-11-20",
-              "date_precision": "second",
-              "event_occurred_at": null,
-              "collected_at": "2026-11-20T08:54:42.693394+00:00",
-              "analysis": null,
-              "dedup_method": "exact_normalized_title"
-            },
-            {
-              "event_id": "c49422d45081a28d6680",
-              "title": "百万重奖寻创作者！2027宁波银行·天e网络文学大赛全球启幕",
-              "source": "cns",
-              "url": "https://www.chinanews.com.cn/cj/2026/11-20/10735227.shtml",
-              "published_at": "2026-11-20T06:47:40+00:00",
-              "published_date": "2026-11-20",
-              "date_precision": "second",
-              "event_occurred_at": null,
-              "collected_at": "2026-11-20T08:54:42.693394+00:00",
-              "analysis": null,
-              "dedup_method": "exact_normalized_title"
-            },
-            {
-              "event_id": "07e605f80a16faf65af7",
-              "title": "中国人民银行公告﹝2026﹞第29号",
-              "source": "pbc",
-              "url": "https://www.pbc.gov.cn/goutongjiaoliu/113456/113469/2026112014315654038/index.html",
-              "published_at": null,
-              "published_date": "2026-11-20",
-              "date_precision": "day",
-              "event_occurred_at": null,
-              "collected_at": "2026-11-20T08:54:42.693394+00:00",
-              "analysis": null,
-              "dedup_method": "exact_normalized_title"
-            },
-            {
-              "event_id": "cfa9c2673cc066e17f43",
-              "title": "中国人民银行与加拿大财政部、加拿大央行共同签署《中加金融工作组工作规范》",
-              "source": "pbc",
-              "url": "https://www.pbc.gov.cn/goutongjiaoliu/113456/113469/2026111809190698994/index.html",
-              "published_at": null,
-              "published_date": "2026-11-18",
-              "date_precision": "day",
-              "event_occurred_at": null,
-              "collected_at": "2026-11-20T08:54:42.693394+00:00",
-              "analysis": null,
-              "dedup_method": "exact_normalized_title"
-            }
-          ],
           "801790": [
             {
               "event_id": "935d73627864bde217f2",
@@ -5456,7 +2771,7 @@
               "published_date": "2026-11-20",
               "date_precision": "second",
               "event_occurred_at": null,
-              "collected_at": "2026-11-20T08:54:42.693394+00:00",
+              "collected_at": "2026-11-20T08:57:09.663109+00:00",
               "analysis": null,
               "dedup_method": "exact_normalized_title"
             },
@@ -5469,7 +2784,7 @@
               "published_date": "2026-11-20",
               "date_precision": "second",
               "event_occurred_at": null,
-              "collected_at": "2026-11-20T08:54:42.693394+00:00",
+              "collected_at": "2026-11-20T08:57:09.663109+00:00",
               "analysis": null,
               "dedup_method": "exact_normalized_title"
             },
@@ -5482,7 +2797,7 @@
               "published_date": "2026-11-03",
               "date_precision": "day",
               "event_occurred_at": null,
-              "collected_at": "2026-11-20T08:54:42.693394+00:00",
+              "collected_at": "2026-11-20T08:57:09.663109+00:00",
               "analysis": null,
               "dedup_method": "exact_normalized_title"
             }
@@ -5497,7 +2812,7 @@
               "published_date": "2026-11-20",
               "date_precision": "second",
               "event_occurred_at": null,
-              "collected_at": "2026-11-20T08:54:42.693394+00:00",
+              "collected_at": "2026-11-20T08:57:09.663109+00:00",
               "analysis": null,
               "dedup_method": "exact_normalized_title"
             },
@@ -5510,22 +2825,7 @@
               "published_date": "2026-11-20",
               "date_precision": "second",
               "event_occurred_at": null,
-              "collected_at": "2026-11-20T08:54:42.693394+00:00",
-              "analysis": null,
-              "dedup_method": "exact_normalized_title"
-            }
-          ],
-          "801010": [
-            {
-              "event_id": "682e44d5db7c0de2e581",
-              "title": "11月20日“农产品批发价格200指数”比昨天下降0.08个点",
-              "source": "cns",
-              "url": "https://www.chinanews.com.cn/cj/2026/11-20/10735244.shtml",
-              "published_at": "2026-11-20T07:22:50+00:00",
-              "published_date": "2026-11-20",
-              "date_precision": "second",
-              "event_occurred_at": null,
-              "collected_at": "2026-11-20T08:54:42.693394+00:00",
+              "collected_at": "2026-11-20T08:57:09.663109+00:00",
               "analysis": null,
               "dedup_method": "exact_normalized_title"
             }
@@ -5540,22 +2840,7 @@
               "published_date": "2026-11-20",
               "date_precision": "second",
               "event_occurred_at": null,
-              "collected_at": "2026-11-20T08:54:42.693394+00:00",
-              "analysis": null,
-              "dedup_method": "exact_normalized_title"
-            }
-          ],
-          "801770": [
-            {
-              "event_id": "f663ed2f7a1838b607f8",
-              "title": "工信部启动2026年“5G+工业互联网”融合应用城市试点工作",
-              "source": "cns",
-              "url": "https://www.chinanews.com.cn/cj/2026/11-20/10735086.shtml",
-              "published_at": "2026-11-20T02:14:29+00:00",
-              "published_date": "2026-11-20",
-              "date_precision": "second",
-              "event_occurred_at": null,
-              "collected_at": "2026-11-20T07:44:01.384406+00:00",
+              "collected_at": "2026-11-20T08:57:09.663109+00:00",
               "analysis": null,
               "dedup_method": "exact_normalized_title"
             }
@@ -5563,20 +2848,21 @@
         },
         "news_coverage_note": "只依据已采集公开标题，来源覆盖有限。"
       },
-      "collected_at": "2026-11-20T08:54:42.693394+00:00"
+      "collected_at": "2026-11-20T08:57:09.663109+00:00"
     },
     "observations": {
-      "status": "succeeded",
+      "status": "partial",
       "data": [],
-      "collected_at": "2026-11-20T08:54:42.693394+00:00",
-      "pool_count": 12,
+      "collected_at": "2026-11-20T08:57:09.663109+00:00",
+      "pool_count": 0,
+      "validated_count": 0,
       "market_gate": "closed",
-      "explanation": "沪深300收盘低于20日均线，本期不新增个股候选。"
+      "explanation": "沪深300收盘未高于20日均线，本期不新增个股候选。 当前没有可验证的研究成分池。"
     },
     "tracking": {
       "status": "succeeded",
       "data": [],
-      "collected_at": "2026-11-20T08:54:42.693394+00:00"
+      "collected_at": "2026-11-20T08:57:09.663109+00:00"
     }
   },
   "sources": {
