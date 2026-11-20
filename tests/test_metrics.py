@@ -1,6 +1,6 @@
 import unittest
 from datetime import datetime, timezone
-from market_weather.metrics import rank_industries, validate_bars
+from market_weather.metrics import rank_industries, validate_bars, recover_daily_returns
 from market_weather.calendar import cn_sessions, is_cn_session
 from market_weather.providers import completed_cn
 
@@ -42,6 +42,18 @@ class MetricsTests(unittest.TestCase):
         self.assertEqual([r['code'] for r in days[9]['rows']], ['B'])
         self.assertEqual([r['code'] for r in days[10]['rows']], ['B'])
         self.assertEqual([r['code'] for r in days[11]['rows']], ['B', 'A'])
+
+    def test_recover_daily_from_public_curve_preserves_gaps(self):
+        u = universe()
+        del u['A']['bars'][10]
+        industry = rank_industries(u, bars(0), 2)
+        recovered = recover_daily_returns(industry, DAYS[-1])
+        self.assertEqual(len(recovered), 30)
+        for original, fallback in zip(industry['daily_returns'], recovered):
+            self.assertEqual(original['date'], fallback['date'])
+            self.assertEqual([r['code'] for r in original['rows']], [r['code'] for r in fallback['rows']])
+            for a, b in zip(original['rows'], fallback['rows']):
+                self.assertAlmostEqual(a['change_pct'], b['change_pct'], places=5)
 
     def test_missing_industry_never_reweights_heat(self):
         result = rank_industries({'A': universe()['A']}, bars(0), 2)

@@ -7,7 +7,7 @@ import uuid
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
 from pathlib import Path
-from .metrics import rank_industries
+from .metrics import rank_industries, recover_daily_returns
 from .providers import (CST, SOURCES, Fetcher, sw_universe, sw_history, cn_history,
                         yahoo_quote, rss_news, pbc_news, merge_news)
 from .storage import atomic_json, publish
@@ -130,6 +130,10 @@ def collect(root, now=None, replay=None, settings=None):
         modules['temperature'] = market_temp
     industry_value = modules['industry'].get('data')
     modules['macro'] = {'status':'succeeded' if quotes else 'partial','data':macro_review(quotes,news,industry_value),'collected_at':now.isoformat()}
+    if industry_value and not industry_value.get('daily_returns'):
+        market_bars = modules['cn_market'].get('data', {}).get('benchmark', [])
+        end = max(industry_value['as_of_date'], market_bars[-1]['date']) if market_bars else industry_value['as_of_date']
+        industry_value['daily_returns'] = recover_daily_returns(industry_value, end)
     industry_cards = industry_research(industry_value,now) if industry_value else []
     if industry_value:
         industry_value['recommendations']=industry_cards

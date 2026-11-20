@@ -51,6 +51,31 @@ def daily_industry_returns(maps, names, sessions):
     return result
 
 
+def recover_daily_returns(industry, end):
+    """Migrate a pre-daily public brief using its already-published return curves.
+
+    Ratios between adjacent cumulative values recover daily moves to the
+    precision of the original published figures. Missing dates stay missing.
+    """
+    start = industry['window_start']
+    try:
+        sessions = cn_sessions(start, end)
+    except ValueError:
+        return []
+    if len(sessions) < 31:
+        return []
+    maps = {
+        row['code']: {
+            point['date']: {'close': 1 + point['cumulative_return_pct'] / 100}
+            for point in row['series']
+            if point['cumulative_return_pct'] > -100
+        }
+        for row in industry['industries']
+    }
+    names = {row['code']: row['name'] for row in industry['industries']}
+    return daily_industry_returns(maps, names, sessions)
+
+
 def rank_industries(histories, benchmark, expected_count=31):
     """30 return intervals = 31 common closes. Heat uses a fixed 31-sector denominator.
 
