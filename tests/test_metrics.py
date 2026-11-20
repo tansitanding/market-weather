@@ -34,6 +34,15 @@ class MetricsTests(unittest.TestCase):
         total = sum(r['transaction_heat_30d_share_pct'] for r in result['industries'])
         self.assertAlmostEqual(total, 100, places=5)
 
+    def test_daily_returns_never_bridge_a_missing_close(self):
+        u = universe()
+        del u['A']['bars'][10]
+        days = rank_industries(u, bars(0), 2)['daily_returns']
+        self.assertEqual([d['date'] for d in days], DAYS[1:])
+        self.assertEqual([r['code'] for r in days[9]['rows']], ['B'])
+        self.assertEqual([r['code'] for r in days[10]['rows']], ['B'])
+        self.assertEqual([r['code'] for r in days[11]['rows']], ['B', 'A'])
+
     def test_missing_industry_never_reweights_heat(self):
         result = rank_industries({'A': universe()['A']}, bars(0), 2)
         self.assertEqual(result['heat_status'], 'unavailable')

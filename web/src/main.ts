@@ -2,6 +2,7 @@ import "./style.css";
 import type {
   Snapshot,
   IndustryModule,
+  IndustryDay,
   IndustryRecord,
   DataModule,
   NewsItem,
@@ -16,8 +17,6 @@ import {
   timeLabel,
   dataOf,
   parseRoute,
-  segments,
-  comparisonData,
 } from "./lib/presentation.ts";
 import { safeURL } from "./lib/validate.ts";
 const root = document.querySelector<HTMLElement>("#app");
@@ -42,17 +41,12 @@ const store = new SnapshotStore(
 );
 let hash = location.hash;
 let route = parseRoute(hash);
-let rank = "return";
-let showAll = false;
+let selectedIndustryDate = "";
 let newsCount = 6;
 let newsFilter = "all";
 let managerOpen = false;
 const scrolls = new Map<string, number>();
 const expanded = new Set<string>();
-try {
-  const saved = sessionStorage.getItem("market-weather:rank");
-  if (["return", "heat", "rising"].includes(saved ?? "")) rank = saved!;
-} catch {}
 if ("scrollRestoration" in history) history.scrollRestoration = "manual";
 const sourceNames: Record<string, string> = {
   sw: "申万宏源研究",
@@ -177,7 +171,9 @@ function macroSummary(snapshot: Snapshot) {
 function sectorReviews(snapshot: Snapshot, code?: string) {
   const rows = (
     dataOf(snapshot.modules.industry)?.recommendations ?? []
-  ).filter((r) => !code || r.code === code);
+  ).filter(
+    (r) => r.rule_version === "sector-daily-v1.0" && (!code || r.code === code),
+  );
   return card(
     "行业研究观察",
     rows.length
@@ -187,10 +183,7 @@ function sectorReviews(snapshot: Snapshot, code?: string) {
               `<article class="sector-review"><a class="section-link" href="#/industry/${encodeURIComponent(r.code)}">${e(r.name)}</a><span class="badge">${e(r.state)}</span><p>${e(r.conclusion)}</p>${fold("sector-" + r.code, "查看条件、风险与版本", `<h3>观察条件</h3><p>${e(r.trigger)}</p><h3>失效条件</h3><p>${e(r.invalidation)}</p><ul>${r.risks.map((v) => `<li>${e(v)}</li>`).join("")}</ul><small>${e(r.rule_version)} · ${e(timeLabel(r.published_at))}</small>`)}</article>`,
           )
           .join("")
-      : empty(
-          "暂无行业入选",
-          "同时要求30日收益、相对强度和5日收益为正。排行靠前并不自动入选。",
-        ),
+      : empty("暂无行业入选", "最新完整榜单中暂无满足近期持续上榜条件的行业。"),
   );
 }
 function trackingSection(snapshot: Snapshot) {
@@ -227,20 +220,10 @@ function home(snapshot: Snapshot) {
   const industry = dataOf(snapshot.modules.industry);
   const globals = dataOf(snapshot.modules.global) ?? [];
   return `${climate(snapshot)}${macroSummary(snapshot)}${card("本次资料覆盖", `<div class="coverage"><div><strong>${industry?.valid_count ?? "—"}</strong><span>一级行业</span></div><div><strong>${globals.length}</strong><span>国际观测</span></div><div><strong>${dataOf(snapshot.modules.news)?.length ?? 0}</strong><span>资讯条目</span></div></div>${industry?.missing_session_dates.length ? `<p class="caption">行业窗口有 ${industry.missing_session_dates.length} 个交易日缺口，热度与回撤暂停计算。</p>` : ""}`)}${card("A 股收盘行情", cnRows(snapshot))}${card(
-    "行业近 30 日表现",
-    `${moduleNote(snapshot.modules.industry, "行业数据")}${
-      industry
-        ? `<p class="caption">${e(industry.window_start)} 至 ${e(industry.as_of_date)} · 30 个交易间隔</p>${[
-            ...industry.industries,
-          ]
-            .sort((a, b) => b.return_30d_pct - a.return_30d_pct)
-            .slice(0, 3)
-            .map((r, i) => rankRow(r, i, "return"))
-            .join(
-              "",
-            )}<a class="section-link" href="#/industry">查看全部行业与统计口径</a>`
-        : empty("行业资料暂不可用", "其他市场与资讯仍可继续阅读。")
-    }`,
+    "最新行业涨幅",
+    moduleNote(snapshot.modules.industry, "行业数据") +
+      dailyRanking(latestIndustryDay(industry), 3) +
+      '<a class="section-link" href="#/industry">查看每日 Top 10 与行业建议</a>',
   )}${
     globals.length
       ? card(
@@ -254,18 +237,51 @@ function home(snapshot: Snapshot) {
       : ""
   }${newsSection(snapshot, newsCount, true)}`;
 }
-function rankRow(r: IndustryRecord, i: number, mode: string) {
-  const v =
-    mode === "heat"
-      ? r.transaction_heat_30d_share_pct
-      : mode === "rising"
-        ? r.heat_rising_5v25_pct
-        : r.return_30d_pct;
-  return `<a class="rank-row" href="#/industry/${encodeURIComponent(r.code)}"><span class="rank-number">${String(i + 1).padStart(2, "0")}</span><div><strong>${e(r.name)}</strong><small>${e(r.code)} · 申万一级</small></div><b class="${mode === "heat" ? "neutral" : direction(v)}">${mode === "heat" ? (v == null ? "—" : decimal(v) + "%") : signed(v)}</b></a>`;
+function latestIndustryDay(data?: IndustryModule) {
+  const days = data?.daily_returns ?? [];
+  return (
+    days.filter((day) => day.rows.length === data?.expected_count).at(-1) ??
+    days.filter((day) => day.rows.length > 0).at(-1)
+  );
 }
+
+function dailyRanking(day: IndustryDay | undefined, limit: number) {
+  if (!day?.rows.length)
+    return empty("该日涨幅不可计算", "需要当日与上一交易日的收盘数据。");
+  const rows = day.rows.slice(0, limit);
+  const extent = Math.max(0.01, ...rows.map((r) => Math.abs(r.change_pct)));
+  return (
+    `<p class="caption">${e(day.date)} · 可计算 ${day.rows.length} / 31 个行业${day.rows.length < 31 ? " · 按可用行业排名" : ""}</p>` +
+    rows
+      .map((r, i) => {
+        const width = (Math.abs(r.change_pct) / extent) * 50;
+        return `<a class="daily-row" href="#/industry/${encodeURIComponent(r.code)}"><span class="rank-number">${i + 1}</span><strong>${e(r.name)}</strong><b class="${direction(r.change_pct)}">${signed(r.change_pct)}</b><span class="daily-track" aria-hidden="true"><i class="${r.change_pct >= 0 ? "gain" : "loss"}" style="width:${width}%;left:${r.change_pct >= 0 ? 50 : 50 - width}%"></i></span></a>`;
+      })
+      .join("")
+  );
+}
+
+function frequencyChart(data: IndustryModule) {
+  const complete = (data.daily_returns ?? []).filter(
+    (day) => day.rows.length === data.expected_count,
+  );
+  if (!complete.length)
+    return empty("暂无完整榜单", "取得齐全的行业数据后统计上榜频率。");
+  const counts = new Map<string, { name: string; count: number }>();
+  for (const day of complete)
+    for (const row of day.rows.slice(0, 10)) {
+      const previous = counts.get(row.code)?.count ?? 0;
+      counts.set(row.code, { name: row.name, count: previous + 1 });
+    }
+  const leaders = [...counts.values()]
+    .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name, "zh"))
+    .slice(0, 10);
+  return `<p class="caption">近 30 个交易日中，按 ${complete.length} 天完整榜单统计。上榜不一定为正涨幅。</p>${leaders.map((r) => `<div class="frequency-row"><span>${e(r.name)}</span><meter min="0" max="${complete.length}" value="${r.count}" aria-label="${e(r.name)}上榜次数"></meter><b>${r.count} 天</b></div>`).join("")}`;
+}
+
 function industryPage(snapshot: Snapshot) {
-  const m = snapshot.modules.industry;
-  const data = dataOf(m);
+  const m = snapshot.modules.industry,
+    data = dataOf(m);
   if (!data)
     return (
       heading("INDUSTRY", "行业分析") +
@@ -275,83 +291,65 @@ function industryPage(snapshot: Snapshot) {
         empty("行业资料暂不可用", "可返回总览查看其他模块，或刷新资料重试。"),
       )
     );
-  const rows = [...data.industries].sort((a, b) =>
-    rank === "heat"
-      ? (b.transaction_heat_30d_share_pct ?? -Infinity) -
-        (a.transaction_heat_30d_share_pct ?? -Infinity)
-      : rank === "rising"
-        ? (b.heat_rising_5v25_pct ?? -Infinity) -
-          (a.heat_rising_5v25_pct ?? -Infinity)
-        : b.return_30d_pct - a.return_30d_pct,
-  );
-  const unavailable = rank !== "return" && data.heat_status !== "succeeded";
+  const daily = data.daily_returns ?? [];
+  const latest = latestIndustryDay(data);
+  const selected =
+    daily.find((d) => d.date === selectedIndustryDate) ??
+    latest ??
+    daily.at(-1);
+  const selector = daily.length
+    ? `<label class="filter">交易日<select id="industry-date" aria-label="行业交易日"><option value="" ${selectedIndustryDate ? "" : "selected"}>最新有效榜单</option>${[
+        ...daily,
+      ]
+        .reverse()
+        .map(
+          (d) =>
+            `<option value="${e(d.date)}" ${selectedIndustryDate === d.date ? "selected" : ""}>${e(d.date)}${!d.rows.length ? " · 缺数据" : d.rows.length < 31 ? " · 部分覆盖" : ""}</option>`,
+        )
+        .join("")}</select></label>`
+    : "";
   return (
-    heading(
-      "INDUSTRY",
-      "行业分析",
-      "申万 2021 一级行业 · " +
-        data.valid_count +
-        " / " +
-        data.expected_count +
-        " 个行业",
-    ) +
-    `<div class="window"><span>统计区间</span><strong>${e(data.window_start)} — ${e(data.as_of_date)}</strong><small>30 个交易间隔 · 日终口径</small></div>${moduleNote(m, "行业")}${data.freshness === "lags_benchmark" ? '<div class="module-note">行业尚未更新至最新 A 股基准日期，请以本页截至日期为准。</div>' : ""}<div class="segment" role="group" aria-label="行业排行维度">${[
-      ["return", "涨幅"],
-      ["heat", "交易热度"],
-      ["rising", "升温"],
-    ]
-      .map(
-        ([k, l]) =>
-          `<button data-action="rank" data-value="${k}" aria-pressed="${rank === k}">${l}</button>`,
-      )
-      .join("")}</div>${card(
-      rank === "return"
-        ? "近 30 日涨幅排行"
-        : rank === "heat"
-          ? "30 日交易热度排行"
-          : "交易关注升温排行",
-      unavailable
-        ? empty(
-            "数据有缺口，暂停排行",
-            `缺少 ${e(data.missing_session_dates.join("、") || "必要的成交资料")}。不沿用演示排名，也不把缺失值记为零。`,
-          )
-        : `<p class="caption">${rank === "return" ? "区间收益用于比较强弱，不代表推荐顺序。" : rank === "heat" ? "行业成交额占 31 行业总额的日均份额。" : "最近 5 日成交份额均值相对前 25 日的变化。"}</p>${rows
-            .slice(0, showAll ? rows.length : 5)
-            .map((r, i) => rankRow(r, i, rank))
-            .join(
-              "",
-            )}${rows.length > 5 ? `<button class="text-button full" data-action="all-industries">${showAll ? "收起到 Top 5" : "查看全部 " + rows.length + " 个行业"}</button>` : ""}`,
-    )} ${sectorReviews(snapshot)}${card("如何理解这些指标", fold("industry-method", "查看统计口径与缺失处理", "<p>30 日涨幅由起止收盘计算；升温与热度需要完整成交路径。中间交易日缺失时仍可计算起止收益，但热度、升温和完整最大回撤不可计算。</p><p>基准为沪深 300，同区间差值以“百分点”表示。行业研究采用固定规则；关键词新闻关联不作为收益预测或推荐得分。</p>"))}`
+    heading("INDUSTRY", "行业分析", "申万一级行业 · 近 30 个交易日逐日排行") +
+    moduleNote(m, "行业") +
+    (latest && daily.at(-1)?.date !== latest.date
+      ? `<p class="module-note">最近完整榜单截至 ${e(latest.date)}。可切换日期查看其后的数据状态。</p>`
+      : "") +
+    card("当日涨幅 Top 10", selector + dailyRanking(selected, 10)) +
+    sectorReviews(snapshot) +
+    card("Top 10 上榜次数", frequencyChart(data)) +
+    card(
+      "计算口径",
+      "<p>每日涨幅按当日收盘相对上一交易日收盘计算。前后任一日缺数据时留空。行业建议基于最新完整榜单，要求当日上涨且进入前十，并在最近五个交易日内至少三次上涨上榜。</p>",
+    )
   );
 }
-function chart(snapshot: Snapshot, r: IndustryRecord) {
-  const points = comparisonData(snapshot, r);
-  if (!points.dates.length)
-    return empty(
-      "对比曲线暂不可用",
-      "缺少同区间基准，不能绘制可比较的收益曲线。",
-    );
-  const values = [0, ...points.industry, ...points.benchmark].flatMap((p) =>
-    typeof p === "number" ? [p] : p.value === null ? [] : [p.value],
+
+function dailyMoveChart(data: IndustryModule, code: string) {
+  const days = data.daily_returns ?? [];
+  const values = days.map(
+    (d) => d.rows.find((r) => r.code === code)?.change_pct,
   );
-  let low = Math.min(...values),
-    high = Math.max(...values);
-  if (high === low) {
-    low -= 1;
-    high += 1;
-  }
-  const pad = (high - low) * 0.12;
-  low -= pad;
-  high += pad;
-  const x = (i: number) =>
-    40 + (i / Math.max(1, points.dates.length - 1)) * 272;
-  const y = (v: number) => 20 + ((high - v) / (high - low)) * 148;
-  const lines = (data: typeof points.industry, cls: string) =>
-    segments(data, x, y)
-      .map((d) => `<path d="${d}" class="${cls}"/>`)
-      .join("");
-  return `<svg class="return-chart" viewBox="0 0 328 207" role="img" aria-label="${e(r.name)}与沪深300的区间累计收益，缺失交易日断线显示"><line x1="40" x2="312" y1="${y(0)}" y2="${y(0)}" class="chart-grid"/><text x="3" y="27">${decimal(high, 1)}%</text><text x="3" y="168">${decimal(low, 1)}%</text>${lines(points.benchmark, "benchmark-line")}${lines(points.industry, "industry-line")}<text x="40" y="198">${points.dates[0].slice(5)}</text><text x="276" y="198">${points.dates.at(-1)!.slice(5)}</text></svg><div class="chart-legend"><span><i class="industry-key"></i>${e(r.name)}</span><span><i class="benchmark-key"></i>沪深 300</span></div>`;
+  if (!values.some((v) => v !== undefined))
+    return empty("暂无每日涨跌", "等待有效日线数据。");
+  const extent = Math.max(0.01, ...values.map((v) => Math.abs(v ?? 0)));
+  const cells = values
+    .map((v, i) => {
+      const label = e(
+        days[i].date + " " + (v === undefined ? "缺数据" : signed(v)),
+      );
+      return `<span class="move-cell" title="${label}" aria-label="${label}">${v === undefined ? '<i class="missing"></i>' : `<i class="${v >= 0 ? "gain" : "loss"}" style="height:${Math.max(1, (Math.abs(v) / extent) * 50)}%;${v >= 0 ? "bottom" : "top"}:50%"></i>`}</span>`;
+    })
+    .join("");
+  const list = values
+    .map(
+      (v, i) =>
+        `<li>${e(days[i].date)} · ${v === undefined ? "缺数据" : signed(v)}</li>`,
+    )
+    .reverse()
+    .join("");
+  return `<p class="caption">零线上方为上涨，下方为下跌，灰点为缺数据。</p><div class="move-chart" aria-hidden="true">${cells}</div><div class="scale-labels"><span>${e(days[0].date)}</span><span>${e(days.at(-1)!.date)}</span></div>${fold("daily-" + code, "查看逐日数值", `<ul class="daily-values">${list}</ul>`)}`;
 }
+
 function metric(label: string, value: string, cls = "") {
   return `<div class="metric"><span>${label}</span><strong class="${cls}">${value}</strong></div>`;
 }
@@ -368,7 +366,7 @@ function industryDetail(snapshot: Snapshot, code: string) {
       ) +
       '<a class="section-link" href="#/industry">返回行业排行</a>'
     );
-  return `<a class="back-link" href="#/industry">返回行业排行</a>${heading(e(r.code) + " · 申万一级", e(r.name), e(data.window_start) + " 至 " + e(data.as_of_date))}${moduleNote(m, "行业数据")}<section class="card chart-card"><span class="eyebrow">近 30 个交易间隔</span><div class="return-head"><strong class="${direction(r.return_30d_pct)}">${signed(r.return_30d_pct)}</strong><span>相对沪深 300 <b class="${direction(r.excess_30d_pp)}">${signed(r.excess_30d_pp, " 个百分点")}</b></span></div>${chart(snapshot, r)}${r.missing_session_dates.length ? `<p class="caption">缺口 ${e(r.missing_session_dates.join("、"))} · 曲线断线显示，未补值。</p>` : ""}</section>${card("趋势与交易指标", `<div class="metrics">${metric("最近 5 日收益", signed(r.return_5d_pct), direction(r.return_5d_pct))}${metric("30 日最大回撤", signed(r.max_drawdown_30d_pct), direction(r.max_drawdown_30d_pct))}${metric("30 日交易份额", data.heat_status === "succeeded" && r.transaction_heat_30d_share_pct != null ? decimal(r.transaction_heat_30d_share_pct) + "%" : "暂不可计算")}${metric("交易关注升温", data.heat_status === "succeeded" ? signed(r.heat_rising_5v25_pct) : "暂不可计算")}</div>`)}${card("依据与来源", `${external(sourceURLs.sw, "申万宏源研究 · 行业指数")}${external(sourceURLs.eastmoney, "东方财富 · 沪深 300 基准")}${fold("industry-evidence", "查看计算方法与数据范围", "<p>起止收盘形成 30 个交易间隔收益，5 日收益使用对应交易日收盘。基准与行业对齐同一区间，不使用后来发布的资料修改原始快照。</p>")}<p class="caption">行业与新闻按标题关键词关联，不能据此确认催化或利好。</p>`)}${sectorReviews(snapshot, code)}${card("相关资讯线索", `<p class="caption">仅标题关键词关联，需阅读原文核验。</p>${(dataOf(snapshot.modules.macro)?.industry_news[code] ?? []).map(article).join("") || empty("暂无匹配资讯", "当前来源覆盖有限，未匹配不代表没有事件。")}`)}${card(
+  return `<a class="back-link" href="#/industry">返回行业排行</a>${heading(e(r.code) + " · 申万一级", e(r.name))}${moduleNote(m, "行业数据")}${card("近 30 个交易日每日涨跌", dailyMoveChart(data, code))}${card("依据与来源", `${external(sourceURLs.sw, "申万宏源研究 · 行业指数")}${external(sourceURLs.eastmoney, "东方财富 · 沪深 300 基准")}${fold("industry-evidence", "查看计算方法与数据范围", "<p>涨幅按相邻两个交易日的收盘计算，遇到缺日留空。</p>")}<p class="caption">行业与新闻按标题关键词关联，不能据此确认催化或利好。</p>`)}${sectorReviews(snapshot, code)}${card("相关资讯线索", `<p class="caption">仅标题关键词关联，需阅读原文核验。</p>${(dataOf(snapshot.modules.macro)?.industry_news[code] ?? []).map(article).join("") || empty("暂无匹配资讯", "当前来源覆盖有限，未匹配不代表没有事件。")}`)}${card(
     "相关个股",
     (dataOf(snapshot.modules.observations) ?? [])
       .filter((x) => x.conclusion.includes(r.name))
@@ -576,18 +574,6 @@ app.addEventListener("click", (event) => {
       newsCount += 6;
       render();
       break;
-    case "rank":
-      rank = el.dataset.value!;
-      showAll = false;
-      try {
-        sessionStorage.setItem("market-weather:rank", rank);
-      } catch {}
-      render();
-      break;
-    case "all-industries":
-      showAll = !showAll;
-      render();
-      break;
     case "manager":
       managerOpen = true;
       render();
@@ -599,6 +585,10 @@ app.addEventListener("click", (event) => {
 });
 app.addEventListener("change", (event) => {
   const target = event.target as HTMLSelectElement;
+  if (target.id === "industry-date") {
+    selectedIndustryDate = target.value;
+    render();
+  }
   if (target.id === "news-source") {
     newsFilter = target.value;
     newsCount = 6;

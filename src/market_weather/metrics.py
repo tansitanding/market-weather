@@ -36,6 +36,21 @@ def drawdown(values):
     return worst * 100
 
 
+def daily_industry_returns(maps, names, sessions):
+    """Use only adjacent official closing sessions, even when a bar is missing."""
+    result = []
+    window = sessions[-31:]
+    for previous, current in zip(window, window[1:]):
+        rows = [
+            {'code': code, 'name': names[code],
+             'change_pct': round((bars[current]['close'] / bars[previous]['close'] - 1) * 100, 6)}
+            for code, bars in maps.items() if previous in bars and current in bars
+        ]
+        rows.sort(key=lambda row: (-row['change_pct'], row['code']))
+        result.append({'date': current, 'rows': rows})
+    return result
+
+
 def rank_industries(histories, benchmark, expected_count=31):
     """30 return intervals = 31 common closes. Heat uses a fixed 31-sector denominator.
 
@@ -118,5 +133,9 @@ def rank_industries(histories, benchmark, expected_count=31):
             'heat_rising_top': [] if heat_reason else [r['code'] for r in sorted(records, key=lambda r: (-r['heat_rising_5v25_pct'], r['code']))[:5]],
         },
         'industries': records,
+        'daily_returns': daily_industry_returns(
+            maps, {code: row['name'] for code, row in histories.items()},
+            cn_sessions(benchmark[-31]['date'], benchmark[-1]['date']),
+        ),
         'recommendations': [], 'recommendation_status': 'phase_5_not_implemented',
     }

@@ -2,6 +2,7 @@ import type {
   Snapshot,
   DataModule,
   IndustryModule,
+  IndustryDay,
   IndustryRecord,
   NewsItem,
   GlobalQuote,
@@ -123,6 +124,32 @@ function record(v: unknown): IndustryRecord {
       : { heat_rising_5v25_pct: num(r.heat_rising_5v25_pct) }),
   };
 }
+function dailyReturns(v: unknown, validCodes: Set<string>): IndustryDay[] {
+  let previous = "";
+  return list(v, 30).map((x) => {
+    const item = obj(x),
+      date = day(item.date);
+    if (date <= previous) throw Error("交易日顺序无效");
+    previous = date;
+    const seen = new Set<string>();
+    const rows = list(item.rows, 31)
+      .map((y) => {
+        const r = obj(y),
+          id = code(r.code);
+        if (!validCodes.has(id) || seen.has(id)) throw Error("行业代码无效");
+        seen.add(id);
+        return {
+          code: id,
+          name: str(r.name, 80),
+          change_pct: num(r.change_pct),
+        };
+      })
+      .sort(
+        (a, b) => b.change_pct - a.change_pct || a.code.localeCompare(b.code),
+      );
+    return { date, rows };
+  });
+}
 function industry(v: unknown): IndustryModule {
   const r = obj(v),
     rows = list(r.industries, 100).map(record),
@@ -179,6 +206,8 @@ function industry(v: unknown): IndustryModule {
           : "latest_available",
     missing_session_dates: dates(r.missing_session_dates ?? []),
     recommendations: r.recommendations ? sectorReviews(r.recommendations) : [],
+    daily_returns:
+      r.daily_returns == null ? [] : dailyReturns(r.daily_returns, codes),
     benchmark: {
       ...(b.series
         ? {

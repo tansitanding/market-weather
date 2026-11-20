@@ -3,6 +3,7 @@ import hashlib
 import html
 import json
 import re
+import ssl
 import time
 import threading
 import urllib.error
@@ -36,6 +37,18 @@ class Fetcher:
         self._rate_lock = threading.Lock()
         self._host_next = {}
 
+    def _context(self, host):
+        if host != 'www.swsresearch.com':
+            return None
+        # The server omits its DigiCert intermediate. Keep hostname checks and
+        # require a chain ending in a system-trusted root.
+        context = ssl.create_default_context()
+        context.verify_flags &= ~getattr(ssl, 'VERIFY_X509_PARTIAL_CHAIN', 0)
+        context.load_verify_locations(
+            Path(__file__).resolve().parents[2] / 'config/sw-geotrust-intermediate.pem'
+        )
+        return context
+
     def get(self, key, url):
         path = self.root / (key + '.raw')
         if self.replay:
@@ -51,7 +64,7 @@ class Fetcher:
                     if delay:time.sleep(delay)
                     self._host_next[host]=time.monotonic()+.4
                 request = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0 (MarketWeather research prototype)', 'Accept': '*/*', **({'Referer':'https://finance.sina.com.cn/'} if 'sina' in host else {})})
-                with urllib.request.urlopen(request, timeout=self.timeout) as response:
+                with urllib.request.urlopen(request, timeout=self.timeout, context=self._context(host)) as response:
                     data = response.read(10_000_001)
                     if len(data) > 10_000_000:
                         raise ValueError('response exceeds 10 MB')

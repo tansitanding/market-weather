@@ -36,6 +36,10 @@ export interface IndustryRecord {
   heat_rising_5v25_pct?: number;
   series: { date: string; cumulative_return_pct: number }[];
 }
+export interface IndustryDay {
+  date: string;
+  rows: { code: string; name: string; change_pct: number }[];
+}
 export interface IndustryModule {
   status: "succeeded" | "partial";
   classification: "SW2021_L1";
@@ -55,6 +59,7 @@ export interface IndustryModule {
     series?: { date: string; cumulative_return_pct: number }[];
   };
   recommendations?: SectorReview[];
+  daily_returns?: IndustryDay[];
   rankings: {
     return_top: string[];
     transaction_heat_top: string[];

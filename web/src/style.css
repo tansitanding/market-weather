@@ -925,3 +925,91 @@ footer small {
 .story .badge {
   margin-left: 8px;
 }
+
+.daily-row {
+  display: grid;
+  grid-template-columns: 2rem 1fr auto;
+  align-items: center;
+  gap: 5px 8px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+  color: inherit;
+  text-decoration: none;
+}
+.daily-track {
+  grid-column: 2 / -1;
+  position: relative;
+  display: block;
+  height: 7px;
+  border-radius: 4px;
+  background: #edf1f4;
+}
+.daily-track::after,
+.move-chart::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: #83939e;
+}
+.daily-track i {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-radius: 4px;
+}
+.gain {
+  background: #cb514c;
+}
+.loss {
+  background: #168270;
+}
+.frequency-row {
+  display: grid;
+  grid-template-columns: 6.5em 1fr 3em;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  padding: 6px 0;
+}
+.frequency-row meter {
+  width: 100%;
+  accent-color: #168270;
+}
+.frequency-row b {
+  text-align: right;
+}
+.move-chart {
+  display: flex;
+  position: relative;
+  height: 124px;
+  gap: 2px;
+  margin-top: 16px;
+}
+.move-chart::after {
+  inset: 50% 0 auto;
+  height: 1px;
+  width: auto;
+}
+.move-cell {
+  flex: 1;
+  position: relative;
+}
+.move-cell i {
+  position: absolute;
+  left: 0;
+  right: 0;
+  border-radius: 2px;
+}
+.move-cell .missing {
+  top: calc(50% - 2px);
+  height: 4px;
+  background: #a9b2b7;
+  z-index: 1;
+}
+.daily-values {
+  max-height: 300px;
+  overflow: auto;
+}

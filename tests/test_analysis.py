@@ -64,3 +64,16 @@ class AnalysisTests(unittest.TestCase):
   with tempfile.TemporaryDirectory() as d:
    out=export_snapshot(x,d)
    self.assertEqual(out['modules']['industry']['data']['benchmark']['series'],series)
+
+ def test_sector_advice_requires_current_positive_rank_and_three_appearances(self):
+  daily = [{'date': d, 'rows': [
+   {'code': 'A', 'name': '行业A', 'change_pct': 2},
+   {'code': 'B', 'name': '行业B', 'change_pct': -1},
+  ]} for d in DAYS[-5:]]
+  daily[1]['rows'] = []
+  daily[3]['rows'] = []
+  result = industry_research(dict(daily_returns=daily,expected_count=2),datetime.now(timezone.utc))
+  self.assertEqual([r['code'] for r in result], ['A'])
+  self.assertIn('3 日数据齐全', result[0]['conclusion'])
+  daily[0]['rows'] = []
+  self.assertEqual(industry_research(dict(daily_returns=daily,expected_count=2),datetime.now(timezone.utc)), [])

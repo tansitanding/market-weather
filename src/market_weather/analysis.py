@@ -70,18 +70,38 @@ def macro_review(quotes, news, industry):
 
 
 def industry_research(industry, now):
-    results=[]
-    for r in industry['industries']:
-        # Returns are factual even if intermediate paths are missing. Missing
-        # complete heat data prevents an unqualified recommendation.
-        if r['return_30d_pct']>0 and r['excess_30d_pp']>0 and r['return_5d_pct']>0:
-            results.append({'code':r['code'],'name':r['name'],'state':'升温观察' if industry['heat_status']=='succeeded' else '待补量能证据',
-              'conclusion':f"30日收益 {r['return_30d_pct']:+.2f}%，相对沪深300 {r['excess_30d_pp']:+.2f} 个百分点；5日仍为正。",
-              'trigger':'相对强度保持，成交份额持续且上涨扩散；缺少量能证据时仅观察。',
-              'invalidation':'5日强度转负、相对趋势转弱或原有催化被证伪。',
-              'risks':['近期涨幅不代表未来收益','行业指数可能被少数权重股拉动']+(['历史成交缺日，热度与完整回撤不可计算'] if industry['heat_status']!='succeeded' else []),
-              'published_at':now.isoformat(),'rule_version':RULE})
-    return sorted(results,key=lambda r:next(-x['excess_30d_pp'] for x in industry['industries'] if x['code']==r['code']))[:3]
+    daily = industry.get('daily_returns', [])
+    complete = [day for day in daily if len(day['rows']) == industry['expected_count']]
+    if not complete:
+        return []
+    latest = complete[-1]
+    recent = [day for day in daily if day['date'] <= latest['date']][-5:]
+    covered = [day for day in recent if len(day['rows']) == industry['expected_count']]
+    if len(covered) < 3:
+        return []
+    recent_leaders = [
+        {row['code'] for row in day['rows'][:10] if row['change_pct'] > 0}
+        for day in covered
+    ]
+    results = []
+    for rank, row in enumerate(latest['rows'][:10], start=1):
+        appearances = sum(row['code'] in leaders for leaders in recent_leaders)
+        if row['change_pct'] <= 0 or appearances < 3:
+            continue
+        results.append((appearances, rank, {
+            'code': row['code'], 'name': row['name'], 'state': '优先观察',
+            'conclusion': (
+                f"{latest['date']} 日涨幅 {row['change_pct']:+.2f}%，排名第 {rank}。"
+                f"截至该日的近 5 个交易日中，有 {len(covered)} 日数据齐全，"
+                f"其中 {appearances} 日上涨且进入 Top 10。"
+            ),
+            'trigger': '下一交易日仍处于涨幅前列，并核验成交与成分股是否同步走强。',
+            'invalidation': '后续收盘转弱或跌出涨幅前十，降低观察优先级。',
+            'risks': ['连续上榜也可能来自短期轮动', '权重股拉动不代表多数成分股上涨'],
+            'published_at': now.isoformat(), 'rule_version': 'sector-daily-v1.0',
+        }))
+    results.sort(key=lambda item: (-item[0], item[1]))
+    return [card for _, _, card in results[:3]]
 
 
 def stock_card(security, bars, benchmark, industry_name, now):
