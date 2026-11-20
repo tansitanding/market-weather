@@ -1,8 +1,8 @@
 {
   "schema_version": "1.0",
-  "snapshot_id": "20261120T085940-17785cee",
-  "started_at": "2026-11-20T08:59:40.073364+00:00",
-  "published_at": "2026-11-20T09:00:53.149178+00:00",
+  "snapshot_id": "20261120T090117-1b776fe4",
+  "started_at": "2026-11-20T09:01:17.451629+00:00",
+  "published_at": "2026-11-20T09:02:37.224519+00:00",
   "trigger": "local_manual_validation",
   "timezone": "Asia/Shanghai",
   "public_access_requires_login": false,
@@ -1616,7 +1616,7 @@
               "行业指数可能被少数权重股拉动",
               "历史成交缺日，热度与完整回撤不可计算"
             ],
-            "published_at": "2026-11-20T08:59:40.073364+00:00",
+            "published_at": "2026-11-20T09:01:17.451629+00:00",
             "rule_version": "research-v1.0"
           }
         ],
@@ -1625,11 +1625,11 @@
         "freshness": "lags_benchmark"
       },
       "carried_forward": true,
-      "last_attempt_at": "2026-11-20T08:59:40.073364+00:00"
+      "last_attempt_at": "2026-11-20T09:01:17.451629+00:00"
     },
     "cn_market": {
       "status": "succeeded",
-      "collected_at": "2026-11-20T08:59:40.073364+00:00",
+      "collected_at": "2026-11-20T09:01:17.451629+00:00",
       "carried_forward": false,
       "data": {
         "benchmark": [
@@ -1663,21 +1663,40 @@
     },
     "global": {
       "status": "succeeded",
-      "collected_at": "2026-11-20T08:59:40.073364+00:00",
+      "collected_at": "2026-11-20T09:01:17.451629+00:00",
       "carried_forward": false,
       "data": [
         {
           "symbol": "CL=F",
           "name": "WTI原油期货连续",
           "asset_type": "continuous_futures",
-          "price": 81.57,
+          "price": 81.5,
           "unit": "USD",
           "currency": "USD",
           "market_date": "2026-11-20",
-          "observed_at": "2026-11-20T08:49:52+00:00",
+          "observed_at": "2026-11-20T08:51:28+00:00",
           "exchange_timezone": "America/New_York",
           "source": "yahoo",
-          "change_vs_previous_day_close_pct": -1.970916,
+          "change_vs_previous_day_close_pct": -2.05504,
+          "change_bp": null,
+          "change_unit": "percent",
+          "availability": "latest_available_observation",
+          "age_hours": 0.164,
+          "is_live_guaranteed": false,
+          "freshness": "latest_available"
+        },
+        {
+          "symbol": "DX-Y.NYB",
+          "name": "美元指数",
+          "asset_type": "index",
+          "price": 103.86,
+          "unit": "index_points",
+          "currency": "USD",
+          "market_date": "2026-11-20",
+          "observed_at": "2026-11-20T08:51:30+00:00",
+          "exchange_timezone": "America/New_York",
+          "source": "yahoo",
+          "change_vs_previous_day_close_pct": -0.0385,
           "change_bp": null,
           "change_unit": "percent",
           "availability": "latest_available_observation",
@@ -1686,40 +1705,21 @@
           "freshness": "latest_available"
         },
         {
-          "symbol": "DX-Y.NYB",
-          "name": "美元指数",
-          "asset_type": "index",
-          "price": 103.854,
-          "unit": "index_points",
-          "currency": "USD",
-          "market_date": "2026-11-20",
-          "observed_at": "2026-11-20T08:49:51+00:00",
-          "exchange_timezone": "America/New_York",
-          "source": "yahoo",
-          "change_vs_previous_day_close_pct": -0.044275,
-          "change_bp": null,
-          "change_unit": "percent",
-          "availability": "latest_available_observation",
-          "age_hours": 0.164,
-          "is_live_guaranteed": false,
-          "freshness": "latest_available"
-        },
-        {
           "symbol": "GC=F",
           "name": "黄金期货连续",
           "asset_type": "continuous_futures",
-          "price": 3584.0,
+          "price": 3584.4,
           "unit": "USD",
           "currency": "USD",
           "market_date": "2026-11-20",
-          "observed_at": "2026-11-20T08:49:49+00:00",
+          "observed_at": "2026-11-20T08:51:22+00:00",
           "exchange_timezone": "America/New_York",
           "source": "yahoo",
-          "change_vs_previous_day_close_pct": -2.754036,
+          "change_vs_previous_day_close_pct": -2.743183,
           "change_bp": null,
           "change_unit": "percent",
           "availability": "latest_available_observation",
-          "age_hours": 0.164,
+          "age_hours": 0.165,
           "is_live_guaranteed": false,
           "freshness": "latest_available"
         },
@@ -1738,7 +1738,7 @@
           "change_bp": null,
           "change_unit": "percent",
           "availability": "latest_available_observation",
-          "age_hours": 0.846,
+          "age_hours": 0.873,
           "is_live_guaranteed": false,
           "freshness": "latest_available"
         },
@@ -1757,7 +1757,7 @@
           "change_bp": null,
           "change_unit": "percent",
           "availability": "latest_available_observation",
-          "age_hours": 11.008,
+          "age_hours": 11.035,
           "is_live_guaranteed": false,
           "freshness": "latest_available"
         },
@@ -1776,7 +1776,7 @@
           "change_bp": null,
           "change_unit": "percent",
           "availability": "latest_available_observation",
-          "age_hours": 11.006,
+          "age_hours": 11.033,
           "is_live_guaranteed": false,
           "freshness": "latest_available"
         },
@@ -1795,7 +1795,7 @@
           "change_bp": null,
           "change_unit": "percent",
           "availability": "latest_available_observation",
-          "age_hours": 0.846,
+          "age_hours": 0.873,
           "is_live_guaranteed": false,
           "freshness": "latest_available"
         },
@@ -1814,7 +1814,7 @@
           "change_bp": null,
           "change_unit": "percent",
           "availability": "latest_available_observation",
-          "age_hours": 10.728,
+          "age_hours": 10.755,
           "is_live_guaranteed": false,
           "freshness": "latest_available"
         },
@@ -1833,7 +1833,7 @@
           "change_bp": -1.399998,
           "change_unit": "bp",
           "availability": "latest_available_observation",
-          "age_hours": 12.996,
+          "age_hours": 13.023,
           "is_live_guaranteed": false,
           "freshness": "latest_available"
         }
@@ -1841,7 +1841,7 @@
     },
     "news": {
       "status": "succeeded",
-      "collected_at": "2026-11-20T08:59:40.073364+00:00",
+      "collected_at": "2026-11-20T09:01:17.451629+00:00",
       "carried_forward": false,
       "data": [
         {
@@ -1853,7 +1853,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:57:09.663109+00:00",
+          "collected_at": "2026-11-20T09:01:17.451629+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -1866,7 +1866,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:59:40.073364+00:00",
+          "collected_at": "2026-11-20T09:01:17.451629+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -1879,7 +1879,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:59:40.073364+00:00",
+          "collected_at": "2026-11-20T09:01:17.451629+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -1892,7 +1892,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:59:40.073364+00:00",
+          "collected_at": "2026-11-20T09:01:17.451629+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -1905,7 +1905,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:59:40.073364+00:00",
+          "collected_at": "2026-11-20T09:01:17.451629+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -1918,7 +1918,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:59:40.073364+00:00",
+          "collected_at": "2026-11-20T09:01:17.451629+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -1931,7 +1931,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:59:40.073364+00:00",
+          "collected_at": "2026-11-20T09:01:17.451629+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -1944,7 +1944,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:59:40.073364+00:00",
+          "collected_at": "2026-11-20T09:01:17.451629+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -1957,7 +1957,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:59:40.073364+00:00",
+          "collected_at": "2026-11-20T09:01:17.451629+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -1970,7 +1970,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:59:40.073364+00:00",
+          "collected_at": "2026-11-20T09:01:17.451629+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -1983,7 +1983,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:59:40.073364+00:00",
+          "collected_at": "2026-11-20T09:01:17.451629+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -1996,7 +1996,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:59:40.073364+00:00",
+          "collected_at": "2026-11-20T09:01:17.451629+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -2009,7 +2009,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:59:40.073364+00:00",
+          "collected_at": "2026-11-20T09:01:17.451629+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -2022,7 +2022,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:59:40.073364+00:00",
+          "collected_at": "2026-11-20T09:01:17.451629+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -2035,7 +2035,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:59:40.073364+00:00",
+          "collected_at": "2026-11-20T09:01:17.451629+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -2048,7 +2048,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:59:40.073364+00:00",
+          "collected_at": "2026-11-20T09:01:17.451629+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -2061,7 +2061,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:59:40.073364+00:00",
+          "collected_at": "2026-11-20T09:01:17.451629+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -2074,7 +2074,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:59:40.073364+00:00",
+          "collected_at": "2026-11-20T09:01:17.451629+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -2087,7 +2087,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:59:40.073364+00:00",
+          "collected_at": "2026-11-20T09:01:17.451629+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -2100,7 +2100,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:59:40.073364+00:00",
+          "collected_at": "2026-11-20T09:01:17.451629+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -2113,7 +2113,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:59:40.073364+00:00",
+          "collected_at": "2026-11-20T09:01:17.451629+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -2126,7 +2126,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:59:40.073364+00:00",
+          "collected_at": "2026-11-20T09:01:17.451629+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -2139,7 +2139,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:59:40.073364+00:00",
+          "collected_at": "2026-11-20T09:01:17.451629+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -2152,7 +2152,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:59:40.073364+00:00",
+          "collected_at": "2026-11-20T09:01:17.451629+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -2165,7 +2165,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:59:40.073364+00:00",
+          "collected_at": "2026-11-20T09:01:17.451629+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -2178,7 +2178,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:59:40.073364+00:00",
+          "collected_at": "2026-11-20T09:01:17.451629+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -2191,7 +2191,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:59:40.073364+00:00",
+          "collected_at": "2026-11-20T09:01:17.451629+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -2204,7 +2204,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:59:40.073364+00:00",
+          "collected_at": "2026-11-20T09:01:17.451629+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -2217,7 +2217,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:59:40.073364+00:00",
+          "collected_at": "2026-11-20T09:01:17.451629+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -2230,7 +2230,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:59:40.073364+00:00",
+          "collected_at": "2026-11-20T09:01:17.451629+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -2347,7 +2347,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:59:40.073364+00:00",
+          "collected_at": "2026-11-20T09:01:17.451629+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -2360,7 +2360,7 @@
           "published_date": "2026-11-20",
           "date_precision": "day",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:59:40.073364+00:00",
+          "collected_at": "2026-11-20T09:01:17.451629+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -2373,7 +2373,7 @@
           "published_date": "2026-11-19",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:59:40.073364+00:00",
+          "collected_at": "2026-11-20T09:01:17.451629+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -2386,7 +2386,7 @@
           "published_date": "2026-11-18",
           "date_precision": "day",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:59:40.073364+00:00",
+          "collected_at": "2026-11-20T09:01:17.451629+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -2399,7 +2399,7 @@
           "published_date": "2026-11-14",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:59:40.073364+00:00",
+          "collected_at": "2026-11-20T09:01:17.451629+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -2412,7 +2412,7 @@
           "published_date": "2026-11-13",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:59:40.073364+00:00",
+          "collected_at": "2026-11-20T09:01:17.451629+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -2425,7 +2425,7 @@
           "published_date": "2026-11-13",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:59:40.073364+00:00",
+          "collected_at": "2026-11-20T09:01:17.451629+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -2438,7 +2438,7 @@
           "published_date": "2026-11-13",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:59:40.073364+00:00",
+          "collected_at": "2026-11-20T09:01:17.451629+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -2451,7 +2451,7 @@
           "published_date": "2026-11-13",
           "date_precision": "day",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:59:40.073364+00:00",
+          "collected_at": "2026-11-20T09:01:17.451629+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -2464,7 +2464,7 @@
           "published_date": "2026-11-12",
           "date_precision": "day",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:59:40.073364+00:00",
+          "collected_at": "2026-11-20T09:01:17.451629+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -2477,7 +2477,7 @@
           "published_date": "2026-11-11",
           "date_precision": "day",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:59:40.073364+00:00",
+          "collected_at": "2026-11-20T09:01:17.451629+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -2490,7 +2490,7 @@
           "published_date": "2026-11-11",
           "date_precision": "day",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:59:40.073364+00:00",
+          "collected_at": "2026-11-20T09:01:17.451629+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -2503,7 +2503,7 @@
           "published_date": "2026-11-11",
           "date_precision": "day",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:59:40.073364+00:00",
+          "collected_at": "2026-11-20T09:01:17.451629+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -2516,7 +2516,7 @@
           "published_date": "2026-11-10",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:59:40.073364+00:00",
+          "collected_at": "2026-11-20T09:01:17.451629+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -2529,7 +2529,7 @@
           "published_date": "2026-11-06",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:59:40.073364+00:00",
+          "collected_at": "2026-11-20T09:01:17.451629+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -2542,7 +2542,7 @@
           "published_date": "2026-11-05",
           "date_precision": "day",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:59:40.073364+00:00",
+          "collected_at": "2026-11-20T09:01:17.451629+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -2555,7 +2555,7 @@
           "published_date": "2026-11-05",
           "date_precision": "day",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:59:40.073364+00:00",
+          "collected_at": "2026-11-20T09:01:17.451629+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -2568,7 +2568,7 @@
           "published_date": "2026-11-05",
           "date_precision": "day",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:59:40.073364+00:00",
+          "collected_at": "2026-11-20T09:01:17.451629+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -2581,7 +2581,7 @@
           "published_date": "2026-11-05",
           "date_precision": "day",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:59:40.073364+00:00",
+          "collected_at": "2026-11-20T09:01:17.451629+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -2594,7 +2594,7 @@
           "published_date": "2026-11-04",
           "date_precision": "day",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:59:40.073364+00:00",
+          "collected_at": "2026-11-20T09:01:17.451629+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -2607,7 +2607,7 @@
           "published_date": "2026-11-03",
           "date_precision": "day",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:59:40.073364+00:00",
+          "collected_at": "2026-11-20T09:01:17.451629+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -2620,7 +2620,7 @@
           "published_date": "2026-11-03",
           "date_precision": "day",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:59:40.073364+00:00",
+          "collected_at": "2026-11-20T09:01:17.451629+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -2633,7 +2633,7 @@
           "published_date": "2026-11-03",
           "date_precision": "day",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:59:40.073364+00:00",
+          "collected_at": "2026-11-20T09:01:17.451629+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -2646,7 +2646,7 @@
           "published_date": "2026-10-30",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:59:40.073364+00:00",
+          "collected_at": "2026-11-20T09:01:17.451629+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         },
@@ -2659,7 +2659,7 @@
           "published_date": "2026-10-29",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T08:59:40.073364+00:00",
+          "collected_at": "2026-11-20T09:01:17.451629+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title"
         }
@@ -2722,12 +2722,12 @@
           "unchanged": 23,
           "completed_session": true,
           "source": "sina",
-          "collected_at": "2026-11-20T08:59:40.073364+00:00"
+          "collected_at": "2026-11-20T09:01:17.451629+00:00"
         },
         "rule_version": "research-v1.0",
         "calibration": "研究规则，未经收益优势验证；不是上涨概率"
       },
-      "collected_at": "2026-11-20T08:59:40.073364+00:00"
+      "collected_at": "2026-11-20T09:01:17.451629+00:00"
     },
     "macro": {
       "status": "succeeded",
@@ -2749,7 +2749,7 @@
           {
             "title": "美元指数",
             "text": "相对前一完整收盘 -0.04%",
-            "as_of": "2026-11-20T08:49:51+00:00",
+            "as_of": "2026-11-20T08:51:30+00:00",
             "source_url": "https://finance.yahoo.com/quote/DX-Y.NYB/"
           },
           {
@@ -2772,7 +2772,7 @@
               "published_date": "2026-11-20",
               "date_precision": "second",
               "event_occurred_at": null,
-              "collected_at": "2026-11-20T08:59:40.073364+00:00",
+              "collected_at": "2026-11-20T09:01:17.451629+00:00",
               "analysis": null,
               "dedup_method": "exact_normalized_title"
             },
@@ -2785,7 +2785,7 @@
               "published_date": "2026-11-20",
               "date_precision": "second",
               "event_occurred_at": null,
-              "collected_at": "2026-11-20T08:59:40.073364+00:00",
+              "collected_at": "2026-11-20T09:01:17.451629+00:00",
               "analysis": null,
               "dedup_method": "exact_normalized_title"
             },
@@ -2798,7 +2798,7 @@
               "published_date": "2026-11-03",
               "date_precision": "day",
               "event_occurred_at": null,
-              "collected_at": "2026-11-20T08:59:40.073364+00:00",
+              "collected_at": "2026-11-20T09:01:17.451629+00:00",
               "analysis": null,
               "dedup_method": "exact_normalized_title"
             }
@@ -2813,7 +2813,7 @@
               "published_date": "2026-11-20",
               "date_precision": "second",
               "event_occurred_at": null,
-              "collected_at": "2026-11-20T08:59:40.073364+00:00",
+              "collected_at": "2026-11-20T09:01:17.451629+00:00",
               "analysis": null,
               "dedup_method": "exact_normalized_title"
             },
@@ -2826,7 +2826,7 @@
               "published_date": "2026-11-20",
               "date_precision": "second",
               "event_occurred_at": null,
-              "collected_at": "2026-11-20T08:59:40.073364+00:00",
+              "collected_at": "2026-11-20T09:01:17.451629+00:00",
               "analysis": null,
               "dedup_method": "exact_normalized_title"
             }
@@ -2841,7 +2841,7 @@
               "published_date": "2026-11-20",
               "date_precision": "second",
               "event_occurred_at": null,
-              "collected_at": "2026-11-20T08:59:40.073364+00:00",
+              "collected_at": "2026-11-20T09:01:17.451629+00:00",
               "analysis": null,
               "dedup_method": "exact_normalized_title"
             }
@@ -2849,12 +2849,12 @@
         },
         "news_coverage_note": "只依据已采集公开标题，来源覆盖有限。"
       },
-      "collected_at": "2026-11-20T08:59:40.073364+00:00"
+      "collected_at": "2026-11-20T09:01:17.451629+00:00"
     },
     "observations": {
       "status": "partial",
       "data": [],
-      "collected_at": "2026-11-20T08:59:40.073364+00:00",
+      "collected_at": "2026-11-20T09:01:17.451629+00:00",
       "pool_count": 0,
       "validated_count": 0,
       "market_gate": "closed",
@@ -2863,7 +2863,7 @@
     "tracking": {
       "status": "succeeded",
       "data": [],
-      "collected_at": "2026-11-20T08:59:40.073364+00:00"
+      "collected_at": "2026-11-20T09:01:17.451629+00:00"
     }
   },
   "sources": {
