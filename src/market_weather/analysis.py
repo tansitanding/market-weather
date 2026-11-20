@@ -183,3 +183,45 @@ def track_signals(previous, cards, histories, benchmark):
                     r['horizons'][str(horizon)]={'date':end['date'],'net_return_pct':net,'benchmark_return_pct':benchmark_return,'excess_pp':round(net-benchmark_return,4) if benchmark_return is not None else None,'exit_reason':reason}
             if '20' in r['horizons']:r['status']='completed'
     return records[-300:]
+
+
+def investment_plan(benchmark, temperature_data, sectors, sector_date, candidate_count):
+    """A market-level plan using one completed close and date-matched breadth."""
+    if len(benchmark) < 20:
+        raise ValueError('基准收盘数据不足')
+    window = benchmark[-20:]
+    as_of = window[-1]['date']
+    if [row['date'] for row in window] != cn_sessions(window[0]['date'], as_of):
+        raise ValueError('基准日线存在缺口')
+
+    close = window[-1]['close']
+    mean = statistics.mean(row['close'] for row in window)
+    distance = (close / mean - 1) * 100
+    temperature_data = temperature_data or {}
+    breadth = temperature_data.get('breadth', {})
+    valid = breadth.get('valid_count', 0)
+    share = (100 * breadth['advancing'] / valid
+             if valid and temperature_data.get('as_of_date') == as_of else None)
+    evidence = [f'沪深300收盘 {close:.2f} 点，较20日均线 {mean:.2f} 点 {distance:+.2f}%。']
+    evidence.append(f'同日上涨家数占有效报价 {share:.1f}%。' if share is not None else '该日缺少对齐的市场上涨广度。')
+
+    if distance <= 0 or (share is not None and share < 40):
+        stance, action = '防守观察', '暂缓新增方向仓位。已有持仓先复核买入理由、风险线和行业集中度。'
+    elif share is not None and share >= 55 and sectors and sector_date == as_of:
+        stance, action = '分批验证', '优先验证连续强势行业。等待候选满足量价触发条件，再评估分批参与。'
+    else:
+        stance, action = '等待确认', '保留观察清单。等待上涨范围与行业强度同步改善，再评估新增敞口。'
+
+    if sectors and sector_date:
+        evidence.append(f"{sector_date} 完整行业榜的持续强势方向：{'、'.join(sectors)}。")
+    else:
+        evidence.append('目前没有同时满足持续上榜条件的行业。')
+    evidence.append(f'本期符合个股筛选规则的候选 {candidate_count} 只。')
+    return {
+        'as_of_date': as_of, 'sector_date': sector_date, 'stance': stance,
+        'action': action, 'evidence': evidence,
+        'confirm': '关注后续完整收盘：沪深300在20日均线上方、上涨家数占比达到55%，且候选行业维持上涨并进入当日Top 10。',
+        'invalidate': '收盘再度跌破20日均线、上涨广度低于40%，或观察行业退出当日Top 10时，复核参与理由。',
+        'risk': '评价使用日终数据与固定阈值。题材轮动、跳空和来源延迟都可能影响可执行性。',
+        'rule_version': 'investment-plan-v1.0',
+    }

@@ -2,6 +2,7 @@ import type {
   Snapshot,
   DataModule,
   IndustryModule,
+  InvestmentPlan,
   IndustryDay,
   IndustryRecord,
   NewsItem,
@@ -429,6 +430,20 @@ function trackingData(v: unknown): TrackedSignal[] {
     };
   });
 }
+function investmentPlan(v: unknown): InvestmentPlan {
+  const r = obj(v);
+  return {
+    as_of_date: day(r.as_of_date),
+    sector_date: r.sector_date ? day(r.sector_date) : null,
+    stance: str(r.stance, 40),
+    action: str(r.action),
+    evidence: list(r.evidence, 10).map((v) => str(v)),
+    confirm: str(r.confirm),
+    invalidate: str(r.invalidate),
+    risk: str(r.risk),
+    rule_version: str(r.rule_version, 80),
+  };
+}
 function moduleData<T>(v: unknown, decode: (v: unknown) => T): DataModule<T> {
   try {
     const r = obj(v);
@@ -490,6 +505,9 @@ export function parseSnapshot(v: unknown): Snapshot {
       typeof r.analysis_status === "string" ? r.analysis_status : "unavailable",
     modules: {
       industry: moduleData(m.industry, industry),
+      ...(m.investment
+        ? { investment: moduleData(m.investment, investmentPlan) }
+        : {}),
       ...(m.temperature
         ? { temperature: moduleData(m.temperature, temperatureData) }
         : {}),

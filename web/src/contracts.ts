@@ -119,6 +119,7 @@ export interface Snapshot {
   analysis_status: string;
   modules: {
     industry: DataModule<IndustryModule>;
+    investment?: DataModule<InvestmentPlan>;
     news: DataModule<NewsItem[]>;
     global: DataModule<GlobalQuote[]>;
     cn_market: DataModule<CNMarket>;
@@ -172,4 +173,16 @@ export interface TrackedSignal {
       exit_reason: string;
     }
   >;
+}
+
+export interface InvestmentPlan {
+  as_of_date: string;
+  sector_date: string | null;
+  stance: string;
+  action: string;
+  evidence: string[];
+  confirm: string;
+  invalidate: string;
+  risk: string;
+  rule_version: string;
 }

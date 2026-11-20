@@ -12,7 +12,7 @@ from .providers import (CST, SOURCES, Fetcher, sw_universe, sw_history, cn_histo
                         yahoo_quote, rss_news, pbc_news, merge_news)
 from .storage import atomic_json, publish
 from .news import curate_news
-from .analysis import temperature, macro_review, industry_research, stock_card, track_signals, RULE
+from .analysis import temperature, macro_review, industry_research, stock_card, track_signals, investment_plan, RULE
 from .providers import market_universe, sw_components, stock_history
 
 GLOBAL = [
@@ -53,6 +53,7 @@ def collect(root, now=None, replay=None, settings=None):
         jobs[pool.submit(guarded, lambda: market_universe(fetch, now))] = ('breadth', 'all', None)
         jobs[pool.submit(guarded, lambda: cn_history(fetch, '000300', now))] = ('benchmark', '000300', None)
         jobs[pool.submit(guarded, lambda: cn_history(fetch, '000001', now))] = ('cn_index', '000001', None)
+        jobs[pool.submit(guarded, lambda: cn_history(fetch, '399006', now))] = ('cn_index', '399006', None)
         for industry in universe.get('data', []):
             code, name = industry['code'], industry['name']
             jobs[pool.submit(guarded, lambda c=code: sw_history(fetch, c, now))] = ('industry', code, name)
@@ -175,6 +176,13 @@ def collect(root, now=None, replay=None, settings=None):
     modules['observations']={'status':'succeeded' if research_complete else 'partial','data':selected,'collected_at':now.isoformat(),
                              'pool_count':len(pool),'validated_count':len(stock_histories),'market_gate':('open' if trend_ok else 'closed') if trend_known else 'unknown',
                              'explanation':explanation}
+    industry_days = industry_value.get('daily_returns', []) if industry_value else []
+    sector_date = next((day['date'] for day in reversed(industry_days)
+                        if len(day['rows']) == settings['industry_expected_count']), None)
+    modules['investment'] = guarded(lambda: investment_plan(
+        benchmark, modules['temperature'].get('data'),
+        [card['name'] for card in industry_cards], sector_date, len(selected),
+    ))
     tracking=track_signals(previous_tracking,selected,stock_histories,benchmark)
     modules['tracking']={'status':'succeeded','data':tracking,'collected_at':now.isoformat()}
     atomic_json(tracking_path,tracking)

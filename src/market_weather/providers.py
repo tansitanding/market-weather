@@ -103,7 +103,7 @@ def sw_history(fetch, code, now):
 
 
 def cn_history(fetch, code, now):
-    params = {'secid': '1.' + code, 'klt': 101, 'fqt': 0, 'end': '20500101',
+    params = {'secid': ('0.' if code == '399006' else '1.') + code, 'klt': 101, 'fqt': 0, 'end': '20500101',
               'lmt': 180, 'fields1': 'f1,f2,f3,f4,f5,f6', 'fields2': 'f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61'}
     data = fetch.json('em_' + code, 'https://push2his.eastmoney.com/api/qt/stock/kline/get?' + urllib.parse.urlencode(params))
     rows = []

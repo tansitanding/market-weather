@@ -1024,3 +1024,123 @@ footer small {
 .story details {
   margin-top: 6px;
 }
+
+.refresh-link {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}
+.index-tiles {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+}
+.index-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 7px;
+  border-radius: 10px;
+  background: #f2f5f6;
+}
+.index-tile strong,
+.index-tile small {
+  font-size: 11px;
+}
+.index-tile b {
+  font-size: clamp(15px, 4.5vw, 21px);
+  font-variant-numeric: tabular-nums;
+}
+.index-tile span {
+  font-size: 13px;
+}
+.index-tile.warm {
+  background: #fff0ed;
+}
+.index-tile.warm-strong {
+  background: #ffdcd5;
+}
+.index-tile.cool {
+  background: #ebf7f1;
+}
+.index-tile.cool-strong {
+  background: #cfecdd;
+}
+.advice-lead {
+  padding: 14px;
+  background: #e5f2ed;
+  border-radius: 12px;
+}
+.advice-lead strong {
+  display: block;
+  font-size: 24px;
+  color: #174c42;
+}
+.advice-lead small {
+  font-size: 11px;
+}
+.advice-lead p,
+.advice-rules p {
+  margin: 6px 0 0;
+}
+.advice-rules {
+  display: grid;
+  gap: 8px;
+}
+.advice-rules > div {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 11px;
+}
+.advice-rules h3 {
+  margin: 0;
+}
+.journal-form {
+  display: grid;
+  gap: 10px;
+  margin: 12px 0;
+}
+.journal-form label {
+  display: grid;
+  gap: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  min-width: 0;
+}
+.journal-form input,
+.journal-form select,
+.journal-form textarea {
+  width: 100%;
+  min-width: 0;
+  padding: 9px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: inherit;
+  background: white;
+  font: inherit;
+  font-size: 16px;
+}
+.journal-form fieldset {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  min-width: 0;
+}
+.journal-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+.journal-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.journal-item {
+  overflow-wrap: anywhere;
+}
+.journal-note {
+  white-space: pre-wrap;
+}
+#journal-error:empty {
+  display: none;
+}

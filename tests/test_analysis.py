@@ -1,7 +1,7 @@
 import copy,json,tempfile,unittest
 from pathlib import Path
 from datetime import datetime,timezone
-from market_weather.analysis import temperature, stock_card, track_signals, industry_research
+from market_weather.analysis import temperature, stock_card, track_signals, industry_research, investment_plan
 from market_weather.calendar import cn_sessions
 from market_weather.export import export_snapshot
 DAYS=cn_sessions('2026-07-01','2026-09-23')
@@ -77,3 +77,13 @@ class AnalysisTests(unittest.TestCase):
   self.assertIn('3 日数据齐全', result[0]['conclusion'])
   daily[0]['rows'] = []
   self.assertEqual(industry_research(dict(daily_returns=daily,expected_count=2),datetime.now(timezone.utc)), [])
+
+ def test_investment_plan_needs_same_day_breadth_and_sector_strength(self):
+  benchmark = bars()
+  day = benchmark[-1]['date']
+  strong = dict(as_of_date=day,breadth=dict(advancing=60,valid_count=100))
+  self.assertEqual(investment_plan(benchmark,strong,['行业A'],day,1)['stance'],'分批验证')
+  self.assertEqual(investment_plan(benchmark,strong,['行业A'],benchmark[-2]['date'],1)['stance'],'等待确认')
+  weak = dict(as_of_date=day,breadth=dict(advancing=30,valid_count=100))
+  self.assertEqual(investment_plan(benchmark,weak,['行业A'],day,0)['stance'],'防守观察')
+  self.assertEqual(investment_plan(benchmark,dict(weak,as_of_date=benchmark[-2]['date']),[],None,0)['stance'],'等待确认')

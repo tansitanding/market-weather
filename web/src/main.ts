@@ -8,6 +8,13 @@ import type {
   NewsItem,
   GlobalQuote,
 } from "./contracts.ts";
+import {
+  readJournal,
+  saveJournal,
+  validEntry,
+  realizedProfit,
+  type JournalEntry,
+} from "./lib/journal.ts";
 import { SnapshotStore } from "./lib/store.ts";
 import {
   escapeHTML as e,
@@ -45,7 +52,13 @@ let selectedIndustryDate = "";
 let newsCount = 10;
 let newsMode: "important" | "recent" = "important";
 let newsFilter = "all";
-let managerOpen = false;
+const workflowURL =
+  "https://github.com/tansitanding/market-weather/actions/workflows/refresh.yml";
+let refreshDeadline = 0;
+let refreshTimer: number | undefined;
+let refreshStart = "";
+let journal = readJournal(cache);
+let journalEditing: JournalEntry | "new" | null = null;
 const scrolls = new Map<string, number>();
 const expanded = new Set<string>();
 if ("scrollRestoration" in history) history.scrollRestoration = "manual";
@@ -97,7 +110,7 @@ function nav() {
     ["home", "总览", "#/"],
     ["industry", "行业", "#/industry"],
     ["global", "全球", "#/global"],
-    ["observe", "观察", "#/observe"],
+    ["observe", "跟踪", "#/observe"],
   ]
     .map(
       ([key, label, url]) =>
@@ -178,27 +191,51 @@ function globalRow(q: GlobalQuote) {
   return `<article class="quote"><div class="quote-top"><strong>${e(q.name)}</strong><b class="${direction(change)}">${signed(change, unit)}</b></div><div class="quote-price">${decimal(q.price)} <small>${q.unit === "percent_yield" ? "% · 收益率" : q.unit === "index_points" ? "点" : e(q.currency ?? q.unit)}${q.asset_type === "continuous_futures" ? " · 连续期货" : ""}</small></div><div class="quote-time">${e(q.market_date)} · ${e(timeLabel(q.observed_at, q.exchange_timezone).split(" ").at(-1))} 来源市场时间<br>北京时间 ${e(timeLabel(q.observed_at))} · ${q.freshness === "stale" ? "资料较旧" : "最近可用观测"}</div><div class="quote-source">${external(sourceURLs[q.source] ?? "https://finance.yahoo.com/", sourceNames[q.source] ?? q.source)}</div></article>`;
 }
 function cnRows(snapshot: Snapshot) {
-  const m = snapshot.modules.cn_market;
-  const data = dataOf(m);
-  const rows = data
-    ? [
-        { name: "上证指数", bars: data.indices["000001"] ?? [] },
-        { name: "沪深 300", bars: data.benchmark },
-      ]
-    : [];
+  const module = snapshot.modules.cn_market;
+  const data = dataOf(module);
+  const rows = [
+    { name: "上证指数", bars: data?.indices["000001"] },
+    { name: "沪深 300", bars: data?.benchmark },
+    { name: "创业板指", bars: data?.indices["399006"] },
+  ];
   return (
-    moduleNote(m, "A 股行情") +
-    (rows.some((r) => r.bars.length)
-      ? rows
-          .filter((r) => r.bars.length)
-          .map((r) => {
-            const last = r.bars.at(-1)!,
-              prior = r.bars.at(-2),
-              change = prior ? (last.close / prior.close - 1) * 100 : null;
-            return `<div class="quote"><div class="quote-top"><strong>${r.name}</strong><b class="${direction(change)}">${signed(change)}</b></div><div class="quote-price">${decimal(last.close)} <small>点</small></div><div class="quote-time">${e(last.date)} · 日线收盘 · ${sourceTag("eastmoney")}</div></div>`;
-          })
-          .join("")
-      : empty("A 股资料暂不可用", "等待完整日线，不用模拟数值补齐。"))
+    moduleNote(module, "A 股行情") +
+    `<div class="index-tiles">${rows
+      .map(({ name, bars }) => {
+        const close = bars?.at(-1),
+          prior = bars?.at(-2);
+        const pct =
+          close && prior ? (close.close / prior.close - 1) * 100 : null;
+        const heat =
+          pct === null
+            ? ""
+            : pct >= 1
+              ? "warm-strong"
+              : pct > 0
+                ? "warm"
+                : pct <= -1
+                  ? "cool-strong"
+                  : pct < 0
+                    ? "cool"
+                    : "";
+        return `<div class="index-tile ${heat}"><strong>${name}</strong><b class="${direction(pct)}">${pct === null ? "—" : signed(pct)}</b><span>${close ? decimal(close.close) : "待更新"}</span><small>${close ? e(close.date.slice(5)) + " 收盘" : "暂无日线"}</small></div>`;
+      })
+      .join(
+        "",
+      )}</div><p class="caption">红涨绿跌，颜色越深表示单日涨跌幅越大。</p>`
+  );
+}
+function advice(snapshot: Snapshot) {
+  const p = dataOf(snapshot.modules.investment);
+  if (!p)
+    return card(
+      "投资建议",
+      empty("等待本期研判", "需要完整的沪深300日线才能生成研判。"),
+    );
+  return card(
+    "投资建议",
+    `<div class="advice-lead"><strong>${e(p.stance)}</strong><small>${e(p.as_of_date)} 收盘判断</small><p>${e(p.action)}</p></div><h3>判断依据</h3><ul>${p.evidence.map((line) => `<li>${e(line)}</li>`).join("")}</ul><div class="advice-rules"><div><h3>何时考虑参与</h3><p>${e(p.confirm)}</p></div><div><h3>何时重新评估</h3><p>${e(p.invalidate)}</p></div></div><p class="caption">${e(p.risk)}</p><a class="section-link" href="#/observe">查看个股候选与我的跟踪</a>`,
+    "advice-card",
   );
 }
 function climate(snapshot: Snapshot) {
@@ -266,7 +303,7 @@ function trackingSection(snapshot: Snapshot) {
 function home(snapshot: Snapshot) {
   const industry = dataOf(snapshot.modules.industry);
   const globals = dataOf(snapshot.modules.global) ?? [];
-  return `${climate(snapshot)}${macroSummary(snapshot)}${card("本次资料覆盖", `<div class="coverage"><div><strong>${industry?.valid_count ?? "—"}</strong><span>一级行业</span></div><div><strong>${globals.length}</strong><span>国际观测</span></div><div><strong>${dataOf(snapshot.modules.news)?.length ?? 0}</strong><span>资讯条目</span></div></div>${industry?.missing_session_dates.length ? `<p class="caption">行业窗口有 ${industry.missing_session_dates.length} 个交易日缺口，热度与回撤暂停计算。</p>` : ""}`)}${card("A 股收盘行情", cnRows(snapshot))}${card(
+  return `${card("A 股主要指数", cnRows(snapshot))}${advice(snapshot)}${climate(snapshot)}${macroSummary(snapshot)}${card("本次资料覆盖", `<div class="coverage"><div><strong>${industry?.valid_count ?? "—"}</strong><span>一级行业</span></div><div><strong>${globals.length}</strong><span>国际观测</span></div><div><strong>${dataOf(snapshot.modules.news)?.length ?? 0}</strong><span>资讯条目</span></div></div>${industry?.missing_session_dates.length ? `<p class="caption">行业窗口有 ${industry.missing_session_dates.length} 个交易日缺口，热度与回撤暂停计算。</p>` : ""}`)}${card(
     "最新行业涨幅",
     moduleNote(snapshot.modules.industry, "行业数据") +
       dailyRanking(latestIndustryDay(industry), 3) +
@@ -469,6 +506,45 @@ function globalPage(snapshot: Snapshot) {
     newsSection(snapshot, newsCount)
   );
 }
+function journalSection() {
+  const row = journalEditing === "new" ? null : journalEditing;
+  const localDate = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Shanghai",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(new Date());
+  const form = journalEditing
+    ? `<form id="journal-form" class="journal-form">
+    <label>标的代码或名称<input name="symbol" required maxlength="40" value="${e(row?.symbol)}"></label>
+    <div class="journal-grid"><label>记录日期<input name="date" type="date" required value="${e(row?.date ?? localDate)}"></label><label>类型<select name="kind" id="journal-kind"><option value="watch">观察计划</option><option value="trade" ${row?.kind === "trade" ? "selected" : ""}>交易记录</option></select></label></div>
+    <fieldset id="journal-trade" ${row?.kind === "trade" ? "" : "hidden disabled"}><legend>价格和数量</legend><div class="journal-grid">
+    <label>买入均价<input name="entry" type="number" step="any" min="0.000001" value="${e(row?.entry)}"></label>
+    <label>数量<input name="quantity" type="number" step="1" min="1" value="${e(row?.quantity)}"></label>
+    <label>卖出均价（选填）<input name="exit" type="number" step="any" min="0.000001" value="${e(row?.exit)}"></label>
+    <label>合计费用（选填）<input name="fees" type="number" step="any" min="0" value="${e(row?.fees)}"></label></div></fieldset>
+    <label>观察理由、触发或复盘<textarea name="note" maxlength="600" rows="3">${e(row?.note)}</textarea></label>
+    <p id="journal-error" role="alert"></p><div class="journal-actions"><button class="primary" type="submit">保存记录</button><button class="text-button" type="button" data-action="journal-cancel">取消</button></div>
+    </form>`
+    : '<button class="primary" data-action="journal-new">新增记录</button>';
+  const entries = [...journal]
+    .sort((a, b) => b.date.localeCompare(a.date))
+    .map((item) => {
+      const pnl = realizedProfit(item);
+      return `<article class="story journal-item"><strong>${e(item.symbol)}</strong><small>${e(item.date)} · ${item.kind === "watch" ? "观察计划" : "交易记录"}</small>${item.kind === "trade" ? `<p>买入 ${decimal(item.entry!, 4)} × ${item.quantity}${item.exit === null ? " · 待填写卖出价" : ` · 卖出 ${decimal(item.exit, 4)}`}</p>` : ""}
+      ${pnl !== null ? `<p class="${direction(pnl)}">价差扣费后 ${signed(pnl, " 元")}</p>` : ""}${item.note ? `<p class="journal-note">${e(item.note)}</p>` : ""}<button class="text-button" data-action="journal-edit" data-value="${e(item.id)}">编辑</button></article>`;
+    })
+    .join("");
+  return card(
+    "我的跟踪记录",
+    '<p class="caption">记录保存在当前浏览器。清理浏览器数据前可导出备份。</p>' +
+      form +
+      entries +
+      (journal.length
+        ? '<button class="text-button" data-action="journal-export">导出记录</button>'
+        : ""),
+  );
+}
 function observe(snapshot: Snapshot) {
   const m = snapshot.modules.observations,
     rows = dataOf(m) ?? [];
@@ -485,9 +561,10 @@ function observe(snapshot: Snapshot) {
   return (
     heading(
       "RESEARCH WATCH",
-      "个股观察",
-      "研究周期基线：5 / 10 / 20 个交易日",
+      "跟踪",
+      "记录你的计划与成交，并查看系统观察候选。",
     ) +
+    journalSection() +
     moduleNote(m, "研究资料") +
     (m?.pool_count != null
       ? `<p class="caption">本期成分研究池 ${m.pool_count} 只 · 取得日线 ${m.validated_count ?? "—"} 只</p>`
@@ -549,7 +626,9 @@ function render(preserve = true) {
       : "",
   ].join("");
   let content = "";
-  if (!snapshot)
+  if (!snapshot && route.page === "observe" && !route.code)
+    content = heading("RESEARCH WATCH", "跟踪") + journalSection();
+  else if (!snapshot)
     content =
       heading("MARKET WEATHER", "市场资料工作台") +
       (state.loading
@@ -558,9 +637,8 @@ function render(preserve = true) {
             "暂未取得资料",
             empty(
               "没有可读取的市场快照",
-              "可以稍后重新读取。开发期真实数据只在本机提供，尚未发布正式网站。",
-            ) +
-              '<button class="primary full" data-action="refresh">重新读取资料</button>',
+              "后台发布行情后，页面会读取最新资料。",
+            ),
           ));
   else if (route.page === "home") content = home(snapshot);
   else if (route.page === "industry")
@@ -573,33 +651,48 @@ function render(preserve = true) {
     content =
       heading("NOT FOUND", "页面不存在") +
       '<a class="section-link" href="#/">返回市场总览</a>';
-  app.innerHTML = `<a class="skip-link" href="#main-content">跳到主要内容</a><div class="app-shell"><header><a class="brand" href="#/" aria-label="股市气象站首页"><span aria-hidden="true">◒</span><div><b>股市气象站</b><small>最新资料 · 公开阅读</small></div></a><div class="header-actions"><button id="read-update" class="refresh" data-action="refresh" ${state.loading ? "disabled" : ""}>${state.loading ? "读取中…" : "读取更新"}</button><button id="manager-open" class="refresh" data-action="manager">手动采集</button></div></header>${banner}<main id="main-content" tabindex="-1"><div class="snapshot-meta">${snapshot ? `<span>上次发布 ${e(timeLabel(snapshot.published_at))} 北京时间</span><small>${state.fromCache ? "本机缓存 · " : ""}交易日 08:45 / 11:45 / 17:30 采集</small>${state.checkedAt ? `<small>最近检查 ${e(timeLabel(state.checkedAt))} 北京时间</small>` : ""}` : state.loading ? "<span>正在读取资料快照</span>" : "<span>暂无有效资料快照</span>"}</div>${content}<footer><p>行情时间独立标注 · 无需登录阅读</p><button class="text-button" data-action="manager">手动采集</button><small>固定规则研究，未经收益优势验证。</small></footer></main>${nav()}</div>${managerOpen ? `<div class="sheet-backdrop"><section class="sheet" role="dialog" aria-modal="true" aria-labelledby="manager-title"><div class="handle"></div><span class="badge">所有者管理入口</span><h2 id="manager-title">手动采集与发布</h2><p>“读取更新”检查已发布资料。要重新采集行情和资讯，请启动下面的云端任务。</p><p class="muted">定时采集由 GitHub Actions 运行，可能排队延迟。用仓库所有者账号登录 GitHub，在任务页点 Run workflow。任务完成后回到本页点“读取更新”。</p>${external("https://github.com/tansitanding/market-weather/actions/workflows/refresh.yml", "前往 GitHub 启动采集", "primary full manager-link")}<button id="close-manager" class="primary full" data-action="close-manager">知道了，继续阅读</button></section></div>` : ""}`;
+  app.innerHTML = `<a class="skip-link" href="#main-content">跳到主要内容</a><div class="app-shell"><header><a class="brand" href="#/" aria-label="股市气象站首页"><span aria-hidden="true">◒</span><div><b>股市气象站</b><small>最新资料 · 公开阅读</small></div></a><a id="refresh-collection" class="refresh refresh-link" href="${workflowURL}" target="_blank" rel="noopener noreferrer" data-action="collect" title="打开 GitHub 并运行采集任务">刷新</a></header>${banner}<main id="main-content" tabindex="-1"><div class="snapshot-meta">${snapshot ? `<span>上次发布 ${e(timeLabel(snapshot.published_at))} 北京时间</span><small>${state.fromCache ? "本机缓存 · " : ""}交易日 08:45 / 11:45 / 17:30 采集</small>${state.checkedAt ? `<small>最近检查 ${e(timeLabel(state.checkedAt))} 北京时间</small>` : ""}` : state.loading ? "<span>正在读取资料快照</span>" : "<span>暂无有效资料快照</span>"}</div>${refreshDeadline ? '<p class="module-note">在 GitHub 点击 Run workflow。新版本发布后，本页会自动载入。</p>' : ""}${content}<footer><p>行情以各市场时间为准 · 无需登录阅读</p></footer></main>${nav()}</div>`;
+
   document.title =
     (route.page === "industry"
       ? "行业分析"
       : route.page === "global"
         ? "全球与宏观"
         : route.page === "observe"
-          ? "个股观察"
+          ? "跟踪"
           : "市场总览") + " · 股市气象站";
-  document.body.classList.toggle("sheet-open", managerOpen);
   requestAnimationFrame(() => {
     window.scrollTo({ top: y, behavior: "instant" });
-    if (managerOpen)
-      document.getElementById("close-manager")?.focus({ preventScroll: true });
-    else if (!preserve)
+    if (!preserve)
       document.getElementById("main-content")?.focus({ preventScroll: true });
     else if (focused)
       document.getElementById(focused)?.focus({ preventScroll: true });
   });
 }
-function closeManager() {
-  managerOpen = false;
-  render();
-  requestAnimationFrame(() =>
-    document.getElementById("manager-open")?.focus({ preventScroll: true }),
-  );
+async function checkForPublication() {
+  if (!refreshDeadline || document.hidden) return;
+  await store.refresh();
+  if (store.state.pending && store.state.pending.snapshot_id !== refreshStart) {
+    store.acceptPending();
+    endRefresh();
+  } else if (
+    Date.now() >= refreshDeadline ||
+    (store.state.snapshot?.snapshot_id !== refreshStart && store.state.snapshot)
+  )
+    endRefresh();
 }
+function endRefresh() {
+  refreshDeadline = 0;
+  window.clearInterval(refreshTimer);
+  if (!journalEditing) render();
+}
+function startRefresh() {
+  refreshStart = store.state.snapshot?.snapshot_id ?? "";
+  refreshDeadline = Date.now() + 7 * 60_000;
+  window.clearInterval(refreshTimer);
+  refreshTimer = window.setInterval(() => void checkForPublication(), 20_000);
+}
+document.addEventListener("visibilitychange", () => void checkForPublication());
 app.addEventListener("click", (event) => {
   if ((event.target as HTMLElement).closest(".skip-link")) {
     event.preventDefault();
@@ -611,11 +704,6 @@ app.addEventListener("click", (event) => {
   );
   if (!el) return;
   switch (el.dataset.action) {
-    case "refresh":
-      void store.refresh().then(() => {
-        if (!store.state.error) store.acceptPending();
-      });
-      break;
     case "accept":
       store.acceptPending();
       break;
@@ -628,17 +716,52 @@ app.addEventListener("click", (event) => {
       newsCount += 10;
       render();
       break;
-    case "manager":
-      managerOpen = true;
+    case "collect":
+      startRefresh();
+      window.setTimeout(() => {
+        if (!journalEditing) render();
+      }, 0);
+      break;
+    case "journal-new":
+      journalEditing = "new";
+      render();
+      document
+        .querySelector<HTMLInputElement>('#journal-form [name="symbol"]')
+        ?.focus();
+      break;
+    case "journal-edit":
+      journalEditing =
+        journal.find((row) => row.id === el.dataset.value) ?? null;
+      render();
+      document
+        .getElementById("journal-form")
+        ?.scrollIntoView({ block: "center" });
+      break;
+    case "journal-cancel":
+      journalEditing = null;
       render();
       break;
-    case "close-manager":
-      closeManager();
+    case "journal-export": {
+      const url = URL.createObjectURL(
+        new Blob([JSON.stringify(journal, null, 2)], {
+          type: "application/json",
+        }),
+      );
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "market-weather-journal.json";
+      link.click();
+      window.setTimeout(() => URL.revokeObjectURL(url), 2000);
       break;
+    }
   }
 });
 app.addEventListener("change", (event) => {
   const target = event.target as HTMLSelectElement;
+  if (target.id === "journal-kind") {
+    const cells = document.querySelector<HTMLFieldSetElement>("#journal-trade");
+    if (cells) cells.disabled = cells.hidden = target.value !== "trade";
+  }
   if (target.id === "industry-date") {
     selectedIndustryDate = target.value;
     render();
@@ -648,6 +771,52 @@ app.addEventListener("change", (event) => {
     newsCount = 10;
     render();
   }
+});
+app.addEventListener("submit", (event) => {
+  if (
+    !(event.target instanceof HTMLFormElement) ||
+    event.target.id !== "journal-form"
+  )
+    return;
+  event.preventDefault();
+  const fields = new FormData(event.target);
+  const text = (name: string) => String(fields.get(name) ?? "").trim();
+  const number = (name: string) => (text(name) ? Number(text(name)) : null);
+  const trade = text("kind") === "trade";
+  const editing = journalEditing === "new" ? null : journalEditing;
+  const row: JournalEntry = {
+    id: editing?.id ?? crypto.randomUUID(),
+    date: text("date"),
+    symbol: text("symbol"),
+    kind: trade ? "trade" : "watch",
+    note: text("note"),
+    entry: trade ? number("entry") : null,
+    exit: trade ? number("exit") : null,
+    quantity: trade ? number("quantity") : null,
+    fees: trade ? number("fees") : null,
+  };
+  const feedback = document.getElementById("journal-error");
+  if (!feedback) return;
+  if (!validEntry(row)) {
+    feedback.textContent = "请核对日期和标的。交易记录需要有效买入均价和数量。";
+    return;
+  }
+  const next = editing
+    ? journal.map((r) => (r.id === row.id ? row : r))
+    : [row, ...journal];
+  if (next.length > 300) {
+    feedback.textContent = "当前最多保存300条记录，请先导出备份。";
+    return;
+  }
+  try {
+    saveJournal(next, cache);
+  } catch {
+    feedback.textContent = "保存失败。浏览器存储受限或空间不足。";
+    return;
+  }
+  journal = next;
+  journalEditing = null;
+  render();
 });
 app.addEventListener(
   "toggle",
@@ -668,24 +837,11 @@ window.addEventListener("hashchange", () => {
   scrolls.set(hash, window.scrollY);
   hash = location.hash;
   route = parseRoute(hash);
-  managerOpen = false;
+  journalEditing = null;
   render(false);
 });
-document.addEventListener("keydown", (event) => {
-  if (managerOpen && event.key === "Escape") {
-    closeManager();
-  }
-  if (managerOpen && event.key === "Tab") {
-    const items = Array.from(
-      app.querySelectorAll<HTMLElement>(".sheet a[href], .sheet button"),
-    );
-    const i = items.indexOf(document.activeElement as HTMLElement);
-    event.preventDefault();
-    items[
-      (i + (event.shiftKey ? -1 : 1) + items.length) % items.length
-    ]?.focus();
-  }
+store.subscribe(() => {
+  if (!journalEditing) render();
 });
-store.subscribe(() => render());
 render(false);
 void store.refresh();
