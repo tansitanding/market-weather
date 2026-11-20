@@ -1,8 +1,8 @@
 {
   "schema_version": "1.0",
-  "snapshot_id": "20261120T093943-d4727bdd",
-  "started_at": "2026-11-20T09:39:43.127404+00:00",
-  "published_at": "2026-11-20T09:41:41.181680+00:00",
+  "snapshot_id": "20261120T095630-4d99a6a0",
+  "started_at": "2026-11-20T09:56:30.229464+00:00",
+  "published_at": "2026-11-20T09:57:15.569583+00:00",
   "trigger": "local_manual_validation",
   "timezone": "Asia/Shanghai",
   "public_access_requires_login": false,
@@ -11,7 +11,7 @@
     "industry": {
       "status": "partial",
       "source_as_of_date": "2026-11-19",
-      "collected_at": "2026-11-20T09:39:43.127404+00:00",
+      "collected_at": "2026-11-20T09:56:30.229464+00:00",
       "data": {
         "status": "partial",
         "classification": "SW2021_L1",
@@ -8222,54 +8222,161 @@
           },
           {
             "date": "2026-11-20",
-            "rows": []
+            "rows": [
+              {
+                "code": "801780",
+                "name": "银行",
+                "change_pct": 1.287759
+              },
+              {
+                "code": "801950",
+                "name": "煤炭",
+                "change_pct": 0.330119
+              },
+              {
+                "code": "801960",
+                "name": "石油石化",
+                "change_pct": 0.305905
+              },
+              {
+                "code": "801790",
+                "name": "非银金融",
+                "change_pct": -0.003056
+              },
+              {
+                "code": "801170",
+                "name": "交通运输",
+                "change_pct": -0.797702
+              },
+              {
+                "code": "801720",
+                "name": "建筑装饰",
+                "change_pct": -2.412416
+              },
+              {
+                "code": "801710",
+                "name": "建筑材料",
+                "change_pct": -3.272153
+              },
+              {
+                "code": "801880",
+                "name": "汽车",
+                "change_pct": -3.286082
+              },
+              {
+                "code": "801760",
+                "name": "传媒",
+                "change_pct": -3.615334
+              },
+              {
+                "code": "801980",
+                "name": "美容护理",
+                "change_pct": -3.681102
+              },
+              {
+                "code": "801180",
+                "name": "房地产",
+                "change_pct": -3.834643
+              },
+              {
+                "code": "801730",
+                "name": "电力设备",
+                "change_pct": -3.883952
+              },
+              {
+                "code": "801200",
+                "name": "商贸零售",
+                "change_pct": -3.896936
+              },
+              {
+                "code": "801770",
+                "name": "通信",
+                "change_pct": -4.070432
+              },
+              {
+                "code": "801970",
+                "name": "环保",
+                "change_pct": -4.154071
+              },
+              {
+                "code": "801210",
+                "name": "社会服务",
+                "change_pct": -4.316101
+              },
+              {
+                "code": "801750",
+                "name": "计算机",
+                "change_pct": -4.424171
+              },
+              {
+                "code": "801740",
+                "name": "国防军工",
+                "change_pct": -4.543053
+              },
+              {
+                "code": "801890",
+                "name": "机械设备",
+                "change_pct": -4.768385
+              },
+              {
+                "code": "801230",
+                "name": "综合",
+                "change_pct": -5.918299
+              }
+            ]
           }
         ],
         "recommendations": [
           {
-            "code": "801110",
-            "name": "家用电器",
-            "state": "优先观察",
-            "conclusion": "2026-11-19 日涨幅 +0.69%，排名第 1。截至该日的近 5 个交易日中，有 5 日数据齐全，其中 5 日上涨且进入 Top 10。",
-            "trigger": "下一交易日仍处于涨幅前列，并核验成交与成分股是否同步走强。",
-            "invalidation": "后续收盘转弱或跌出涨幅前十，降低观察优先级。",
+            "code": "801780",
+            "name": "银行",
+            "state": "初步观察",
+            "as_of_date": "2026-11-20",
+            "conclusion": "2026-11-20 日涨幅 +1.29%，在可比较的 20/31 个行业中排名第 1。近5日有 4/5 个完整榜单，其中 2 次上涨上榜。该行业有 5/5 日涨幅可核验，其中 3 日上涨。",
+            "trigger": "下一次完整收盘仍上涨并进入前十，同时复核成交与成分股上涨范围。",
+            "invalidation": "收盘转弱、完整榜单排名回落，或强势仅集中在个别权重股时，下调观察优先级。",
             "risks": [
-              "连续上榜也可能来自短期轮动",
-              "权重股拉动不代表多数成分股上涨"
+              "短期上涨可能来自行业轮动",
+              "需核验成交及上涨能否扩散到成分股",
+              "持续性尚待确认，先跟踪，等待完整榜单及后续收盘验证。"
             ],
-            "published_at": "2026-11-20T09:39:43.127404+00:00",
-            "rule_version": "sector-daily-v1.0"
+            "published_at": "2026-11-20T09:56:30.229464+00:00",
+            "rule_version": "sector-daily-v2.0"
           },
           {
-            "code": "801120",
-            "name": "食品饮料",
-            "state": "优先观察",
-            "conclusion": "2026-11-19 日涨幅 +0.65%，排名第 2。截至该日的近 5 个交易日中，有 5 日数据齐全，其中 4 日上涨且进入 Top 10。",
-            "trigger": "下一交易日仍处于涨幅前列，并核验成交与成分股是否同步走强。",
-            "invalidation": "后续收盘转弱或跌出涨幅前十，降低观察优先级。",
+            "code": "801950",
+            "name": "煤炭",
+            "state": "初步观察",
+            "as_of_date": "2026-11-20",
+            "conclusion": "2026-11-20 日涨幅 +0.33%，在可比较的 20/31 个行业中排名第 2。近5日有 4/5 个完整榜单，其中 2 次上涨上榜。该行业有 5/5 日涨幅可核验，其中 3 日上涨。",
+            "trigger": "下一次完整收盘仍上涨并进入前十，同时复核成交与成分股上涨范围。",
+            "invalidation": "收盘转弱、完整榜单排名回落，或强势仅集中在个别权重股时，下调观察优先级。",
             "risks": [
-              "连续上榜也可能来自短期轮动",
-              "权重股拉动不代表多数成分股上涨"
+              "短期上涨可能来自行业轮动",
+              "需核验成交及上涨能否扩散到成分股",
+              "持续性尚待确认，先跟踪，等待完整榜单及后续收盘验证。"
             ],
-            "published_at": "2026-11-20T09:39:43.127404+00:00",
-            "rule_version": "sector-daily-v1.0"
+            "published_at": "2026-11-20T09:56:30.229464+00:00",
+            "rule_version": "sector-daily-v2.0"
           },
           {
-            "code": "801790",
-            "name": "非银金融",
-            "state": "优先观察",
-            "conclusion": "2026-11-19 日涨幅 +0.24%，排名第 3。截至该日的近 5 个交易日中，有 5 日数据齐全，其中 4 日上涨且进入 Top 10。",
-            "trigger": "下一交易日仍处于涨幅前列，并核验成交与成分股是否同步走强。",
-            "invalidation": "后续收盘转弱或跌出涨幅前十，降低观察优先级。",
+            "code": "801960",
+            "name": "石油石化",
+            "state": "初步观察",
+            "as_of_date": "2026-11-20",
+            "conclusion": "2026-11-20 日涨幅 +0.31%，在可比较的 20/31 个行业中排名第 3。近5日有 4/5 个完整榜单，其中 2 次上涨上榜。该行业有 5/5 日涨幅可核验，其中 3 日上涨。",
+            "trigger": "下一次完整收盘仍上涨并进入前十，同时复核成交与成分股上涨范围。",
+            "invalidation": "收盘转弱、完整榜单排名回落，或强势仅集中在个别权重股时，下调观察优先级。",
             "risks": [
-              "连续上榜也可能来自短期轮动",
-              "权重股拉动不代表多数成分股上涨"
+              "短期上涨可能来自行业轮动",
+              "需核验成交及上涨能否扩散到成分股",
+              "持续性尚待确认，先跟踪，等待完整榜单及后续收盘验证。"
             ],
-            "published_at": "2026-11-20T09:39:43.127404+00:00",
-            "rule_version": "sector-daily-v1.0"
+            "published_at": "2026-11-20T09:56:30.229464+00:00",
+            "rule_version": "sector-daily-v2.0"
           }
         ],
-        "recommendation_status": "rules_v1",
+        "recommendation_status": "sector-daily-v2.0",
         "age_calendar_days": 1,
         "freshness": "lags_benchmark"
       },
@@ -8277,7 +8384,7 @@
     },
     "cn_market": {
       "status": "succeeded",
-      "collected_at": "2026-11-20T09:39:43.127404+00:00",
+      "collected_at": "2026-11-20T09:56:30.229464+00:00",
       "carried_forward": false,
       "data": {
         "benchmark": [
@@ -8323,25 +8430,25 @@
     },
     "global": {
       "status": "succeeded",
-      "collected_at": "2026-11-20T09:39:43.127404+00:00",
+      "collected_at": "2026-11-20T09:56:30.229464+00:00",
       "carried_forward": false,
       "data": [
         {
           "symbol": "CL=F",
           "name": "WTI原油期货连续",
           "asset_type": "continuous_futures",
-          "price": 81.36,
+          "price": 80.86,
           "unit": "USD",
           "currency": "USD",
           "market_date": "2026-11-20",
-          "observed_at": "2026-11-20T09:30:25+00:00",
+          "observed_at": "2026-11-20T09:47:07+00:00",
           "exchange_timezone": "America/New_York",
           "source": "yahoo",
-          "change_vs_previous_day_close_pct": -2.223289,
+          "change_vs_previous_day_close_pct": -2.824179,
           "change_bp": null,
           "change_unit": "percent",
           "availability": "latest_available_observation",
-          "age_hours": 0.155,
+          "age_hours": 0.156,
           "is_live_guaranteed": false,
           "freshness": "latest_available"
         },
@@ -8349,18 +8456,18 @@
           "symbol": "DX-Y.NYB",
           "name": "美元指数",
           "asset_type": "index",
-          "price": 103.842,
+          "price": 103.762,
           "unit": "index_points",
           "currency": "USD",
           "market_date": "2026-11-20",
-          "observed_at": "2026-11-20T09:30:26+00:00",
+          "observed_at": "2026-11-20T09:47:05+00:00",
           "exchange_timezone": "America/New_York",
           "source": "yahoo",
-          "change_vs_previous_day_close_pct": -0.055824,
+          "change_vs_previous_day_close_pct": -0.132821,
           "change_bp": null,
           "change_unit": "percent",
           "availability": "latest_available_observation",
-          "age_hours": 0.155,
+          "age_hours": 0.157,
           "is_live_guaranteed": false,
           "freshness": "latest_available"
         },
@@ -8368,18 +8475,18 @@
           "symbol": "GC=F",
           "name": "黄金期货连续",
           "asset_type": "continuous_futures",
-          "price": 3571.7,
+          "price": 3574.2,
           "unit": "USD",
           "currency": "USD",
           "market_date": "2026-11-20",
-          "observed_at": "2026-11-20T09:30:27+00:00",
+          "observed_at": "2026-11-20T09:47:06+00:00",
           "exchange_timezone": "America/New_York",
           "source": "yahoo",
-          "change_vs_previous_day_close_pct": -3.087776,
+          "change_vs_previous_day_close_pct": -3.019943,
           "change_bp": null,
           "change_unit": "percent",
           "availability": "latest_available_observation",
-          "age_hours": 0.154,
+          "age_hours": 0.157,
           "is_live_guaranteed": false,
           "freshness": "latest_available"
         },
@@ -8398,7 +8505,7 @@
           "change_bp": null,
           "change_unit": "percent",
           "availability": "latest_available_observation",
-          "age_hours": 1.514,
+          "age_hours": 1.793,
           "is_live_guaranteed": false,
           "freshness": "latest_available"
         },
@@ -8417,7 +8524,7 @@
           "change_bp": null,
           "change_unit": "percent",
           "availability": "latest_available_observation",
-          "age_hours": 11.675,
+          "age_hours": 11.955,
           "is_live_guaranteed": false,
           "freshness": "latest_available"
         },
@@ -8436,7 +8543,7 @@
           "change_bp": null,
           "change_unit": "percent",
           "availability": "latest_available_observation",
-          "age_hours": 11.674,
+          "age_hours": 11.953,
           "is_live_guaranteed": false,
           "freshness": "latest_available"
         },
@@ -8455,7 +8562,7 @@
           "change_bp": null,
           "change_unit": "percent",
           "availability": "latest_available_observation",
-          "age_hours": 1.514,
+          "age_hours": 1.793,
           "is_live_guaranteed": false,
           "freshness": "latest_available"
         },
@@ -8474,7 +8581,7 @@
           "change_bp": null,
           "change_unit": "percent",
           "availability": "latest_available_observation",
-          "age_hours": 11.396,
+          "age_hours": 11.675,
           "is_live_guaranteed": false,
           "freshness": "latest_available"
         },
@@ -8493,7 +8600,7 @@
           "change_bp": -1.399998,
           "change_unit": "bp",
           "availability": "latest_available_observation",
-          "age_hours": 13.663,
+          "age_hours": 13.943,
           "is_live_guaranteed": false,
           "freshness": "latest_available"
         }
@@ -8501,9 +8608,89 @@
     },
     "news": {
       "status": "succeeded",
-      "collected_at": "2026-11-20T09:39:43.127404+00:00",
+      "collected_at": "2026-11-20T09:56:30.229464+00:00",
       "carried_forward": false,
       "data": [
+        {
+          "event_id": "aa95ec4e413042fbc9c2",
+          "title": "央行定于11月27日发行2027中国丁未（羊）年贵金属纪念币一套",
+          "source": "cns",
+          "url": "https://www.chinanews.com.cn/cj/2026/11-20/10735364.shtml",
+          "published_at": "2026-11-20T09:50:14+00:00",
+          "published_date": "2026-11-20",
+          "date_precision": "second",
+          "event_occurred_at": null,
+          "collected_at": "2026-11-20T09:56:30.229464+00:00",
+          "analysis": null,
+          "dedup_method": "exact_normalized_title",
+          "importance_score": 0,
+          "importance_reason": null,
+          "related_sources": []
+        },
+        {
+          "event_id": "c04bddc87c99354a85e6",
+          "title": "辽宁省工商联“三措并举”护航民营经济高质量发展",
+          "source": "cns",
+          "url": "https://www.chinanews.com.cn/cj/2026/11-20/10735347.shtml",
+          "published_at": "2026-11-20T09:45:12+00:00",
+          "published_date": "2026-11-20",
+          "date_precision": "second",
+          "event_occurred_at": null,
+          "collected_at": "2026-11-20T09:56:30.229464+00:00",
+          "analysis": null,
+          "dedup_method": "exact_normalized_title",
+          "importance_score": 0,
+          "importance_reason": null,
+          "related_sources": []
+        },
+        {
+          "event_id": "ceb3f935f24cf23fabe0",
+          "title": "从工业到体育  脑机接口加速“破圈”",
+          "source": "cns",
+          "url": "https://www.chinanews.com.cn/cj/2026/11-20/10735342.shtml",
+          "published_at": "2026-11-20T09:44:16+00:00",
+          "published_date": "2026-11-20",
+          "date_precision": "second",
+          "event_occurred_at": null,
+          "collected_at": "2026-11-20T09:56:30.229464+00:00",
+          "analysis": null,
+          "dedup_method": "exact_normalized_title",
+          "importance_score": 0,
+          "importance_reason": null,
+          "related_sources": []
+        },
+        {
+          "event_id": "90505677bd36f44851e6",
+          "title": "今年前10个月北京地区进出口总值创历史同期新高",
+          "source": "cns",
+          "url": "https://www.chinanews.com.cn/cj/2026/11-20/10735339.shtml",
+          "published_at": "2026-11-20T09:43:20+00:00",
+          "published_date": "2026-11-20",
+          "date_precision": "second",
+          "event_occurred_at": null,
+          "collected_at": "2026-11-20T09:56:30.229464+00:00",
+          "analysis": null,
+          "dedup_method": "exact_normalized_title",
+          "importance_score": 0,
+          "importance_reason": null,
+          "related_sources": []
+        },
+        {
+          "event_id": "b33bf31cb2c044f6559f",
+          "title": "破解绿电外送消纳难题 中国自主研发装备在延安投运",
+          "source": "cns",
+          "url": "https://www.chinanews.com.cn/cj/2026/11-20/10735335.shtml",
+          "published_at": "2026-11-20T09:43:12+00:00",
+          "published_date": "2026-11-20",
+          "date_precision": "second",
+          "event_occurred_at": null,
+          "collected_at": "2026-11-20T09:56:30.229464+00:00",
+          "analysis": null,
+          "dedup_method": "exact_normalized_title",
+          "importance_score": 0,
+          "importance_reason": null,
+          "related_sources": []
+        },
         {
           "event_id": "f36112e0e3463ae66840",
           "title": "前三季度数字产业收入超32万亿元 同比增长14.8%",
@@ -8513,7 +8700,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T09:39:43.127404+00:00",
+          "collected_at": "2026-11-20T09:56:30.229464+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -8529,7 +8716,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T09:39:43.127404+00:00",
+          "collected_at": "2026-11-20T09:56:30.229464+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -8545,7 +8732,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T09:39:43.127404+00:00",
+          "collected_at": "2026-11-20T09:56:30.229464+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -8561,7 +8748,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T09:39:43.127404+00:00",
+          "collected_at": "2026-11-20T09:56:30.229464+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -8577,7 +8764,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T09:39:43.127404+00:00",
+          "collected_at": "2026-11-20T09:56:30.229464+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -8593,7 +8780,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T09:39:43.127404+00:00",
+          "collected_at": "2026-11-20T09:56:30.229464+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -8609,7 +8796,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T09:39:43.127404+00:00",
+          "collected_at": "2026-11-20T09:56:30.229464+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -8625,7 +8812,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T09:39:43.127404+00:00",
+          "collected_at": "2026-11-20T09:56:30.229464+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -8641,7 +8828,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T09:39:43.127404+00:00",
+          "collected_at": "2026-11-20T09:56:30.229464+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -8657,7 +8844,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T09:39:43.127404+00:00",
+          "collected_at": "2026-11-20T09:56:30.229464+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -8673,7 +8860,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T09:39:43.127404+00:00",
+          "collected_at": "2026-11-20T09:56:30.229464+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -8689,7 +8876,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T09:39:43.127404+00:00",
+          "collected_at": "2026-11-20T09:56:30.229464+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -8705,7 +8892,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T09:39:43.127404+00:00",
+          "collected_at": "2026-11-20T09:56:30.229464+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -8721,7 +8908,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T09:39:43.127404+00:00",
+          "collected_at": "2026-11-20T09:56:30.229464+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -8737,7 +8924,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T09:39:43.127404+00:00",
+          "collected_at": "2026-11-20T09:56:30.229464+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -8753,7 +8940,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T09:39:43.127404+00:00",
+          "collected_at": "2026-11-20T09:56:30.229464+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -8769,7 +8956,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T09:39:43.127404+00:00",
+          "collected_at": "2026-11-20T09:56:30.229464+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -8785,7 +8972,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T09:39:43.127404+00:00",
+          "collected_at": "2026-11-20T09:56:30.229464+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -8801,7 +8988,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T09:39:43.127404+00:00",
+          "collected_at": "2026-11-20T09:56:30.229464+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -8817,7 +9004,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T09:39:43.127404+00:00",
+          "collected_at": "2026-11-20T09:56:30.229464+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -8833,7 +9020,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T09:39:43.127404+00:00",
+          "collected_at": "2026-11-20T09:56:30.229464+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -8849,7 +9036,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T09:39:43.127404+00:00",
+          "collected_at": "2026-11-20T09:56:30.229464+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -8865,7 +9052,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T09:39:43.127404+00:00",
+          "collected_at": "2026-11-20T09:56:30.229464+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -8881,7 +9068,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T09:39:43.127404+00:00",
+          "collected_at": "2026-11-20T09:56:30.229464+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -8897,7 +9084,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T09:39:43.127404+00:00",
+          "collected_at": "2026-11-20T09:56:30.229464+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -9169,7 +9356,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T09:39:43.127404+00:00",
+          "collected_at": "2026-11-20T09:56:30.229464+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -9185,7 +9372,7 @@
           "published_date": "2026-11-20",
           "date_precision": "day",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T09:39:43.127404+00:00",
+          "collected_at": "2026-11-20T09:56:30.229464+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -9201,7 +9388,7 @@
           "published_date": "2026-11-19",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T09:39:43.127404+00:00",
+          "collected_at": "2026-11-20T09:56:30.229464+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -9217,7 +9404,7 @@
           "published_date": "2026-11-18",
           "date_precision": "day",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T09:39:43.127404+00:00",
+          "collected_at": "2026-11-20T09:56:30.229464+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -9233,7 +9420,7 @@
           "published_date": "2026-11-14",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T09:39:43.127404+00:00",
+          "collected_at": "2026-11-20T09:56:30.229464+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -9249,7 +9436,7 @@
           "published_date": "2026-11-13",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T09:39:43.127404+00:00",
+          "collected_at": "2026-11-20T09:56:30.229464+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -9265,7 +9452,7 @@
           "published_date": "2026-11-13",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T09:39:43.127404+00:00",
+          "collected_at": "2026-11-20T09:56:30.229464+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -9281,7 +9468,7 @@
           "published_date": "2026-11-13",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T09:39:43.127404+00:00",
+          "collected_at": "2026-11-20T09:56:30.229464+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -9297,7 +9484,7 @@
           "published_date": "2026-11-13",
           "date_precision": "day",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T09:39:43.127404+00:00",
+          "collected_at": "2026-11-20T09:56:30.229464+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -9313,7 +9500,7 @@
           "published_date": "2026-11-12",
           "date_precision": "day",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T09:39:43.127404+00:00",
+          "collected_at": "2026-11-20T09:56:30.229464+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -9329,7 +9516,7 @@
           "published_date": "2026-11-11",
           "date_precision": "day",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T09:39:43.127404+00:00",
+          "collected_at": "2026-11-20T09:56:30.229464+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -9345,7 +9532,7 @@
           "published_date": "2026-11-11",
           "date_precision": "day",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T09:39:43.127404+00:00",
+          "collected_at": "2026-11-20T09:56:30.229464+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -9361,7 +9548,7 @@
           "published_date": "2026-11-11",
           "date_precision": "day",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T09:39:43.127404+00:00",
+          "collected_at": "2026-11-20T09:56:30.229464+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -9377,7 +9564,7 @@
           "published_date": "2026-11-10",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T09:39:43.127404+00:00",
+          "collected_at": "2026-11-20T09:56:30.229464+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -9393,7 +9580,7 @@
           "published_date": "2026-11-06",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T09:39:43.127404+00:00",
+          "collected_at": "2026-11-20T09:56:30.229464+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -9409,7 +9596,7 @@
           "published_date": "2026-11-05",
           "date_precision": "day",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T09:39:43.127404+00:00",
+          "collected_at": "2026-11-20T09:56:30.229464+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -9425,7 +9612,7 @@
           "published_date": "2026-11-05",
           "date_precision": "day",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T09:39:43.127404+00:00",
+          "collected_at": "2026-11-20T09:56:30.229464+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -9441,7 +9628,7 @@
           "published_date": "2026-11-05",
           "date_precision": "day",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T09:39:43.127404+00:00",
+          "collected_at": "2026-11-20T09:56:30.229464+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -9457,7 +9644,7 @@
           "published_date": "2026-11-05",
           "date_precision": "day",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T09:39:43.127404+00:00",
+          "collected_at": "2026-11-20T09:56:30.229464+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -9473,7 +9660,7 @@
           "published_date": "2026-11-04",
           "date_precision": "day",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T09:39:43.127404+00:00",
+          "collected_at": "2026-11-20T09:56:30.229464+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -9489,7 +9676,7 @@
           "published_date": "2026-11-03",
           "date_precision": "day",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T09:39:43.127404+00:00",
+          "collected_at": "2026-11-20T09:56:30.229464+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -9505,7 +9692,7 @@
           "published_date": "2026-11-03",
           "date_precision": "day",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T09:39:43.127404+00:00",
+          "collected_at": "2026-11-20T09:56:30.229464+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -9521,7 +9708,7 @@
           "published_date": "2026-11-03",
           "date_precision": "day",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T09:39:43.127404+00:00",
+          "collected_at": "2026-11-20T09:56:30.229464+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -9537,7 +9724,7 @@
           "published_date": "2026-10-30",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T09:39:43.127404+00:00",
+          "collected_at": "2026-11-20T09:56:30.229464+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -9553,7 +9740,7 @@
           "published_date": "2026-10-29",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-20T09:39:43.127404+00:00",
+          "collected_at": "2026-11-20T09:56:30.229464+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -9619,12 +9806,12 @@
           "unchanged": 23,
           "completed_session": true,
           "source": "sina",
-          "collected_at": "2026-11-20T09:39:43.127404+00:00"
+          "collected_at": "2026-11-20T09:56:30.229464+00:00"
         },
         "rule_version": "research-v1.0",
         "calibration": "研究规则，未经收益优势验证；不是上涨概率"
       },
-      "collected_at": "2026-11-20T09:39:43.127404+00:00"
+      "collected_at": "2026-11-20T09:56:30.229464+00:00"
     },
     "macro": {
       "status": "succeeded",
@@ -9645,8 +9832,8 @@
           },
           {
             "title": "美元指数",
-            "text": "相对前一完整收盘 -0.06%",
-            "as_of": "2026-11-20T09:30:26+00:00",
+            "text": "相对前一完整收盘 -0.13%",
+            "as_of": "2026-11-20T09:47:05+00:00",
             "source_url": "https://finance.yahoo.com/quote/DX-Y.NYB/"
           },
           {
@@ -9658,6 +9845,48 @@
         ],
         "interpretation": "隔夜美股走弱，可能压制风险偏好；国内政策与资金节奏可能形成反向影响。",
         "counter_evidence": "需继续验证国内成交、行业扩散与公告；新闻关联不等于已证实的利好或因果。",
+        "global_review": {
+          "score": 25.8,
+          "label": "偏冷",
+          "markets": [
+            {
+              "name": "美股",
+              "date": "2026-11-19",
+              "average_pct": -2.1553,
+              "score": 24.1,
+              "coverage": 3,
+              "expected": 3,
+              "advancing": 0
+            },
+            {
+              "name": "港股",
+              "date": "2026-11-20",
+              "average_pct": -1.8861,
+              "score": 27.4,
+              "coverage": 1,
+              "expected": 2,
+              "advancing": 0
+            }
+          ],
+          "notes": [
+            {
+              "title": "美港股联动",
+              "text": "美股样本走弱，港股样本走弱。两地同向走弱，先关注下一交易日跌幅是否收窄、领跌板块是否减少。"
+            },
+            {
+              "title": "美股风格",
+              "text": "纳指相对标普 -0.24 个百分点（2026-11-19）。科技成长相对承压，观察科技板块跌幅是否收窄。"
+            },
+            {
+              "title": "美元与利率",
+              "text": "美元指数 -0.13%（2026-11-20），美国10年期收益率 -1.4 基点（2026-11-19）。分别观察美元变化对非美资产、利率变化对估值的压力。"
+            },
+            {
+              "title": "商品线索",
+              "text": "黄金 -3.02%，WTI -2.82%（2026-11-20）。金油表现接近，分别核查美元、避险需求及原油供需。"
+            }
+          ]
+        },
         "industry_news": {
           "801780": [
             {
@@ -9669,7 +9898,7 @@
               "published_date": "2026-11-20",
               "date_precision": "second",
               "event_occurred_at": null,
-              "collected_at": "2026-11-20T09:39:43.127404+00:00",
+              "collected_at": "2026-11-20T09:56:30.229464+00:00",
               "analysis": null,
               "dedup_method": "exact_normalized_title",
               "related_sources": [],
@@ -9685,7 +9914,7 @@
               "published_date": "2026-11-20",
               "date_precision": "second",
               "event_occurred_at": null,
-              "collected_at": "2026-11-20T09:39:43.127404+00:00",
+              "collected_at": "2026-11-20T09:56:30.229464+00:00",
               "analysis": null,
               "dedup_method": "exact_normalized_title",
               "related_sources": [],
@@ -9701,7 +9930,7 @@
               "published_date": "2026-11-20",
               "date_precision": "second",
               "event_occurred_at": null,
-              "collected_at": "2026-11-20T09:39:43.127404+00:00",
+              "collected_at": "2026-11-20T09:56:30.229464+00:00",
               "analysis": null,
               "dedup_method": "exact_normalized_title",
               "related_sources": [],
@@ -9717,7 +9946,7 @@
               "published_date": "2026-11-20",
               "date_precision": "day",
               "event_occurred_at": null,
-              "collected_at": "2026-11-20T09:39:43.127404+00:00",
+              "collected_at": "2026-11-20T09:56:30.229464+00:00",
               "analysis": null,
               "dedup_method": "exact_normalized_title",
               "related_sources": [],
@@ -9733,7 +9962,7 @@
               "published_date": "2026-11-18",
               "date_precision": "day",
               "event_occurred_at": null,
-              "collected_at": "2026-11-20T09:39:43.127404+00:00",
+              "collected_at": "2026-11-20T09:56:30.229464+00:00",
               "analysis": null,
               "dedup_method": "exact_normalized_title",
               "related_sources": [],
@@ -9751,7 +9980,7 @@
               "published_date": "2026-11-20",
               "date_precision": "second",
               "event_occurred_at": null,
-              "collected_at": "2026-11-20T09:39:43.127404+00:00",
+              "collected_at": "2026-11-20T09:56:30.229464+00:00",
               "analysis": null,
               "dedup_method": "exact_normalized_title",
               "related_sources": [],
@@ -9767,7 +9996,7 @@
               "published_date": "2026-11-03",
               "date_precision": "day",
               "event_occurred_at": null,
-              "collected_at": "2026-11-20T09:39:43.127404+00:00",
+              "collected_at": "2026-11-20T09:56:30.229464+00:00",
               "analysis": null,
               "dedup_method": "exact_normalized_title",
               "related_sources": [],
@@ -9785,7 +10014,7 @@
               "published_date": "2026-11-20",
               "date_precision": "second",
               "event_occurred_at": null,
-              "collected_at": "2026-11-20T09:39:43.127404+00:00",
+              "collected_at": "2026-11-20T09:56:30.229464+00:00",
               "analysis": null,
               "dedup_method": "exact_normalized_title",
               "related_sources": [],
@@ -9801,7 +10030,7 @@
               "published_date": "2026-11-20",
               "date_precision": "second",
               "event_occurred_at": null,
-              "collected_at": "2026-11-20T09:39:43.127404+00:00",
+              "collected_at": "2026-11-20T09:56:30.229464+00:00",
               "analysis": null,
               "dedup_method": "exact_normalized_title",
               "related_sources": [],
@@ -9819,7 +10048,7 @@
               "published_date": "2026-11-20",
               "date_precision": "second",
               "event_occurred_at": null,
-              "collected_at": "2026-11-20T09:39:43.127404+00:00",
+              "collected_at": "2026-11-20T09:56:30.229464+00:00",
               "analysis": null,
               "dedup_method": "exact_normalized_title",
               "related_sources": [],
@@ -9837,7 +10066,7 @@
               "published_date": "2026-11-20",
               "date_precision": "second",
               "event_occurred_at": null,
-              "collected_at": "2026-11-20T09:39:43.127404+00:00",
+              "collected_at": "2026-11-20T09:56:30.229464+00:00",
               "analysis": null,
               "dedup_method": "exact_normalized_title",
               "related_sources": [],
@@ -9866,28 +10095,28 @@
         },
         "news_coverage_note": "只依据已采集公开标题，来源覆盖有限。"
       },
-      "collected_at": "2026-11-20T09:39:43.127404+00:00"
+      "collected_at": "2026-11-20T09:56:30.229464+00:00"
     },
     "observations": {
       "status": "partial",
       "data": [],
-      "collected_at": "2026-11-20T09:39:43.127404+00:00",
-      "pool_count": 18,
+      "collected_at": "2026-11-20T09:56:30.229464+00:00",
+      "pool_count": 0,
       "validated_count": 0,
       "market_gate": "closed",
-      "explanation": "沪深300收盘未高于20日均线，本期不新增个股候选。 部分成分日线未取得，仅使用通过校验的资料。"
+      "explanation": "沪深300收盘未高于20日均线，本期不新增个股候选。 当前没有可验证的研究成分池。"
     },
     "investment": {
       "status": "succeeded",
       "data": {
         "as_of_date": "2026-11-20",
-        "sector_date": "2026-11-19",
+        "sector_date": null,
         "stance": "防守观察",
         "action": "暂缓新增方向仓位。已有持仓先复核买入理由、风险线和行业集中度。",
         "evidence": [
           "沪深300收盘 3954.57 点，较20日均线 4034.49 点 -1.98%。",
           "同日上涨家数占有效报价 5.6%。",
-          "2026-11-19 完整行业榜的持续强势方向：家用电器、食品饮料、非银金融。",
+          "目前没有同时满足持续上榜条件的行业。",
           "本期符合个股筛选规则的候选 0 只。"
         ],
         "confirm": "关注后续完整收盘：沪深300在20日均线上方、上涨家数占比达到55%，且候选行业维持上涨并进入当日Top 10。",
@@ -9899,7 +10128,7 @@
     "tracking": {
       "status": "succeeded",
       "data": [],
-      "collected_at": "2026-11-20T09:39:43.127404+00:00"
+      "collected_at": "2026-11-20T09:56:30.229464+00:00"
     }
   },
   "sources": {
