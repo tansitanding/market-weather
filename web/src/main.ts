@@ -616,11 +616,9 @@ function render(preserve = true) {
     state.error
       ? `<div class="notice error" role="status">${e(state.error)}${snapshot ? " · 继续显示已保存资料。" : ""}</div>`
       : "",
-    state.pending
-      ? '<button class="new-content" data-action="accept">有新资料，点击查看更新</button>'
-      : state.note
-        ? `<div class="notice" role="status">${e(state.note)}</div>`
-        : "",
+    !state.pending && state.note
+      ? `<div class="notice" role="status">${e(state.note)}</div>`
+      : "",
     age > 1
       ? '<div class="notice">这份资料已超过 24 小时未更新，请留意各模块截至时间。</div>'
       : "",
@@ -704,9 +702,6 @@ app.addEventListener("click", (event) => {
   );
   if (!el) return;
   switch (el.dataset.action) {
-    case "accept":
-      store.acceptPending();
-      break;
     case "news-mode":
       newsMode = el.dataset.value === "recent" ? "recent" : "important";
       newsCount = 10;
@@ -844,4 +839,6 @@ store.subscribe(() => {
   if (!journalEditing) render();
 });
 render(false);
-void store.refresh();
+void store.refresh().then(() => {
+  if (!store.state.error) store.acceptPending();
+});
