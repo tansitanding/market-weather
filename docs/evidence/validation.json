@@ -87,5 +87,21 @@
     "yahoo__IXIC.raw": "2594f5294efa2abf3b4ca9d32e5fcb3a1b804e9e7f14dba767397340176cec56",
     "yahoo__TNX.raw": "c56b4fdc05127b23ca867bba1a658c6552b7ed8b7740d90734b45ae7355ed6ad"
   },
-  "remote_upload_status": "pending"
+  "remote_upload_status": "verified",
+  "verified_source_commit": "4d9fe99b4f768e246a89e18b3e52ec480cb47d09",
+  "remote_visibility": "public",
+  "pages_deployed": false,
+  "ci_status": "template_only_current_oauth_missing_workflow_scope",
+  "prototype_mobile_checks": {
+    "pages": [
+      "industry",
+      "industry-detail"
+    ],
+    "widths_css_px": [
+      360,
+      390,
+      430
+    ],
+    "horizontal_overflow": false
+  }
 }
