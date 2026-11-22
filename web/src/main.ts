@@ -73,7 +73,7 @@ const sourceURLs: Record<string, string> = {
   yahoo: "https://finance.yahoo.com/",
 };
 const icon = (name: string) =>
-  ({ home: "◒", industry: "▦", global: "◎", observe: "◇" })[name] ?? "◒";
+  ({ home: "◒", industry: "▦", global: "◎", advice: "▤", observe: "◇" })[name] ?? "◒";
 function external(url: string, label: string, cls = "source-link") {
   const u = safeURL(url);
   return u
@@ -105,6 +105,7 @@ function moduleNote<T>(m: DataModule<T> | undefined, label: string) {
 function nav() {
   return `<nav class="bottom" aria-label="主导航">${[
     ["home", "总览", "#/"],
+    ["advice", "建议", "#/advice"],
     ["industry", "行业", "#/industry"],
     ["global", "全球", "#/global"],
     ["observe", "跟踪", "#/observe"],
@@ -231,8 +232,8 @@ function advice(snapshot: Snapshot) {
   const stockList = stocks.length
     ? stocks.map((stock) => `<article class="sector-review"><a class="section-link" href="#/observe/${encodeURIComponent(stock.code)}">${e(stock.name)} · ${e(stock.code)}</a><p>${e(stock.conclusion)}</p><p class="caption">观察条件 · ${e(stock.trigger)}</p></article>`).join("")
     : '<p class="muted">当前暂无符合规则的个股候选。</p>';
-  return card(
-    "投资建议",
+  return heading("INVESTMENT", "投资建议") + card(
+    "市场观察",
     `<section class="investment-section"><h3>整体大盘</h3>${market}</section>
      <section class="investment-section"><h3>行业</h3>${sectorReviewContent(snapshot)}<a class="section-link" href="#/industry">查看行业排行</a></section>
      <section class="investment-section"><h3>关注个股</h3>${stockList}<a class="section-link" href="#/observe">查看个股候选与我的跟踪</a></section>
@@ -336,7 +337,7 @@ function trackingSection(snapshot: Snapshot) {
 function home(snapshot: Snapshot) {
   const industry = dataOf(snapshot.modules.industry);
   const globals = dataOf(snapshot.modules.global) ?? [];
-  return `${card("A 股主要指数", cnRows(snapshot))}${advice(snapshot)}${climate(snapshot)}${macroSummary(snapshot)}${card("本次资料覆盖", `<div class="coverage"><div><strong>${industry?.valid_count ?? "—"}</strong><span>一级行业</span></div><div><strong>${globals.length}</strong><span>国际观测</span></div><div><strong>${dataOf(snapshot.modules.news)?.length ?? 0}</strong><span>资讯条目</span></div></div>${industry?.missing_session_dates.length ? `<p class="caption">行业窗口有 ${industry.missing_session_dates.length} 个交易日缺口，热度与回撤暂停计算。</p>` : ""}`)}${card(
+  return `${card("A 股主要指数", cnRows(snapshot))}${card("投资建议", '<a class="section-link" href="#/advice">查看大盘、行业、个股、基金与债券建议</a>')}${climate(snapshot)}${macroSummary(snapshot)}${card("本次资料覆盖", `<div class="coverage"><div><strong>${industry?.valid_count ?? "—"}</strong><span>一级行业</span></div><div><strong>${globals.length}</strong><span>国际观测</span></div><div><strong>${dataOf(snapshot.modules.news)?.length ?? 0}</strong><span>资讯条目</span></div></div>${industry?.missing_session_dates.length ? `<p class="caption">行业窗口有 ${industry.missing_session_dates.length} 个交易日缺口，热度与回撤暂停计算。</p>` : ""}`)}${card(
     "最新行业涨幅",
     moduleNote(snapshot.modules.industry, "行业数据") +
       dailyRanking(latestIndustryDay(industry), 3) +
@@ -739,6 +740,7 @@ function render(preserve = true) {
     content = route.code
       ? industryDetail(snapshot, route.code)
       : industryPage(snapshot);
+  else if (route.page === "advice") content = advice(snapshot);
   else if (route.page === "global") content = globalPage(snapshot);
   else if (route.page === "observe") content = observe(snapshot);
   else
@@ -752,9 +754,11 @@ function render(preserve = true) {
       ? "行业分析"
       : route.page === "global"
         ? "全球与宏观"
-        : route.page === "observe"
-          ? "跟踪"
-          : "市场总览") + " · 股市气象站";
+        : route.page === "advice"
+          ? "投资建议"
+          : route.page === "observe"
+            ? "跟踪"
+            : "市场总览") + " · 股市气象站";
   requestAnimationFrame(() => {
     window.scrollTo({ top: y, behavior: "instant" });
     if (!preserve)

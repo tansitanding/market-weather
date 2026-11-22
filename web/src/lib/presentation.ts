@@ -35,7 +35,7 @@ export function dataOf<T>(m: DataModule<T> | undefined): T | undefined {
   return m?.status === "failed" ? undefined : m?.data;
 }
 export type Route = {
-  page: "home" | "industry" | "global" | "observe" | "notfound";
+  page: "home" | "industry" | "global" | "advice" | "observe" | "notfound";
   code?: string;
 };
 export function parseRoute(hash: string): Route {
@@ -43,6 +43,7 @@ export function parseRoute(hash: string): Route {
   if (!p.length) return { page: "home" };
   if (p[0] === "industry" && p.length <= 2 && (!p[1] || /^\d{6}$/.test(p[1])))
     return { page: "industry", code: p[1] };
+  if (p[0] === "advice" && p.length === 1) return { page: "advice" };
   if (p[0] === "global" && p.length === 1) return { page: "global" };
   if (
     p[0] === "observe" &&

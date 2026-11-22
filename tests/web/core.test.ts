@@ -92,6 +92,8 @@ test("hash routes work with project subpaths and reject malformed detail paths",
   });
   assert.equal(parseRoute("#/industry/%3Cscript%3E").page, "notfound");
   assert.equal(parseRoute("#/global/other").page, "notfound");
+  assert.equal(parseRoute("#/advice").page, "advice");
+  assert.equal(parseRoute("#/advice/other").page, "notfound");
   assert.equal(parseRoute("").page, "home");
 });
 test("rendered text is escaped, including long or injected titles", () => {
