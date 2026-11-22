@@ -1214,3 +1214,21 @@ footer small {
   padding-top: 1rem;
   border-top: 1px solid var(--line, #dce6ed);
 }
+
+.journal-form .journal-check {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.journal-form input[type="checkbox"] {
+  width: 1.1rem;
+  min-height: 0;
+  height: 1.1rem;
+  margin: 0;
+}
+#journal-watch label + label {
+  margin-top: 0.6rem;
+}
+.journal-actions {
+  flex-wrap: wrap;
+}
