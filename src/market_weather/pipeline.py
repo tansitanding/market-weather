@@ -9,7 +9,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from .metrics import rank_industries, recover_daily_returns
 from .providers import (CST, SOURCES, Fetcher, sw_universe, sw_history, cn_history, growth_index_history,
-                        yahoo_quote, rss_news, pbc_news, merge_news)
+                        yahoo_quote, shanghai_etf_quote, rss_news, pbc_news, merge_news)
 from .storage import atomic_json, publish
 from .news import curate_news
 from .analysis import temperature, macro_review, industry_research, stock_card, track_signals, investment_plan, RULE
@@ -21,6 +21,12 @@ GLOBAL = [
     ('HSTECH.HK', '恒生科技', 'index'), ('DX-Y.NYB', '美元指数', 'index'),
     ('^TNX', '美国10年期国债收益率', 'yield'), ('GC=F', '黄金期货连续', 'continuous_futures'),
     ('CL=F', 'WTI原油期货连续', 'continuous_futures'),
+]
+
+SHANGHAI_ETFS = [
+    ('510300', '沪深300ETF华泰柏瑞', 'equity_etf'),
+    ('510500', '中证500ETF南方', 'equity_etf'),
+    ('511010', '国泰上证5年期国债ETF', 'bond_etf'),
 ]
 
 
@@ -59,6 +65,9 @@ def collect(root, now=None, replay=None, settings=None):
             jobs[pool.submit(guarded, lambda c=code: sw_history(fetch, c, now))] = ('industry', code, name)
         for symbol, name, kind in GLOBAL:
             jobs[pool.submit(guarded, lambda s=symbol,n=name,k=kind: yahoo_quote(fetch, s, n, k, now))] = ('global', symbol, None)
+        for code, name, kind in SHANGHAI_ETFS:
+            future = pool.submit(guarded, lambda c=code,n=name,k=kind: shanghai_etf_quote(fetch, c, n, k, now))
+            jobs[future] = ('global', code + '.SS', None)
         news_jobs = [
             ('fed', lambda: rss_news(fetch, 'fed', 'https://www.federalreserve.gov/feeds/press_all.xml', now)),
             ('cns', lambda: rss_news(fetch, 'cns', 'https://www.chinanews.com.cn/rss/finance.xml', now)),
@@ -106,7 +115,7 @@ def collect(root, now=None, replay=None, settings=None):
                                 'data': {'benchmark': benchmark, 'indices': cn_indices}, 'source_as_of_date': benchmark[-1]['date']}
     else:
         modules['cn_market'] = {'status': 'failed', 'error': {'code': 'NO_BENCHMARK', 'message': 'no valid completed benchmark bars'}}
-    modules['global'] = {'status': 'succeeded' if len(quotes) == len(GLOBAL) else ('partial' if quotes else 'failed'),
+    modules['global'] = {'status': 'succeeded' if len(quotes) == len(GLOBAL) + len(SHANGHAI_ETFS) else ('partial' if quotes else 'failed'),
                          'collected_at': now.isoformat(), 'carried_forward': False, 'data': sorted(quotes, key=lambda r: r['symbol'])}
     for quote in modules['global']['data']:
         quote['freshness'] = 'stale' if quote['age_hours'] > 7 * 24 else 'latest_available'

@@ -1092,7 +1092,7 @@ footer small {
   border-radius: 10px;
   padding: 11px;
 }
-.advice-rules h3 {
+.advice-rules h4 {
   margin: 0;
 }
 .journal-form {
@@ -1207,4 +1207,10 @@ footer small {
 }
 .global-insight p {
   margin-top: 5px;
+}
+
+.investment-section + .investment-section {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line, #dce6ed);
 }

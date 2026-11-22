@@ -14,6 +14,7 @@ from datetime import datetime, timezone, time as dtime
 from email.utils import parsedate_to_datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
+from .calendar import cn_sessions
 from .metrics import validate_bars, number
 from .news import OFFICIAL
 
@@ -318,6 +319,29 @@ def stock_history(fetch, security, now):
             raise ValueError('OHLC range invalid')
         rows.append({'date': v[0], 'open': values[0], 'close': values[1], 'high': values[2], 'low': values[3], 'amount': number(v[6])})
     return completed_cn(rows, now)[-180:]
+
+
+def shanghai_etf_quote(fetch, code, name, asset_type, now):
+    symbol = code + '.SS'
+    try:
+        bars = cn_history(fetch, code, now)
+        close = bars[-1]
+    except (IndexError, KeyError, TypeError, ValueError, OSError, RuntimeError):
+        return yahoo_quote(fetch, symbol, name, asset_type, now)
+    day = close['date']
+    observed = datetime.fromisoformat(day + 'T15:00:00').replace(tzinfo=CST)
+    previous = bars[-2] if len(bars) > 1 else None
+    change = None
+    if previous and cn_sessions(previous['date'], day) == [previous['date'], day]:
+        change = round((close['close'] / previous['close'] - 1) * 100, 6)
+    return {'symbol': symbol, 'name': name, 'asset_type': asset_type,
+            'price': close['close'], 'unit': 'CNY', 'currency': 'CNY',
+            'market_date': day, 'observed_at': observed.isoformat(),
+            'exchange_timezone': 'Asia/Shanghai', 'source': 'eastmoney',
+            'change_vs_previous_day_close_pct': change, 'change_bp': None,
+            'change_unit': 'percent', 'availability': 'latest_available_observation',
+            'age_hours': round((now - observed).total_seconds() / 3600, 3),
+            'is_live_guaranteed': False}
 
 
 def market_universe(fetch, now):

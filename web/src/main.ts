@@ -185,7 +185,7 @@ function globalRow(q: GlobalQuote) {
       ? q.change_bp
       : q.change_vs_previous_day_close_pct;
   const unit = q.unit === "percent_yield" ? " bp" : "%";
-  return `<article class="quote"><div class="quote-top"><strong>${e(q.name)}</strong><b class="${direction(change)}">${signed(change, unit)}</b></div><div class="quote-price">${decimal(q.price)} <small>${q.unit === "percent_yield" ? "% · 收益率" : q.unit === "index_points" ? "点" : e(q.currency ?? q.unit)}${q.asset_type === "continuous_futures" ? " · 连续期货" : ""}</small></div><div class="quote-time">${e(q.market_date)} · ${e(timeLabel(q.observed_at, q.exchange_timezone).split(" ").at(-1))} 来源市场时间<br>北京时间 ${e(timeLabel(q.observed_at))} · ${q.freshness === "stale" ? "资料较旧" : "最近可用观测"}</div><div class="quote-source">${external(sourceURLs[q.source] ?? "https://finance.yahoo.com/", sourceNames[q.source] ?? q.source)}</div></article>`;
+  return `<article class="quote"><div class="quote-top"><strong>${e(q.name)}</strong><b class="${direction(change)}">${signed(change, unit)}</b></div><div class="quote-price">${decimal(q.price)} <small>${q.unit === "percent_yield" ? "% · 收益率" : q.unit === "index_points" ? "点" : e(q.currency ?? q.unit)}${q.asset_type === "continuous_futures" ? " · 连续期货" : ""}</small></div><div class="quote-time">${e(q.market_date)} · ${e(timeLabel(q.observed_at, q.exchange_timezone).split(" ").at(-1))} 来源市场时间<br>北京时间 ${e(timeLabel(q.observed_at))} · ${q.freshness === "stale" ? "资料较旧" : "最近可用观测"}</div><div class="quote-source">${external(q.symbol.endsWith(".SS") && q.source === "eastmoney" ? `https://quote.eastmoney.com/sh${encodeURIComponent(q.symbol.split(".")[0])}.html` : sourceURLs[q.source] ?? "https://finance.yahoo.com/", sourceNames[q.source] ?? q.source)}</div></article>`;
 }
 function cnRows(snapshot: Snapshot) {
   const module = snapshot.modules.cn_market;
@@ -223,17 +223,43 @@ function cnRows(snapshot: Snapshot) {
   );
 }
 function advice(snapshot: Snapshot) {
-  const p = dataOf(snapshot.modules.investment);
-  if (!p)
-    return card(
-      "投资建议",
-      empty("等待本期研判", "需要完整的沪深300日线才能生成研判。"),
-    );
+  const plan = dataOf(snapshot.modules.investment);
+  const stocks = dataOf(snapshot.modules.observations) ?? [];
+  const market = plan
+    ? `<div class="advice-lead"><strong>${e(plan.stance)}</strong><small>${e(plan.as_of_date)} 收盘判断</small><p>${e(plan.action)}</p></div><h4>判断依据</h4><ul>${plan.evidence.map((line) => `<li>${e(line)}</li>`).join("")}</ul><div class="advice-rules"><div><h4>参与条件</h4><p>${e(plan.confirm)}</p></div><div><h4>重新评估条件</h4><p>${e(plan.invalidate)}</p></div></div><p class="caption">${e(plan.risk)}</p>`
+    : '<p class="muted">沪深 300 日线不足，等待下一次大盘研判。</p>';
+  const stockList = stocks.length
+    ? stocks.map((stock) => `<article class="sector-review"><a class="section-link" href="#/observe/${encodeURIComponent(stock.code)}">${e(stock.name)} · ${e(stock.code)}</a><p>${e(stock.conclusion)}</p><p class="caption">观察条件 · ${e(stock.trigger)}</p></article>`).join("")
+    : '<p class="muted">当前暂无符合规则的个股候选。</p>';
   return card(
     "投资建议",
-    `<div class="advice-lead"><strong>${e(p.stance)}</strong><small>${e(p.as_of_date)} 收盘判断</small><p>${e(p.action)}</p></div><h3>判断依据</h3><ul>${p.evidence.map((line) => `<li>${e(line)}</li>`).join("")}</ul><div class="advice-rules"><div><h3>何时考虑参与</h3><p>${e(p.confirm)}</p></div><div><h3>何时重新评估</h3><p>${e(p.invalidate)}</p></div></div><p class="caption">${e(p.risk)}</p><a class="section-link" href="#/observe">查看个股候选与我的跟踪</a>`,
+    `<section class="investment-section"><h3>整体大盘</h3>${market}</section>
+     <section class="investment-section"><h3>行业</h3>${sectorReviewContent(snapshot)}<a class="section-link" href="#/industry">查看行业排行</a></section>
+     <section class="investment-section"><h3>关注个股</h3>${stockList}<a class="section-link" href="#/observe">查看个股候选与我的跟踪</a></section>
+     <section class="investment-section"><h3>关注基金</h3>${watchQuote(snapshot, "510300.SS", "沪深300ETF华泰柏瑞", "510300")}${watchQuote(snapshot, "510500.SS", "中证500ETF南方", "510500")}<p class="caption">用两只宽基 ETF 对照大盘股与中盘股表现。比较涨跌前先核对交易日，关注基金成交与折溢价。</p></section>
+     <section class="investment-section"><h3>债券晴雨表</h3>${bondWeather(snapshot)}</section>`,
     "advice-card",
   );
+}
+function watchQuote(snapshot: Snapshot, symbol: string, name: string, code?: string) {
+  const quote = dataOf(snapshot.modules.global)?.find((row) => row.symbol === symbol);
+  const label = code ? `${name}（${code}）` : name;
+  return quote
+    ? globalRow({ ...quote, name: label })
+    : `<p><strong>${e(label)}</strong> <span class="muted">· 暂无可用行情</span></p>`;
+}
+function bondWeather(snapshot: Snapshot) {
+  const quotes = dataOf(snapshot.modules.global) ?? [];
+  const etf = quotes.find((q) => q.symbol === "511010.SS" && q.freshness !== "stale");
+  const treasury = quotes.find((q) => q.symbol === "^TNX" && q.freshness !== "stale");
+  const move = etf?.change_vs_previous_day_close_pct;
+  const bp = treasury?.change_bp;
+  const domestic = move == null ? "等待国内债券样本的可比收盘。"
+    : move > 0 ? "国内国债 ETF 价格走强。" : move < 0 ? "国内国债 ETF 价格承压。" : "国内国债 ETF 价格持平。";
+  const overseas = bp == null ? "等待美债收益率方向。"
+    : bp > 0 ? "美债收益率上行，关注长久期债券的利率风险。"
+    : bp < 0 ? "美债收益率下行，观察利率回落能否延续。" : "美债收益率持平。";
+  return `<p>${domestic} ${overseas}</p>${watchQuote(snapshot, "511010.SS", "国泰上证5年期国债ETF", "511010")}${watchQuote(snapshot, "^TNX", "美国10年期国债收益率")}<p class="caption">国内样本展示 ETF 市价涨跌，美债展示收益率和基点变动。两项各用本地交易日，覆盖政府债券观察，信用债暂未覆盖。</p>`;
 }
 function climate(snapshot: Snapshot) {
   const m = snapshot.modules.temperature,
@@ -250,6 +276,9 @@ function macroSummary(snapshot: Snapshot) {
   );
 }
 function sectorReviews(snapshot: Snapshot, code?: string) {
+  return card("行业建议", sectorReviewContent(snapshot, code));
+}
+function sectorReviewContent(snapshot: Snapshot, code?: string) {
   const rows = (
     dataOf(snapshot.modules.industry)?.recommendations ?? []
   ).filter(
@@ -257,9 +286,7 @@ function sectorReviews(snapshot: Snapshot, code?: string) {
       ["sector-daily-v1.0", "sector-daily-v2.0"].includes(r.rule_version) &&
       (!code || r.code === code),
   );
-  return card(
-    "行业建议",
-    rows.length
+  return rows.length
       ? rows
           .map(
             (r) =>
@@ -274,8 +301,7 @@ function sectorReviews(snapshot: Snapshot, code?: string) {
           code
             ? "目前没有该行业的领先证据。等日涨幅和排名改善，再验证成交与成分股扩散。"
             : "现有可核验榜单暂无上涨的领先行业，或日涨幅暂缺。先等下一次收盘，观察上涨行业是否增多。",
-        ),
-  );
+        );
 }
 function trackingSection(snapshot: Snapshot) {
   const rows = dataOf(snapshot.modules.tracking) ?? [];
@@ -543,7 +569,7 @@ function globalPage(snapshot: Snapshot) {
       "宏观资产",
       rows.filter(
         (q) =>
-          !["^GSPC", "^IXIC", "^DJI", "^HSI", "HSTECH.HK"].includes(q.symbol),
+          !["^GSPC", "^IXIC", "^DJI", "^HSI", "HSTECH.HK", "^TNX"].includes(q.symbol) && !q.asset_type.endsWith("_etf"),
       ),
     ],
   ] as const;
@@ -554,6 +580,7 @@ function globalPage(snapshot: Snapshot) {
       "各市场独立标注时间，均为最近可用观测。",
     ) +
     globalClimate(snapshot) +
+    card("债券晴雨表", bondWeather(snapshot)) +
     moduleNote(m, "国际行情") +
     (rows.length
       ? groups
@@ -777,6 +804,7 @@ app.addEventListener("click", (event) => {
       render();
       break;
     case "refresh":
+      event.preventDefault();
       void refreshPublishedData();
       break;
     case "journal-new":

@@ -2,7 +2,8 @@ import unittest
 from datetime import datetime, timezone
 from market_weather.metrics import rank_industries, validate_bars, recover_daily_returns
 from market_weather.calendar import cn_sessions, is_cn_session
-from market_weather.providers import completed_cn
+from market_weather.providers import completed_cn, shanghai_etf_quote
+from unittest.mock import patch
 
 DAYS = cn_sessions('2026-08-03', '2026-09-23')[-31:]
 
@@ -104,6 +105,22 @@ class MetricsTests(unittest.TestCase):
         now=datetime(2026,11,20,3,45,tzinfo=timezone.utc)
         result=completed_cn([{'date':'2026-11-19','close':1},{'date':'2026-11-20','close':2}],now)
         self.assertEqual(len(result),1)
+
+    def test_bond_etf_quote_keeps_price_percent_separate_from_yield(self):
+        now = datetime(2026, 9, 23, 9, tzinfo=timezone.utc)
+        with patch('market_weather.providers.cn_history', return_value=bars()[-2:]):
+            quote = shanghai_etf_quote(None, '511010', 'Bond ETF', 'bond_etf', now)
+        self.assertEqual(quote['symbol'], '511010.SS')
+        self.assertEqual(quote['unit'], 'CNY')
+        self.assertIsNone(quote['change_bp'])
+        self.assertAlmostEqual(quote['change_vs_previous_day_close_pct'], (130 / 129 - 1) * 100, places=5)
+
+    def test_etf_quote_falls_back_after_primary_network_failure(self):
+        now = datetime(2026, 9, 23, 9, tzinfo=timezone.utc)
+        with patch('market_weather.providers.cn_history', side_effect=RuntimeError('timeout')), \
+                patch('market_weather.providers.yahoo_quote') as fallback:
+            shanghai_etf_quote(None, '510300', 'ETF', 'equity_etf', now)
+        fallback.assert_called_once_with(None, '510300.SS', 'ETF', 'equity_etf', now)
 
     def test_official_holiday_and_unknown_year(self):
         self.assertFalse(is_cn_session('2026-10-01'))
