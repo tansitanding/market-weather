@@ -27,9 +27,9 @@ export interface CNMarket {
 export interface IndustryRecord {
   code: string;
   name: string;
-  return_30d_pct: number;
-  excess_30d_pp: number;
-  return_5d_pct: number;
+  return_30d_pct: number | null;
+  excess_30d_pp: number | null;
+  return_5d_pct: number | null;
   max_drawdown_30d_pct: number | null;
   missing_session_dates: string[];
   transaction_heat_30d_share_pct?: number;
@@ -55,7 +55,7 @@ export interface IndustryModule {
   benchmark: {
     code: string;
     name: string;
-    return_30d_pct: number;
+    return_30d_pct: number | null;
     series?: { date: string; cumulative_return_pct: number }[];
   };
   recommendations?: SectorReview[];

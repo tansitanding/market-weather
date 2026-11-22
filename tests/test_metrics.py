@@ -69,9 +69,23 @@ class MetricsTests(unittest.TestCase):
         self.assertEqual(result['heat_reason'], 'missing_official_trading_sessions')
         self.assertIn(DAYS[10], a['missing_session_dates'])
 
-    def test_missing_benchmark_session_rejected(self):
-        bm = bars(0); del bm[15]
-        with self.assertRaises(ValueError): rank_industries(universe(), bm, 2)
+    def test_missing_benchmark_session_preserves_industry_analysis(self):
+        bm = bars(0)
+        del bm[15]
+        result = rank_industries(universe(), bm, 2)
+        self.assertEqual(result['industries'][0]['excess_30d_pp'], 60)
+        self.assertEqual(result['heat_status'], 'succeeded')
+
+    def test_missing_endpoints_preserve_available_daily_and_period_metrics(self):
+        u = universe()
+        del u['A']['bars'][0]
+        result = rank_industries(u, [], 2)
+        a = next(row for row in result['industries'] if row['code'] == 'A')
+        self.assertIsNone(a['return_30d_pct'])
+        self.assertIsNone(a['excess_30d_pp'])
+        self.assertIsNotNone(a['return_5d_pct'])
+        self.assertEqual(result['rankings']['return_top'], ['B'])
+        self.assertEqual(len(result['daily_returns'][-1]['rows']), 2)
 
     def test_zero_amount_disables_heat_not_returns(self):
         u=universe(); u['A']['bars'][-1]['amount']=0

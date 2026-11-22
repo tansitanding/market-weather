@@ -77,58 +77,57 @@ def recover_daily_returns(industry, end):
 
 
 def rank_industries(histories, benchmark, expected_count=31):
-    """30 return intervals = 31 common closes. Heat uses a fixed 31-sector denominator.
-
-    Reference is the newest common completed session of all available industries and
-    the benchmark. A failed industry still permits partial return ranks; heat is null.
-    No forward-filling, missing-day compression or changing-denominator heat ranks.
-    """
+    """Use official sessions and calculate each metric from its required inputs."""
     benchmark = validate_bars(benchmark)
-    if not benchmark:
-        raise ValueError('benchmark missing')
-    clean = {k: validate_bars(v['bars']) for k, v in histories.items()}
-    clean = {k: v for k, v in clean.items() if v}
-    if not clean:
+    maps = {}
+    for code, history in histories.items():
+        try:
+            bars = validate_bars(history['bars'])
+        except (KeyError, TypeError, ValueError):
+            continue
+        if bars:
+            maps[code] = {bar['date']: bar for bar in bars}
+    if not maps:
         raise ValueError('industry history missing')
-    common = set(b['date'] for b in benchmark)
-    for rows in clean.values():
-        common &= {b['date'] for b in rows}
-    dates = sorted(common)
-    if not dates:
-        raise ValueError('no common closing date')
-    # Require the selected 31 dates to be consecutive benchmark sessions, not
-    # 31 observations with a missing day silently compressed away.
-    end = dates[-1]
-    benchmark_dates = [b['date'] for b in benchmark if b['date'] <= end]
-    window = benchmark_dates[-31:]
-    if len(window) != 31:
-        raise ValueError('fewer than 31 benchmark sessions')
-    official = cn_sessions(window[0], window[-1])
-    if window != official:
-        raise ValueError('benchmark sessions differ from official exchange calendar')
-    missing_path = sorted(d for d in window if d not in common)
-    if window[0] not in common or window[-6] not in common:
-        raise ValueError('missing required return endpoint')
-    bm = {b['date']: b for b in benchmark}
-    bm_return = (bm[end]['close'] / bm[window[0]]['close'] - 1) * 100
-    maps = {k: {b['date']: b for b in rows} for k, rows in clean.items()}
+    bm = {bar['date']: bar for bar in benchmark}
+    industry_dates = set().union(*maps.values())
+    all_dates = industry_dates | bm.keys()
+    sessions = cn_sessions(min(all_dates), max(all_dates))
+    end = next((day for day in reversed(sessions) if day in industry_dates), None)
+    if end is None:
+        raise ValueError('no official industry closing session')
+    window = sessions[:sessions.index(end) + 1][-31:]
+    if len(window) < 2:
+        raise ValueError('fewer than two closing sessions')
+    missing_path = [day for day in window if any(day not in rows for rows in maps.values())]
+
+    def endpoint_return(rows, intervals):
+        if len(window) <= intervals:
+            return None
+        start = window[-intervals - 1]
+        if start not in rows or end not in rows:
+            return None
+        return (rows[end]['close'] / rows[start]['close'] - 1) * 100
+
+    bm_return = endpoint_return(bm, 30)
     records = []
     for code, rows in maps.items():
         available = [d for d in window if d in rows]
         closes = [rows[d]['close'] for d in available]
-        ret = (rows[end]['close'] / rows[window[0]]['close'] - 1) * 100
+        ret = endpoint_return(rows, 30)
+        ret5 = endpoint_return(rows, 5)
         missing = [d for d in window if d not in rows]
         records.append({
             'code': code, 'name': histories[code]['name'],
-            'return_30d_pct': round(ret, 6),
-            'excess_30d_pp': round(ret - bm_return, 6),
-            'return_5d_pct': round((rows[end]['close'] / rows[window[-6]]['close'] - 1) * 100, 6),
-            'max_drawdown_30d_pct': None if missing else round(drawdown(closes), 6), 'missing_session_dates': missing,
+            'return_30d_pct': round(ret, 6) if ret is not None else None,
+            'excess_30d_pp': round(ret - bm_return, 6) if ret is not None and bm_return is not None else None,
+            'return_5d_pct': round(ret5, 6) if ret5 is not None else None,
+            'max_drawdown_30d_pct': None if missing or len(window) != 31 else round(drawdown(closes), 6), 'missing_session_dates': missing,
             'series': [{'date': d, 'cumulative_return_pct': round((rows[d]['close'] / closes[0] - 1) * 100, 6)} for d in available],
         })
     amount_days = window[1:]
     heat_reason = None
-    if missing_path:
+    if len(window) != 31 or missing_path:
         heat_reason = 'missing_official_trading_sessions'
     elif len(maps) != expected_count:
         heat_reason = 'incomplete_industry_universe'
@@ -142,25 +141,28 @@ def rank_industries(histories, benchmark, expected_count=31):
             earlier = sum(shares[:25]) / 25
             record['transaction_heat_30d_share_pct'] = round(sum(shares) / 30 * 100, 6)
             record['heat_rising_5v25_pct'] = round((recent / earlier - 1) * 100, 6)
-    records.sort(key=lambda r: (-r['return_30d_pct'], r['code']))
+    ranked = sorted((r for r in records if r['return_30d_pct'] is not None),
+                    key=lambda r: (-r['return_30d_pct'], r['code']))
+    ranked_codes = {r['code'] for r in ranked}
+    records = ranked + [r for r in records if r['code'] not in ranked_codes]
     return {
-        'status': 'succeeded' if len(records) == expected_count and not heat_reason else 'partial',
+        'status': 'succeeded' if len(records) == expected_count and not heat_reason and bm_return is not None else 'partial',
         'classification': 'SW2021_L1', 'expected_count': expected_count, 'valid_count': len(records),
         'window_start': window[0], 'as_of_date': end, 'return_intervals': 30,
-        'benchmark': {'code': '000300', 'name': '沪深300', 'return_30d_pct': round(bm_return, 6)},
-        'industry_latest_lags_benchmark': end < benchmark[-1]['date'],
+        'benchmark': {'code': '000300', 'name': '沪深300', 'return_30d_pct': round(bm_return, 6) if bm_return is not None else None},
+        'industry_latest_lags_benchmark': bool(benchmark and end < benchmark[-1]['date']),
         'missing_session_dates': missing_path,
         'heat_status': 'unavailable' if heat_reason else 'succeeded', 'heat_reason': heat_reason,
         'news_heat_status': 'not_implemented', 'breadth_status': 'not_implemented',
         'rankings': {
-            'return_top': [r['code'] for r in records[:5]],
+            'return_top': [r['code'] for r in ranked[:5]],
             'transaction_heat_top': [] if heat_reason else [r['code'] for r in sorted(records, key=lambda r: (-r['transaction_heat_30d_share_pct'], r['code']))[:5]],
             'heat_rising_top': [] if heat_reason else [r['code'] for r in sorted(records, key=lambda r: (-r['heat_rising_5v25_pct'], r['code']))[:5]],
         },
         'industries': records,
         'daily_returns': daily_industry_returns(
             maps, {code: row['name'] for code, row in histories.items()},
-            cn_sessions(benchmark[-31]['date'], benchmark[-1]['date']),
+            sessions[-31:],
         ),
         'recommendations': [], 'recommendation_status': 'phase_5_not_implemented',
     }

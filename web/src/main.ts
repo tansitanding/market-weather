@@ -52,11 +52,8 @@ let selectedIndustryDate = "";
 let newsCount = 10;
 let newsMode: "important" | "recent" = "important";
 let newsFilter = "all";
-const workflowURL =
-  "https://github.com/tansitanding/market-weather/actions/workflows/refresh.yml";
-let refreshDeadline = 0;
-let refreshTimer: number | undefined;
-let refreshStart = "";
+let refreshing = false;
+let refreshMessage = "";
 let journal = readJournal(cache);
 let journalEditing: JournalEntry | "new" | null = null;
 const scrolls = new Map<string, number>();
@@ -460,7 +457,34 @@ function industryDetail(snapshot: Snapshot, code: string) {
       ) +
       '<a class="section-link" href="#/industry">返回行业排行</a>'
     );
-  return `<a class="back-link" href="#/industry">返回行业排行</a>${heading(e(r.code) + " · 申万一级", e(r.name))}${moduleNote(m, "行业数据")}${card("近 30 个交易日每日涨跌", dailyMoveChart(data, code))}${card("依据与来源", `${external(sourceURLs.sw, "申万宏源研究 · 行业指数")}${external(sourceURLs.eastmoney, "东方财富 · 沪深 300 基准")}${fold("industry-evidence", "查看计算方法与数据范围", "<p>涨幅按相邻两个交易日的收盘计算，遇到缺日留空。</p>")}<p class="caption">行业与新闻按标题关键词关联，不能据此确认催化或利好。</p>`)}${sectorReviews(snapshot, code)}${card("相关资讯线索", `<p class="caption">仅标题关键词关联，需阅读原文核验。</p>${(dataOf(snapshot.modules.macro)?.industry_news[code] ?? []).map(article).join("") || empty("暂无匹配资讯", "当前来源覆盖有限，未匹配不代表没有事件。")}`)}${card(
+  const metrics: [string, number | null, string][] = [
+    ["5 日涨跌", r.return_5d_pct, "%"],
+    ["30 日涨跌", r.return_30d_pct, "%"],
+    ["30 日相对沪深 300", r.excess_30d_pp, " 个百分点"],
+    ["30 日最大回撤", r.max_drawdown_30d_pct, "%"],
+  ];
+  const short = r.return_5d_pct;
+  const medium = r.return_30d_pct;
+  const relative = r.excess_30d_pp;
+  const directionNote =
+    short == null || medium == null ? "等待收盘数据补齐后判断短中期方向。"
+    : short > 0 && medium > 0 ? "短中期均上涨，观察后续收盘能否延续涨势。"
+    : short < 0 && medium > 0 ? "中期上涨、短期回落，观察回落是否止住。"
+    : short > 0 && medium < 0 ? "中期下跌、短期反弹，观察反弹能否延续。"
+    : short < 0 && medium < 0 ? "短中期均下跌，观察跌幅是否收窄。"
+    : "至少一个观察周期涨跌持平，等待下一交易日确认。";
+  const relativeNote =
+    relative == null ? "当前缺少同期对照数据。"
+    : relative > 0 ? "同期跑赢沪深 300，复核超额表现能否延续。"
+    : relative < 0 ? "同期跑输沪深 300，观察相对弱势是否收敛。"
+    : "同期表现与沪深 300 持平。";
+  const research = card("行业投资参考",
+    `<p class="caption">截至 ${e(data.as_of_date)} 收盘 · 窗口内缺失收盘 ${r.missing_session_dates.length} 天</p>
+     <dl>${metrics.map(([label, value, unit]) =>
+       `<dt>${label}</dt><dd>${value == null ? "数据不足" : `${value.toFixed(2)}${unit}`}</dd>`,
+     ).join("")}</dl>
+     <h3>下一交易日观察</h3><ul><li>${directionNote}</li><li>${relativeNote}</li></ul>`);
+  return `<a class="back-link" href="#/industry">返回行业排行</a>${heading(e(r.code) + " · 申万一级", e(r.name))}${moduleNote(m, "行业数据")}${research}${card("近 30 个交易日每日涨跌", dailyMoveChart(data, code))}${card("依据与来源", `${external(sourceURLs.sw, "申万宏源研究 · 行业指数")}${external(sourceURLs.eastmoney, "东方财富 · 沪深 300 基准")}${fold("industry-evidence", "查看计算方法与数据范围", "<p>涨幅按相邻两个交易日的收盘计算，遇到缺日留空。</p>")}<p class="caption">行业与新闻按标题关键词关联，不能据此确认催化或利好。</p>`)}${sectorReviews(snapshot, code)}${card("相关资讯线索", `<p class="caption">仅标题关键词关联，需阅读原文核验。</p>${(dataOf(snapshot.modules.macro)?.industry_news[code] ?? []).map(article).join("") || empty("暂无匹配资讯", "当前来源覆盖有限，未匹配不代表没有事件。")}`)}${card(
     "相关个股",
     (dataOf(snapshot.modules.observations) ?? [])
       .filter((x) => x.conclusion.includes(r.name))
@@ -694,7 +718,7 @@ function render(preserve = true) {
     content =
       heading("NOT FOUND", "页面不存在") +
       '<a class="section-link" href="#/">返回市场总览</a>';
-  app.innerHTML = `<a class="skip-link" href="#main-content">跳到主要内容</a><div class="app-shell"><header><a class="brand" href="#/" aria-label="股市气象站首页"><span aria-hidden="true">◒</span><div><b>股市气象站</b><small>最新资料 · 公开阅读</small></div></a><a id="refresh-collection" class="refresh refresh-link" href="${workflowURL}" target="_blank" rel="noopener noreferrer" data-action="collect" title="打开 GitHub 并运行采集任务">刷新</a></header>${banner}<main id="main-content" tabindex="-1"><div class="snapshot-meta">${snapshot ? `<span>上次发布 ${e(timeLabel(snapshot.published_at))} 北京时间</span><small>${state.fromCache ? "本机缓存 · " : ""}交易日 08:45 / 11:45 / 17:30 采集</small>${state.checkedAt ? `<small>最近检查 ${e(timeLabel(state.checkedAt))} 北京时间</small>` : ""}` : state.loading ? "<span>正在读取资料快照</span>" : "<span>暂无有效资料快照</span>"}</div>${refreshDeadline ? '<p class="module-note">在 GitHub 点击 Run workflow。新版本发布后，本页会自动载入。</p>' : ""}${content}<footer><p>行情以各市场时间为准 · 无需登录阅读</p></footer></main>${nav()}</div>`;
+  app.innerHTML = `<a class="skip-link" href="#main-content">跳到主要内容</a><div class="app-shell"><header><a class="brand" href="#/" aria-label="股市气象站首页"><span aria-hidden="true">◒</span><div><b>股市气象站</b><small>最新资料 · 公开阅读</small></div></a><button type="button" class="refresh" data-action="refresh" ${refreshing ? "disabled" : ""}>刷新数据</button></header>${banner}<main id="main-content" tabindex="-1"><div class="snapshot-meta">${snapshot ? `<span>上次发布 ${e(timeLabel(snapshot.published_at))} 北京时间</span><small>${state.fromCache ? "本机缓存 · " : ""}交易日 08:45 / 11:45 / 17:30 采集</small>${state.checkedAt ? `<small>最近检查 ${e(timeLabel(state.checkedAt))} 北京时间</small>` : ""}` : state.loading ? "<span>正在读取资料快照</span>" : "<span>暂无有效资料快照</span>"}</div><p class="module-note" role="status" ${refreshMessage ? "" : "hidden"}>${e(refreshMessage)}</p>${content}<footer><p>行情以各市场时间为准 · 无需登录阅读</p></footer></main>${nav()}</div>`;
 
   document.title =
     (route.page === "industry"
@@ -712,30 +736,26 @@ function render(preserve = true) {
       document.getElementById(focused)?.focus({ preventScroll: true });
   });
 }
-async function checkForPublication() {
-  if (!refreshDeadline || document.hidden) return;
-  await store.refresh();
-  if (store.state.pending && store.state.pending.snapshot_id !== refreshStart) {
-    store.acceptPending();
-    endRefresh();
-  } else if (
-    Date.now() >= refreshDeadline ||
-    (store.state.snapshot?.snapshot_id !== refreshStart && store.state.snapshot)
-  )
-    endRefresh();
-}
-function endRefresh() {
-  refreshDeadline = 0;
-  window.clearInterval(refreshTimer);
+async function refreshPublishedData() {
+  if (refreshing) return;
+  refreshing = true;
+  refreshMessage = "正在检查已发布数据…";
   if (!journalEditing) render();
+  try {
+    await store.refresh();
+    if (store.state.pending) {
+      store.acceptPending();
+      refreshMessage = "已载入最新发布的数据。";
+    } else {
+      refreshMessage = store.state.error
+        ? "检查失败，请稍后重试。"
+        : store.state.snapshot ? "当前已是最新发布版本。" : "暂无已发布数据。";
+    }
+  } finally {
+    refreshing = false;
+    if (!journalEditing) render();
+  }
 }
-function startRefresh() {
-  refreshStart = store.state.snapshot?.snapshot_id ?? "";
-  refreshDeadline = Date.now() + 7 * 60_000;
-  window.clearInterval(refreshTimer);
-  refreshTimer = window.setInterval(() => void checkForPublication(), 20_000);
-}
-document.addEventListener("visibilitychange", () => void checkForPublication());
 app.addEventListener("click", (event) => {
   if ((event.target as HTMLElement).closest(".skip-link")) {
     event.preventDefault();
@@ -756,11 +776,8 @@ app.addEventListener("click", (event) => {
       newsCount += 10;
       render();
       break;
-    case "collect":
-      startRefresh();
-      window.setTimeout(() => {
-        if (!journalEditing) render();
-      }, 0);
+    case "refresh":
+      void refreshPublishedData();
       break;
     case "journal-new":
       journalEditing = "new";

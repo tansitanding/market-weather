@@ -108,9 +108,9 @@ function record(v: unknown): IndustryRecord {
   return {
     code: code(r.code),
     name: str(r.name, 80),
-    return_30d_pct: num(r.return_30d_pct),
-    excess_30d_pp: num(r.excess_30d_pp),
-    return_5d_pct: num(r.return_5d_pct),
+    return_30d_pct: nullable(r.return_30d_pct),
+    excess_30d_pp: nullable(r.excess_30d_pp),
+    return_5d_pct: nullable(r.return_5d_pct),
     max_drawdown_30d_pct: missing.length
       ? null
       : nullable(r.max_drawdown_30d_pct),
@@ -224,7 +224,7 @@ function industry(v: unknown): IndustryModule {
         : {}),
       code: code(b.code),
       name: str(b.name, 80),
-      return_30d_pct: num(b.return_30d_pct),
+      return_30d_pct: nullable(b.return_30d_pct),
     },
     rankings: {
       return_top: ranked(rankings.return_top),

@@ -8,7 +8,7 @@ def year_calendar(year):
     path = Path(__file__).resolve().parents[2] / 'config' / ('calendar-cn-%d.json' % year)
     if not path.exists():
         raise ValueError('official calendar not configured for year %d' % year)
-    return json.loads(path.read_text())
+    return json.loads(path.read_text(encoding='utf-8'))
 
 
 def is_cn_session(day):
