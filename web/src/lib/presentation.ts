@@ -39,7 +39,7 @@ export type Route = {
   code?: string;
 };
 export function parseRoute(hash: string): Route {
-  const p = hash.replace(/^#\/?/, "").split("/").filter(Boolean);
+  const p = hash.split("?")[0].replace(/^#\/?/, "").split("/").filter(Boolean);
   if (!p.length) return { page: "home" };
   if (p[0] === "industry" && p.length <= 2 && (!p[1] || /^\d{6}$/.test(p[1])))
     return { page: "industry", code: p[1] };

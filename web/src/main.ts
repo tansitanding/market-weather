@@ -19,6 +19,14 @@ import {
   watchReview,
   type JournalEntry,
 } from "./lib/journal.ts";
+import {
+  collectionWorkflow,
+  fineGrainedTokens,
+  isCollectionToken,
+  dispatchCollection,
+  collectionRunURL,
+  collectionStatus,
+} from "./lib/collection.ts";
 import { SnapshotStore } from "./lib/store.ts";
 import {
   escapeHTML as e,
@@ -58,6 +66,12 @@ let newsMode: "important" | "recent" = "important";
 let newsFilter = "all";
 let refreshing = false;
 let refreshMessage = "";
+let activeRun: number | null = null;
+let lastRun: number | null = null;
+let pollTimer = 0;
+let authorization: string | null = null;
+let authorizationTimer = 0;
+let trackedUntil = 0;
 let journal = readJournal(cache);
 let journalEditing: JournalEntry | "new" | null = null;
 let journalDraft: Omit<JournalEntry, "id" | "date"> | null = null;
@@ -79,7 +93,9 @@ const sourceURLs: Record<string, string> = {
   yahoo: "https://finance.yahoo.com/",
 };
 const icon = (name: string) =>
-  ({ home: "◒", industry: "▦", global: "◎", advice: "▤", observe: "◇" })[name] ?? "◒";
+  ({ home: "◒", industry: "▦", global: "◎", advice: "▤", observe: "◇" })[
+    name
+  ] ?? "◒";
 function external(url: string, label: string, cls = "source-link") {
   const u = safeURL(url);
   return u
@@ -192,7 +208,7 @@ function globalRow(q: GlobalQuote) {
       ? q.change_bp
       : q.change_vs_previous_day_close_pct;
   const unit = q.unit === "percent_yield" ? " bp" : "%";
-  return `<article class="quote"><div class="quote-top"><strong>${e(q.name)}</strong><b class="${direction(change)}">${signed(change, unit)}</b></div><div class="quote-price">${decimal(q.price)} <small>${q.unit === "percent_yield" ? "% · 收益率" : q.unit === "index_points" ? "点" : e(q.currency ?? q.unit)}${q.asset_type === "continuous_futures" ? " · 连续期货" : ""}</small></div><div class="quote-time">${e(q.market_date)} · ${e(timeLabel(q.observed_at, q.exchange_timezone).split(" ").at(-1))} 来源市场时间<br>北京时间 ${e(timeLabel(q.observed_at))} · ${q.freshness === "stale" ? "资料较旧" : "最近可用观测"}</div><div class="quote-source">${external(q.symbol.endsWith(".SS") && q.source === "eastmoney" ? `https://quote.eastmoney.com/sh${encodeURIComponent(q.symbol.split(".")[0])}.html` : sourceURLs[q.source] ?? "https://finance.yahoo.com/", sourceNames[q.source] ?? q.source)}</div></article>`;
+  return `<article class="quote"><div class="quote-top"><strong>${e(q.name)}</strong><b class="${direction(change)}">${signed(change, unit)}</b></div><div class="quote-price">${decimal(q.price)} <small>${q.unit === "percent_yield" ? "% · 收益率" : q.unit === "index_points" ? "点" : e(q.currency ?? q.unit)}${q.asset_type === "continuous_futures" ? " · 连续期货" : ""}</small></div><div class="quote-time">${e(q.market_date)} · ${e(timeLabel(q.observed_at, q.exchange_timezone).split(" ").at(-1))} 来源市场时间<br>北京时间 ${e(timeLabel(q.observed_at))} · ${q.freshness === "stale" ? "资料较旧" : "最近可用观测"}</div><div class="quote-source">${external(q.symbol.endsWith(".SS") && q.source === "eastmoney" ? `https://quote.eastmoney.com/sh${encodeURIComponent(q.symbol.split(".")[0])}.html` : (sourceURLs[q.source] ?? "https://finance.yahoo.com/"), sourceNames[q.source] ?? q.source)}</div></article>`;
 }
 function cnRows(snapshot: Snapshot) {
   const module = snapshot.modules.cn_market;
@@ -236,37 +252,70 @@ function advice(snapshot: Snapshot) {
     ? `<div class="advice-lead"><strong>${e(plan.stance)}</strong><small>${e(plan.as_of_date)} 收盘判断</small><p>${e(plan.action)}</p></div><h4>判断依据</h4><ul>${plan.evidence.map((line) => `<li>${e(line)}</li>`).join("")}</ul><div class="advice-rules"><div><h4>参与条件</h4><p>${e(plan.confirm)}</p></div><div><h4>重新评估条件</h4><p>${e(plan.invalidate)}</p></div></div><p class="caption">${e(plan.risk)}</p>`
     : '<p class="muted">沪深 300 日线不足，等待下一次大盘研判。</p>';
   const stockList = stocks.length
-    ? stocks.map((stock) => `<article class="sector-review"><a class="section-link" href="#/observe/${encodeURIComponent(stock.code)}">${e(stock.name)} · ${e(stock.code)}</a><p>${e(stock.conclusion)}</p><p class="caption">观察条件 · ${e(stock.trigger)}</p></article>`).join("")
-    : '<p class="muted">当前暂无符合规则的个股候选。</p>';
-  return heading("INVESTMENT", "投资建议") + card(
-    "市场观察",
-    `<section class="investment-section"><h3>整体大盘</h3>${market}</section>
+    ? stocks
+        .map(
+          (stock) =>
+            `<article class="sector-review"><a class="section-link" href="#/observe/${encodeURIComponent(stock.code)}">${e(stock.name)} · ${e(stock.code)}</a><p>${e(stock.conclusion)}</p><p class="caption">观察条件 · ${e(stock.trigger)}</p></article>`,
+        )
+        .join("")
+    : `<p class="muted">当前暂无符合规则的个股候选。</p>${snapshot.modules.observations?.explanation ? `<p class="caption">${e(snapshot.modules.observations.explanation)}</p>` : ""}`;
+  return (
+    heading("INVESTMENT", "投资建议") +
+    card(
+      "市场观察",
+      `<section class="investment-section"><h3>整体大盘</h3>${market}</section>
      <section class="investment-section"><h3>行业</h3>${sectorReviewContent(snapshot)}<a class="section-link" href="#/industry">查看行业排行</a></section>
-     <section class="investment-section"><h3>关注个股</h3>${stockList}<a class="section-link" href="#/observe">查看个股候选与我的跟踪</a></section>
-     <section class="investment-section"><h3>关注基金</h3>${watchQuote(snapshot, "510300.SS", "沪深300ETF华泰柏瑞", "510300")}${watchQuote(snapshot, "510500.SS", "中证500ETF南方", "510500")}<p class="caption">用两只宽基 ETF 对照大盘股与中盘股表现。比较涨跌前先核对交易日，关注基金成交与折溢价。</p></section>
-     <section class="investment-section"><h3>债券晴雨表</h3>${bondWeather(snapshot)}</section>`,
-    "advice-card",
+     <section class="investment-section"><h3>关注个股</h3>${stockList}<a class="section-link" href="#/observe">打开我的跟踪</a></section>
+     <section class="investment-section"><h3>参考信号 · 宽基基金</h3>${watchQuote(snapshot, "510300.SS", "沪深300ETF华泰柏瑞", "510300")}${watchQuote(snapshot, "510500.SS", "中证500ETF南方", "510500")}<p class="caption">用两只宽基 ETF 对照大盘股与中盘股表现。比较涨跌前先核对交易日，关注基金成交与折溢价。</p></section>
+     <section class="investment-section"><h3>参考信号 · 债券</h3><p>${e(bondContext(snapshot))}</p><a class="section-link" href="#/global?section=bonds">查看债券晴雨表</a></section>`,
+      "advice-card",
+    )
   );
 }
-function watchQuote(snapshot: Snapshot, symbol: string, name: string, code?: string) {
-  const quote = dataOf(snapshot.modules.global)?.find((row) => row.symbol === symbol);
+function watchQuote(
+  snapshot: Snapshot,
+  symbol: string,
+  name: string,
+  code?: string,
+) {
+  const quote = dataOf(snapshot.modules.global)?.find(
+    (row) => row.symbol === symbol,
+  );
   const label = code ? `${name}（${code}）` : name;
   return quote
     ? globalRow({ ...quote, name: label })
     : `<p><strong>${e(label)}</strong> <span class="muted">· 暂无可用行情</span></p>`;
 }
-function bondWeather(snapshot: Snapshot) {
+function bondContext(snapshot: Snapshot) {
   const quotes = dataOf(snapshot.modules.global) ?? [];
-  const etf = quotes.find((q) => q.symbol === "511010.SS" && q.freshness !== "stale");
-  const treasury = quotes.find((q) => q.symbol === "^TNX" && q.freshness !== "stale");
+  const etf = quotes.find(
+    (q) => q.symbol === "511010.SS" && q.freshness !== "stale",
+  );
+  const treasury = quotes.find(
+    (q) => q.symbol === "^TNX" && q.freshness !== "stale",
+  );
   const move = etf?.change_vs_previous_day_close_pct;
   const bp = treasury?.change_bp;
-  const domestic = move == null ? "等待国内债券样本的可比收盘。"
-    : move > 0 ? "国内国债 ETF 价格走强。" : move < 0 ? "国内国债 ETF 价格承压。" : "国内国债 ETF 价格持平。";
-  const overseas = bp == null ? "等待美债收益率方向。"
-    : bp > 0 ? "美债收益率上行，关注长久期债券的利率风险。"
-    : bp < 0 ? "美债收益率下行，观察利率回落能否延续。" : "美债收益率持平。";
-  return `<p>${domestic} ${overseas}</p>${watchQuote(snapshot, "511010.SS", "国泰上证5年期国债ETF", "511010")}${watchQuote(snapshot, "^TNX", "美国10年期国债收益率")}<p class="caption">国内样本展示 ETF 市价涨跌，美债展示收益率和基点变动。两项各用本地交易日，覆盖政府债券观察，信用债暂未覆盖。</p>`;
+  const domestic =
+    move == null
+      ? "等待国内债券样本的可比收盘。"
+      : move > 0
+        ? "国内国债 ETF 价格走强。"
+        : move < 0
+          ? "国内国债 ETF 价格承压。"
+          : "国内国债 ETF 价格持平。";
+  const overseas =
+    bp == null
+      ? "等待美债收益率方向。"
+      : bp > 0
+        ? "美债收益率上行，关注长久期债券的利率风险。"
+        : bp < 0
+          ? "美债收益率下行，观察利率回落能否延续。"
+          : "美债收益率持平。";
+  return `${domestic} ${overseas}`;
+}
+function bondWeather(snapshot: Snapshot) {
+  return `<p>${e(bondContext(snapshot))}</p>${watchQuote(snapshot, "511010.SS", "国泰上证5年期国债ETF", "511010")}${watchQuote(snapshot, "^TNX", "美国10年期国债收益率")}<p class="caption">国内样本展示 ETF 市价涨跌，美债展示收益率和基点变动。两项各用本地交易日，覆盖政府债券观察，信用债暂未覆盖。</p>`;
 }
 function climate(snapshot: Snapshot) {
   const m = snapshot.modules.temperature,
@@ -294,21 +343,21 @@ function sectorReviewContent(snapshot: Snapshot, code?: string) {
       (!code || r.code === code),
   );
   return rows.length
-      ? rows
-          .map(
-            (r) =>
-              `<article class="sector-review"><a class="section-link" href="#/industry/${encodeURIComponent(r.code)}">${e(r.name)}</a><span class="badge">${e(r.state)}</span><p>${e(r.conclusion)}</p>${fold("sector-" + r.code, "查看条件、风险与版本", `<h3>观察条件</h3><p>${e(r.trigger)}</p><h3>失效条件</h3><p>${e(r.invalidation)}</p><ul>${r.risks.map((v) => `<li>${e(v)}</li>`).join("")}</ul><small>${e(r.rule_version)} · ${e(timeLabel(r.published_at))}</small>`)}</article>`,
-          )
-          .join("") +
-          (code
-            ? ""
-            : '<p class="caption">初步观察依据可见样本，优先观察需要当日完整覆盖且近五个交易日至少三次上涨上榜。</p>')
-      : empty(
-          code ? "保持观察" : "暂缓追涨",
-          code
-            ? "目前没有该行业的领先证据。等日涨幅和排名改善，再验证成交与成分股扩散。"
-            : "现有可核验榜单暂无上涨的领先行业，或日涨幅暂缺。先等下一次收盘，观察上涨行业是否增多。",
-        );
+    ? rows
+        .map(
+          (r) =>
+            `<article class="sector-review"><a class="section-link" href="#/industry/${encodeURIComponent(r.code)}">${e(r.name)}</a><span class="badge">${e(r.state)}</span><p>${e(r.conclusion)}</p>${fold("sector-" + r.code, "查看条件、风险与版本", `<h3>观察条件</h3><p>${e(r.trigger)}</p><h3>失效条件</h3><p>${e(r.invalidation)}</p><ul>${r.risks.map((v) => `<li>${e(v)}</li>`).join("")}</ul><small>${e(r.rule_version)} · ${e(timeLabel(r.published_at))}</small>`)}</article>`,
+        )
+        .join("") +
+        (code
+          ? ""
+          : '<p class="caption">初步观察依据可见样本，优先观察需要当日完整覆盖且近五个交易日至少三次上涨上榜。</p>')
+    : empty(
+        code ? "保持观察" : "暂缓追涨",
+        code
+          ? "目前没有该行业的领先证据。等日涨幅和排名改善，再验证成交与成分股扩散。"
+          : "现有可核验榜单暂无上涨的领先行业，或日涨幅暂缺。先等下一次收盘，观察上涨行业是否增多。",
+      );
 }
 function trackingSection(snapshot: Snapshot) {
   const rows = dataOf(snapshot.modules.tracking) ?? [];
@@ -341,56 +390,89 @@ function trackingSection(snapshot: Snapshot) {
   );
 }
 function shanghaiDate() {
-  return new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Shanghai" }).format(new Date());
+  return new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Shanghai" }).format(
+    new Date(),
+  );
 }
 function watchReviewList(snapshot?: Snapshot) {
   const today = shanghaiDate();
   return journal
-    .filter((row) => row.kind === "watch" && (!row.outcome || row.outcome === "watching"))
+    .filter(
+      (row) =>
+        row.kind === "watch" && (!row.outcome || row.outcome === "watching"),
+    )
     .map((row) => ({
       row,
       review: watchReview(row, snapshot),
       due: Boolean(row.reviewDate && row.reviewDate <= today),
     }))
-    .sort((a, b) => Number(b.due) - Number(a.due) || b.review.priority - a.review.priority ||
-      b.row.date.localeCompare(a.row.date));
+    .sort(
+      (a, b) =>
+        Number(b.due) - Number(a.due) ||
+        b.review.priority - a.review.priority ||
+        b.row.date.localeCompare(a.row.date),
+    );
 }
 function assistantHome(snapshot?: Snapshot) {
   const queue = watchReviewList(snapshot);
-  const attention = queue.filter(({ due, review }) => due || review.priority >= 2);
+  const attention = queue.filter(
+    ({ due, review }) => due || review.priority >= 2,
+  );
   const items = (attention.length ? attention : queue).slice(0, 3);
   const lead = !queue.length
     ? "还没有进行中的计划。可以从行业或个股页加入关注，也可以手动新增。"
-    : attention.length ? `有 ${attention.length} 条计划值得复核。`
-    : "暂无触发的榜单条件或到期复查。";
+    : attention.length
+      ? `有 ${attention.length} 条计划值得复核。`
+      : "暂无触发的榜单条件或到期复查。";
   const market = snapshot?.modules.investment;
   const plan = dataOf(market);
-  const marketSummary = plan && market?.status !== "stale"
-    ? `<strong>${e(plan.stance)}</strong><small> · ${e(plan.as_of_date)} 收盘</small><p>${e(plan.action)}</p>`
-    : '<p class="muted">暂无可用的大盘研判，等完整收盘数据再核对。</p>';
-  return heading("DAILY REVIEW", "今天该看什么") +
-    card("我的观察", `<p>${lead}</p>${items.map(({ row, review, due }) =>
-      `<article class="story"><strong>${e(row.symbol)}</strong> <span class="badge">${e(review.label)}</span>
+  const marketSummary =
+    plan && market?.status !== "stale"
+      ? `<strong>${e(plan.stance)}</strong><small> · ${e(plan.as_of_date)} 收盘</small><p>${e(plan.action)}</p>`
+      : '<p class="muted">暂无可用的大盘研判，等完整收盘数据再核对。</p>';
+  return (
+    heading("DAILY REVIEW", "今天该看什么") +
+    (!queue.length && snapshot ? card("A 股主要指数", cnRows(snapshot)) : "") +
+    card(
+      "我的观察",
+      `<p>${lead}</p>${items
+        .map(
+          ({ row, review, due }) =>
+            `<article class="story"><strong>${e(row.symbol)}</strong> <span class="badge">${e(review.label)}</span>
       ${due ? '<span class="badge">到期复查</span>' : ""}${review.detail ? `<p>${e(review.detail)}</p>` : ""}
       ${row.confirm ? `<p>确认条件 · ${e(row.confirm)}</p>` : ""}
       <p><strong>下一步</strong> ${e(row.nextCheck || "核对证据和计划条件，再更新状态。")}</p>
       ${row.invalidate ? `<small>失效条件 · ${e(row.invalidate)}</small>` : ""}
       <button type="button" class="text-button" data-action="journal-edit" data-value="${e(row.id)}">复查此计划</button></article>`,
-    ).join("")}<a class="section-link" href="#/observe">管理我的计划与复盘</a>`) +
-    card("大盘检查点", `${marketSummary}<a class="section-link" href="#/advice">查看完整投资建议</a>`) +
-    (snapshot ? fold("home-evidence", "展开行情与复盘资料",
-      card("A 股主要指数", cnRows(snapshot)) + climate(snapshot) + macroSummary(snapshot) +
-      card("最新行业涨幅", dailyRanking(latestIndustryDay(dataOf(snapshot.modules.industry)), 3) +
-        '<a class="section-link" href="#/industry">查看行业排行</a>') +
-      newsSection(snapshot, newsCount),
-    ) : "");
+        )
+        .join(
+          "",
+        )}<a class="section-link" href="#/observe">管理我的计划与复盘</a>`,
+    ) +
+    card(
+      "大盘检查点",
+      `${marketSummary}<a class="section-link" href="#/advice">查看完整投资建议</a>`,
+    ) +
+    (snapshot
+      ? fold(
+          "home-evidence",
+          "展开行情与复盘资料",
+          (queue.length ? card("A 股主要指数", cnRows(snapshot)) : "") +
+            climate(snapshot) +
+            card(
+              "最新行业涨幅",
+              dailyRanking(
+                latestIndustryDay(dataOf(snapshot.modules.industry)),
+                3,
+              ) + '<a class="section-link" href="#/industry">查看行业排行</a>',
+            ) +
+            newsSection(snapshot, newsCount),
+        )
+      : "")
+  );
 }
 function latestIndustryDay(data?: IndustryModule) {
-  const days = data?.daily_returns ?? [];
-  return (
-    days.filter((day) => day.rows.length === data?.expected_count).at(-1) ??
-    days.filter((day) => day.rows.length > 0).at(-1)
-  );
+  return data?.daily_returns?.filter((day) => day.rows.length > 0).at(-1);
 }
 
 function dailyRanking(day: IndustryDay | undefined, limit: number) {
@@ -440,13 +522,19 @@ function industryPage(snapshot: Snapshot) {
       )
     );
   const daily = data.daily_returns ?? [];
-  const latest = latestIndustryDay(data);
+  const latest = daily.filter((d) => d.rows.length > 0).at(-1);
+  const latestComplete = daily
+    .filter((d) => d.rows.length === data.expected_count)
+    .at(-1);
+  const adviceDate = data.recommendations?.find(
+    (r) => r.as_of_date,
+  )?.as_of_date;
   const selected =
     daily.find((d) => d.date === selectedIndustryDate) ??
     latest ??
     daily.at(-1);
   const selector = daily.length
-    ? `<label class="filter">交易日<select id="industry-date" aria-label="行业交易日"><option value="" ${selectedIndustryDate ? "" : "selected"}>最新有效榜单</option>${[
+    ? `<label class="filter">交易日<select id="industry-date" aria-label="行业交易日"><option value="" ${selectedIndustryDate ? "" : "selected"}>最新可用榜单</option>${[
         ...daily,
       ]
         .reverse()
@@ -459,11 +547,19 @@ function industryPage(snapshot: Snapshot) {
   return (
     heading("INDUSTRY", "行业分析", "申万一级行业 · 近 30 个交易日逐日排行") +
     moduleNote(m, "行业") +
-    (latest && daily.at(-1)?.date !== latest.date
-      ? `<p class="module-note">最近完整榜单截至 ${e(latest.date)}。可切换日期查看其后的数据状态。</p>`
-      : "") +
-    card("当日涨幅 Top 10", selector + dailyRanking(selected, 10)) +
-    sectorReviews(snapshot) +
+    `<p class="caption">最新可用榜单 ${latest ? e(latest.date) : "暂无"} · 最近完整榜单 ${latestComplete ? e(latestComplete.date) : "暂无"}</p>` +
+    card(
+      "当日涨幅 Top 10",
+      selector +
+        dailyRanking(selected, 10) +
+        '<p class="caption">切换日期只改变涨幅榜，行业建议始终依据最近的可用行情。</p>',
+    ) +
+    card(
+      "当前行业建议",
+      (adviceDate
+        ? `<p class="caption">建议依据日期 ${e(adviceDate)}</p>`
+        : "") + sectorReviewContent(snapshot),
+    ) +
     card("Top 10 上榜次数", frequencyChart(data)) +
     card(
       "计算口径",
@@ -524,23 +620,36 @@ function industryDetail(snapshot: Snapshot, code: string) {
   const medium = r.return_30d_pct;
   const relative = r.excess_30d_pp;
   const directionNote =
-    short == null || medium == null ? "等待收盘数据补齐后判断短中期方向。"
-    : short > 0 && medium > 0 ? "短中期均上涨，观察后续收盘能否延续涨势。"
-    : short < 0 && medium > 0 ? "中期上涨、短期回落，观察回落是否止住。"
-    : short > 0 && medium < 0 ? "中期下跌、短期反弹，观察反弹能否延续。"
-    : short < 0 && medium < 0 ? "短中期均下跌，观察跌幅是否收窄。"
-    : "至少一个观察周期涨跌持平，等待下一交易日确认。";
+    short == null || medium == null
+      ? "等待收盘数据补齐后判断短中期方向。"
+      : short > 0 && medium > 0
+        ? "短中期均上涨，观察后续收盘能否延续涨势。"
+        : short < 0 && medium > 0
+          ? "中期上涨、短期回落，观察回落是否止住。"
+          : short > 0 && medium < 0
+            ? "中期下跌、短期反弹，观察反弹能否延续。"
+            : short < 0 && medium < 0
+              ? "短中期均下跌，观察跌幅是否收窄。"
+              : "至少一个观察周期涨跌持平，等待下一交易日确认。";
   const relativeNote =
-    relative == null ? "当前缺少同期对照数据。"
-    : relative > 0 ? "同期跑赢沪深 300，复核超额表现能否延续。"
-    : relative < 0 ? "同期跑输沪深 300，观察相对弱势是否收敛。"
-    : "同期表现与沪深 300 持平。";
-  const research = card("行业投资参考",
+    relative == null
+      ? "当前缺少同期对照数据。"
+      : relative > 0
+        ? "同期跑赢沪深 300，复核超额表现能否延续。"
+        : relative < 0
+          ? "同期跑输沪深 300，观察相对弱势是否收敛。"
+          : "同期表现与沪深 300 持平。";
+  const research = card(
+    "行业投资参考",
     `<p class="caption">截至 ${e(data.as_of_date)} 收盘 · 窗口内缺失收盘 ${r.missing_session_dates.length} 天</p>
-     <dl>${metrics.map(([label, value, unit]) =>
-       `<dt>${label}</dt><dd>${value == null ? "数据不足" : `${value.toFixed(2)}${unit}`}</dd>`,
-     ).join("")}</dl>
-     <h3>下一交易日观察</h3><ul><li>${directionNote}</li><li>${relativeNote}</li></ul>`);
+     <dl>${metrics
+       .map(
+         ([label, value, unit]) =>
+           `<dt>${label}</dt><dd>${value == null ? "数据不足" : `${value.toFixed(2)}${unit}`}</dd>`,
+       )
+       .join("")}</dl>
+     <h3>下一交易日观察</h3><ul><li>${directionNote}</li><li>${relativeNote}</li></ul>`,
+  );
   return `<a class="back-link" href="#/industry">返回行业排行</a>${heading(e(r.code) + " · 申万一级", e(r.name))}${followButton("industry", r.code)}${moduleNote(m, "行业数据")}${research}${card("近 30 个交易日每日涨跌", dailyMoveChart(data, code))}${card("依据与来源", `${external(sourceURLs.sw, "申万宏源研究 · 行业指数")}${external(sourceURLs.eastmoney, "东方财富 · 沪深 300 基准")}${fold("industry-evidence", "查看计算方法与数据范围", "<p>涨幅按相邻两个交易日的收盘计算，遇到缺日留空。</p>")}<p class="caption">行业与新闻按标题关键词关联，不能据此确认催化或利好。</p>`)}${sectorReviews(snapshot, code)}${card("相关资讯线索", `<p class="caption">仅标题关键词关联，需阅读原文核验。</p>${(dataOf(snapshot.modules.macro)?.industry_news[code] ?? []).map(article).join("") || empty("暂无匹配资讯", "当前来源覆盖有限，未匹配不代表没有事件。")}`)}${card(
     "相关个股",
     (dataOf(snapshot.modules.observations) ?? [])
@@ -569,7 +678,7 @@ function globalClimate(snapshot: Snapshot) {
     .join("");
   return (
     card(
-      "全球市场冷暖",
+      "美港股冷暖",
       `<div class="global-climate-summary"><div><strong>${e(label)}</strong>${score === null ? "" : `<b>${decimal(score, 1)} / 100</b>`}</div>${score === null ? '<p class="caption">综合冷暖需要同时覆盖美股和港股，并至少取得三只指数。样本不足时保留分市场走势。</p>' : meter(score) + '<div class="scale-labels"><span>冷</span><span>中性</span><span>暖</span></div>'}</div>
     ${tiles ? `<div class="global-tiles">${tiles}</div>` : ""}
     <p class="caption">由美股和港股指数样本计算，围绕 50 分按平均涨跌映射，两地等权。两地时间各自标注。覆盖不足时仅代表已取得的样本。美元、美债和商品另作分析。</p>`,
@@ -600,7 +709,9 @@ function globalPage(snapshot: Snapshot) {
       "宏观资产",
       rows.filter(
         (q) =>
-          !["^GSPC", "^IXIC", "^DJI", "^HSI", "HSTECH.HK", "^TNX"].includes(q.symbol) && !q.asset_type.endsWith("_etf"),
+          !["^GSPC", "^IXIC", "^DJI", "^HSI", "HSTECH.HK", "^TNX"].includes(
+            q.symbol,
+          ) && !q.asset_type.endsWith("_etf"),
       ),
     ],
   ] as const;
@@ -611,7 +722,7 @@ function globalPage(snapshot: Snapshot) {
       "各市场独立标注时间，均为最近可用观测。",
     ) +
     globalClimate(snapshot) +
-    card("债券晴雨表", bondWeather(snapshot)) +
+    `<div id="bonds">${card("债券晴雨表", bondWeather(snapshot))}</div>` +
     moduleNote(m, "国际行情") +
     (rows.length
       ? groups
@@ -638,28 +749,53 @@ function followButton(kind: "industry" | "stock", code: string) {
 }
 function followResearch(kind: string | undefined, code: string | undefined) {
   const snapshot = store.state.snapshot;
-  if (!snapshot || !code || !/^\d{6}$/.test(code) ||
-      (kind !== "industry" && kind !== "stock")) return;
-  const existing = journal.find((row) => row.kind === "watch" &&
-    row.target?.kind === kind && row.target.code === code &&
-    (!row.outcome || row.outcome === "watching"));
-  const research = kind === "industry"
-    ? dataOf(snapshot.modules.industry)?.recommendations?.find((r) => r.code === code)
-    : dataOf(snapshot.modules.observations)?.find((r) => r.code === code);
-  const name = kind === "industry"
-    ? dataOf(snapshot.modules.industry)?.industries.find((r) => r.code === code)?.name
-    : research?.name;
+  if (
+    !snapshot ||
+    !code ||
+    !/^\d{6}$/.test(code) ||
+    (kind !== "industry" && kind !== "stock")
+  )
+    return;
+  const existing = journal.find(
+    (row) =>
+      row.kind === "watch" &&
+      row.target?.kind === kind &&
+      row.target.code === code &&
+      (!row.outcome || row.outcome === "watching"),
+  );
+  const research =
+    kind === "industry"
+      ? dataOf(snapshot.modules.industry)?.recommendations?.find(
+          (r) => r.code === code,
+        )
+      : dataOf(snapshot.modules.observations)?.find((r) => r.code === code);
+  const name =
+    kind === "industry"
+      ? dataOf(snapshot.modules.industry)?.industries.find(
+          (r) => r.code === code,
+        )?.name
+      : research?.name;
   if (!name) return;
   journalEditing = existing ?? "new";
-  journalDraft = existing ? null : {
-    symbol: `${name} ${code}`.slice(0, 40), kind: "watch", target: { kind, code },
-    note: research?.conclusion.slice(0, 600) ?? "",
-    confirm: research?.trigger.slice(0, 600) ?? "",
-    invalidate: research?.invalidation.slice(0, 600) ?? "",
-    nextCheck: kind === "industry" ? "下一次完整收盘后复核行业排名和成交。" : "下一次收盘后核对研究卡与确认条件。",
-    checkIndustryRank: kind === "industry",
-    entry: null, exit: null, quantity: null, fees: null,
-  };
+  journalDraft = existing
+    ? null
+    : {
+        symbol: `${name} ${code}`.slice(0, 40),
+        kind: "watch",
+        target: { kind, code },
+        note: research?.conclusion.slice(0, 600) ?? "",
+        confirm: research?.trigger.slice(0, 600) ?? "",
+        invalidate: research?.invalidation.slice(0, 600) ?? "",
+        nextCheck:
+          kind === "industry"
+            ? "下一次完整收盘后复核行业排名和成交。"
+            : "下一次收盘后核对研究卡与确认条件。",
+        checkIndustryRank: kind === "industry",
+        entry: null,
+        exit: null,
+        quantity: null,
+        fees: null,
+      };
   location.hash = "#/observe?plan";
 }
 function journalSection(snapshot?: Snapshot) {
@@ -668,7 +804,7 @@ function journalSection(snapshot?: Snapshot) {
   const form = journalEditing
     ? `<form id="journal-form" class="journal-form">
     <label>标的代码或名称<input name="symbol" required maxlength="40" value="${e(row?.symbol)}"></label>
-    <div class="journal-grid"><label>记录日期<input name="date" type="date" required value="${e((row && "date" in row ? row.date : localDate))}"></label><label>类型<select name="kind" id="journal-kind"><option value="watch">观察计划</option><option value="trade" ${row?.kind === "trade" ? "selected" : ""}>交易记录</option></select></label></div>
+    <div class="journal-grid"><label>记录日期<input name="date" type="date" required value="${e(row && "date" in row ? row.date : localDate)}"></label><label>类型<select name="kind" id="journal-kind"><option value="watch">观察计划</option><option value="trade" ${row?.kind === "trade" ? "selected" : ""}>交易记录</option></select></label></div>
     <fieldset id="journal-trade" ${row?.kind === "trade" ? "" : "hidden disabled"}><legend>价格和数量</legend><div class="journal-grid">
     <label>买入均价<input name="entry" type="number" step="any" min="0.000001" value="${e(row?.entry)}"></label>
     <label>数量<input name="quantity" type="number" step="1" min="1" value="${e(row?.quantity)}"></label>
@@ -682,7 +818,19 @@ function journalSection(snapshot?: Snapshot) {
     <label>失效条件<textarea name="invalidate" maxlength="600" rows="2">${e(row?.invalidate)}</textarea></label>
     <label>下次复查什么<textarea name="nextCheck" maxlength="600" rows="2">${e(row?.nextCheck)}</textarea></label>
     <div class="journal-grid"><label>复查日期（选填）<input type="date" name="reviewDate" value="${e(row?.reviewDate)}"></label>
-    <label>我的判断<select name="outcome">${([["watching","观察中"],["confirmed","已确认"],["invalidated","已失效"],["closed","已结束"]] as const).map(([value,label]) => `<option value="${value}" ${row?.outcome === value ? "selected" : ""}>${label}</option>`).join("")}</select></label></div>
+    <label>我的判断<select name="outcome">${(
+      [
+        ["watching", "观察中"],
+        ["confirmed", "已确认"],
+        ["invalidated", "已失效"],
+        ["closed", "已结束"],
+      ] as const
+    )
+      .map(
+        ([value, label]) =>
+          `<option value="${value}" ${row?.outcome === value ? "selected" : ""}>${label}</option>`,
+      )
+      .join("")}</select></label></div>
     </fieldset>
     <p id="journal-error" role="alert"></p><div class="journal-actions"><button class="primary" type="submit">保存记录</button><button class="text-button" type="button" data-action="journal-cancel">取消</button></div>
     </form>`
@@ -691,20 +839,39 @@ function journalSection(snapshot?: Snapshot) {
     .sort((a, b) => b.date.localeCompare(a.date))
     .map((item) => {
       const pnl = realizedProfit(item);
-      const active = item.kind === "watch" && (!item.outcome || item.outcome === "watching");
+      const active =
+        item.kind === "watch" && (!item.outcome || item.outcome === "watching");
       const review = active ? watchReview(item, snapshot) : null;
-      return `<article class="story journal-item"><strong>${e(item.symbol)}</strong><small>${e(item.date)} · ${item.kind === "watch" ? watchOutcome(item) : "交易记录"}</small>${item.kind === "trade" ? `<p>买入 ${decimal(item.entry!, 4)} × ${item.quantity}${item.exit === null ? " · 待填写卖出价" : ` · 卖出 ${decimal(item.exit, 4)}`}</p>` : ""}
+      const category =
+        item.kind === "trade" ? "trades" : active ? "active" : "archive";
+      const html = `<article class="story journal-item"><strong>${e(item.symbol)}</strong><small>${e(item.date)} · ${item.kind === "watch" ? watchOutcome(item) : "交易记录"}</small>${item.kind === "trade" ? `<p>买入 ${decimal(item.entry!, 4)} × ${item.quantity}${item.exit === null ? " · 待填写卖出价" : ` · 卖出 ${decimal(item.exit, 4)}`}</p>` : ""}
       ${pnl !== null ? `<p class="${direction(pnl)}">价差扣费后 ${signed(pnl, " 元")}</p>` : ""}${item.note ? `<p class="journal-note">${e(item.note)}</p>` : ""}
       ${review ? `<p><span class="badge">${e(review.label)}</span> ${e(review.detail)}</p>` : ""}
       ${item.nextCheck ? `<p>复查 · ${e(item.nextCheck)} ${item.reviewDate ? e(item.reviewDate) : ""}</p>` : ""}
       <button class="text-button" data-action="journal-edit" data-value="${e(item.id)}">编辑</button></article>`;
-    })
-    .join("");
+      return { category, html };
+    });
+  const items = (category: string) =>
+    entries
+      .filter((row) => row.category === category)
+      .map((row) => row.html)
+      .join("");
   return card(
     "我的跟踪记录",
     '<p class="caption">记录保存在当前浏览器。清理浏览器数据前可导出备份。</p>' +
       form +
-      entries +
+      "<h3>进行中的计划</h3>" +
+      (items("active") || '<p class="muted">暂无进行中的计划。</p>') +
+      fold(
+        "journal-trades",
+        "交易记录",
+        items("trades") || '<p class="muted">暂无交易记录。</p>',
+      ) +
+      fold(
+        "journal-archive",
+        "已确认及归档的计划",
+        items("archive") || '<p class="muted">暂无已确认或归档的计划。</p>',
+      ) +
       `<div class="journal-actions">${journal.length ? '<button class="text-button" data-action="journal-export">导出 JSON 备份</button><button class="text-button" data-action="journal-markdown">导出 Markdown</button>' : ""}
       <button class="text-button" data-action="journal-import">导入 JSON 备份</button>
       <input type="file" id="journal-import" accept=".json,application/json" hidden></div>
@@ -712,8 +879,7 @@ function journalSection(snapshot?: Snapshot) {
   );
 }
 function observe(snapshot: Snapshot) {
-  const m = snapshot.modules.observations,
-    rows = dataOf(m) ?? [];
+  const rows = dataOf(snapshot.modules.observations) ?? [];
   if (route.code) {
     const r = rows.find((r) => r.code === route.code);
     if (!r)
@@ -728,45 +894,13 @@ function observe(snapshot: Snapshot) {
     heading(
       "RESEARCH WATCH",
       "跟踪",
-      "记录你的计划与成交，并查看系统观察候选。",
+      "复查观察计划、记录交易，查看系统纸面跟踪。",
     ) +
     journalSection(snapshot) +
-    moduleNote(m, "研究资料") +
-    (m?.pool_count != null
-      ? `<p class="caption">本期成分研究池 ${m.pool_count} 只 · 取得日线 ${m.validated_count ?? "—"} 只</p>`
-      : "") +
-    (rows.length
-      ? card(
-          "已发布研究卡",
-          rows
-            .map(
-              (r) =>
-                `<a class="research-row" href="#/observe/${encodeURIComponent(r.code)}"><strong>${e(r.name)}</strong><span class="badge">${e(r.state)}</span><p>${e(r.conclusion)}</p><small>${e(r.code)} · ${e(timeLabel(r.published_at))}</small></a>`,
-            )
-            .join(""),
-        )
-      : card(
-          "观察池",
-          empty(
-            m?.status === "failed"
-              ? "研究资料暂不可用"
-              : m
-                ? "本期暂无候选"
-                : "研究筛选待启用",
-            m?.status === "failed"
-              ? "研究模块未返回有效资料，请稍后刷新。"
-              : m
-                ? e(
-                    m.explanation ??
-                      "当前已发布的观察池为空，不强制凑满推荐数量。",
-                  )
-                : "个股筛选与证据分析尚未启用。当前仅提供行情与行业事实指标，不生成示例推荐。",
-          ),
-        )) +
-    trackingSection(snapshot) +
     card(
-      "筛选与跟踪规则",
-      '<div class="process"><div><b>研究依据</b><span>行业背景、量价事实与来源</span></div><div><b>条件与风险</b><span>何时触发，何时失效，哪些判断待验证</span></div><div><b>后续跟踪</b><span>保留原始信号，以纸面成本追踪各窗口</span></div></div>',
+      "系统研究记录",
+      fold("system-tracking", "查看系统纸面跟踪", trackingSection(snapshot)) +
+        '<a class="section-link" href="#/advice">到建议页查看本期系统候选</a>',
     )
   );
 }
@@ -817,7 +951,7 @@ function render(preserve = true) {
     content =
       heading("NOT FOUND", "页面不存在") +
       '<a class="section-link" href="#/">返回市场总览</a>';
-  app.innerHTML = `<a class="skip-link" href="#main-content">跳到主要内容</a><div class="app-shell"><header><a class="brand" href="#/" aria-label="股市气象站首页"><span aria-hidden="true">◒</span><div><b>股市气象站</b><small>最新资料 · 公开阅读</small></div></a><button type="button" class="refresh" data-action="refresh" ${refreshing ? "disabled" : ""}>刷新数据</button></header>${banner}<main id="main-content" tabindex="-1"><div class="snapshot-meta">${snapshot ? `<span>上次发布 ${e(timeLabel(snapshot.published_at))} 北京时间</span><small>${state.fromCache ? "本机缓存 · " : ""}交易日 08:45 / 11:45 / 17:30 采集</small>${state.checkedAt ? `<small>最近检查 ${e(timeLabel(state.checkedAt))} 北京时间</small>` : ""}` : state.loading ? "<span>正在读取资料快照</span>" : "<span>暂无有效资料快照</span>"}</div><p class="module-note" role="status" ${refreshMessage ? "" : "hidden"}>${e(refreshMessage)}</p>${content}<footer><p>行情以各市场时间为准 · 无需登录阅读</p></footer></main>${nav()}</div>`;
+  app.innerHTML = `<a class="skip-link" href="#main-content">跳到主要内容</a><div class="app-shell"><header><a class="brand" href="#/" aria-label="股市气象站首页"><span aria-hidden="true">◒</span><div><b>股市气象站</b><small>最新资料 · 公开阅读</small></div></a><button type="button" id="refresh-data" class="refresh" data-action="refresh" ${refreshing || activeRun ? "disabled" : ""}>${refreshing ? "启动中…" : activeRun ? "采集中…" : "刷新数据"}</button></header>${banner}<main id="main-content" tabindex="-1"><div class="snapshot-meta">${snapshot ? `<span>上次发布 ${e(timeLabel(snapshot.published_at))} 北京时间</span><small>${state.fromCache ? "本机缓存 · " : ""}交易日 08:45 / 11:45 / 17:30 采集</small>${state.checkedAt ? `<small>最近检查 ${e(timeLabel(state.checkedAt))} 北京时间</small>` : ""}` : state.loading ? "<span>正在读取资料快照</span>" : "<span>暂无有效资料快照</span>"}</div><div class="collection-status" role="status" ${refreshMessage ? "" : "hidden"}>${e(refreshMessage)} ${lastRun ? external(collectionRunURL(lastRun), "查看采集任务") : ""}${authorization && !refreshing ? ' <button class="text-button" data-action="forget-collection">清除本页授权</button>' : ""}</div>${content}<footer><p>行情以各市场时间为准 · 无需登录阅读</p></footer></main>${nav()}</div>`;
 
   document.title =
     (route.page === "industry"
@@ -837,24 +971,138 @@ function render(preserve = true) {
       document.getElementById(focused)?.focus({ preventScroll: true });
   });
 }
-async function refreshPublishedData() {
-  if (refreshing) return;
-  refreshing = true;
-  refreshMessage = "正在检查已发布数据…";
+const collectionDialog = document.createElement("dialog");
+collectionDialog.className = "collection-dialog";
+collectionDialog.setAttribute("aria-labelledby", "collection-title");
+collectionDialog.innerHTML = `<form id="collection-form">
+  <h2 id="collection-title">授权并启动采集</h2>
+  <p>用 GitHub 细粒度令牌授予 <code>tansitanding/market-weather</code> 的 Actions 读写权限。请只选择这个仓库和短有效期。</p>
+  <p class="caption">令牌只发送给 GitHub API，在本页内存最多保留 30 分钟。关闭或重载页面即清除。</p>
+  <label>GitHub 细粒度令牌<input id="collection-token" type="password" autocomplete="off" required maxlength="261" spellcheck="false"></label>
+  <p id="collection-error" role="alert"></p>
+  <div class="journal-actions"><button class="primary" type="submit">启动采集</button><button class="text-button" id="cancel-collection" type="button">取消</button></div>
+  <p>${external(fineGrainedTokens, "创建细粒度令牌")} · ${external(collectionWorkflow, "在 GitHub 手动运行")}</p>
+  </form>`;
+document.body.append(collectionDialog);
+window.addEventListener("pagehide", () => {
+  tokenInput.value = "";
+  clearAuthorization();
+});
+const collectionForm = collectionDialog.querySelector<HTMLFormElement>("form")!;
+const tokenInput = collectionDialog.querySelector<HTMLInputElement>("input")!;
+const tokenError =
+  collectionDialog.querySelector<HTMLElement>("#collection-error")!;
+function clearAuthorization() {
+  authorization = null;
+  window.clearTimeout(authorizationTimer);
+}
+collectionDialog.addEventListener("close", () => {
+  tokenInput.value = "";
+  tokenError.textContent = "";
+  document.getElementById("refresh-data")?.focus({ preventScroll: true });
+});
+collectionDialog
+  .querySelector("#cancel-collection")
+  ?.addEventListener("click", () => collectionDialog.close());
+collectionForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+  const token = tokenInput.value.trim();
+  if (!isCollectionToken(token)) {
+    tokenError.textContent = "请输入 github_pat_ 开头的细粒度令牌。";
+    return;
+  }
+  collectionDialog.close();
+  void startCollection(token);
+});
+
+function showCollectionStatus(message: string) {
+  refreshMessage = message;
   if (!journalEditing) render();
-  try {
-    await store.refresh();
-    if (store.state.pending) {
-      store.acceptPending();
-      refreshMessage = "已载入最新发布的数据。";
-    } else {
-      refreshMessage = store.state.error
-        ? "检查失败，请稍后重试。"
-        : store.state.snapshot ? "当前已是最新发布版本。" : "暂无已发布数据。";
+  else {
+    const panel = app.querySelector<HTMLElement>(".collection-status");
+    if (panel) {
+      panel.hidden = !message;
+      panel.innerHTML =
+        e(message) +
+        (lastRun
+          ? " " + external(collectionRunURL(lastRun), "查看采集任务")
+          : "");
     }
+    const button = app.querySelector<HTMLButtonElement>("#refresh-data");
+    if (button) {
+      button.disabled = refreshing || activeRun !== null;
+      button.textContent = refreshing
+        ? "启动中…"
+        : activeRun
+          ? "采集中…"
+          : "刷新数据";
+    }
+  }
+}
+function stopCollection(message: string) {
+  activeRun = null;
+  showCollectionStatus(message);
+}
+async function checkCollection(id: number) {
+  if (activeRun !== id) return;
+  if (Date.now() >= trackedUntil) {
+    stopCollection("本页已停止自动检查。可到 GitHub 查看任务和发布结果。");
+    return;
+  }
+  try {
+    const run = await collectionStatus(id);
+    if (run.status === "completed") {
+      if (run.conclusion !== "success") {
+        stopCollection("本轮采集或发布未成功。请查看 GitHub 的任务记录。");
+        return;
+      }
+      await store.refresh();
+      if (store.state.pending) store.acceptPending();
+      if (store.state.snapshot?.collection_run_id === String(id)) {
+        stopCollection("本轮采集已发布，已载入新数据。");
+        return;
+      }
+      showCollectionStatus("GitHub 已完成，正在检查公开数据是否已同步…");
+    } else {
+      showCollectionStatus(
+        run.status === "in_progress"
+          ? "新一轮采集与发布正在运行…"
+          : "采集任务已提交，正在排队…",
+      );
+    }
+  } catch {
+    showCollectionStatus("暂时无法读取 GitHub 任务状态，稍后继续检查。");
+  }
+  pollTimer = window.setTimeout(() => void checkCollection(id), 15000);
+}
+async function startCollection(token: string) {
+  if (refreshing || activeRun) return;
+  refreshing = true;
+  lastRun = null;
+  showCollectionStatus("正在向 GitHub 提交采集请求…");
+  try {
+    const id = await dispatchCollection(token);
+    clearAuthorization();
+    authorization = token;
+    authorizationTimer = window.setTimeout(() => {
+      clearAuthorization();
+      if (!journalEditing) render();
+    }, 30 * 60_000);
+    activeRun = id;
+    lastRun = id;
+    trackedUntil = Date.now() + 30 * 60_000;
+    window.clearTimeout(pollTimer);
+    pollTimer = window.setTimeout(() => void checkCollection(id), 10000);
+    refreshMessage = "采集任务已提交，等待 GitHub 开始运行。";
+  } catch (error) {
+    clearAuthorization();
+    refreshMessage =
+      error instanceof Error && error.name === "Error"
+        ? error.message
+        : "没有收到提交结果，请先到 GitHub 核对任务，再决定是否重试。";
   } finally {
     refreshing = false;
-    if (!journalEditing) render();
+    showCollectionStatus(refreshMessage);
   }
 }
 app.addEventListener("click", (event) => {
@@ -879,7 +1127,12 @@ app.addEventListener("click", (event) => {
       break;
     case "refresh":
       event.preventDefault();
-      void refreshPublishedData();
+      if (authorization) void startCollection(authorization);
+      else if (!refreshing && !activeRun) collectionDialog.showModal();
+      break;
+    case "forget-collection":
+      clearAuthorization();
+      showCollectionStatus(refreshMessage);
       break;
     case "journal-follow":
       followResearch(el.dataset.kind, el.dataset.value);
@@ -916,13 +1169,19 @@ app.addEventListener("click", (event) => {
     case "journal-markdown":
     case "journal-export": {
       const markdown = el.dataset.action === "journal-markdown";
-      const content = markdown ? journalMarkdown(journal) : JSON.stringify(journal, null, 2);
-      const url = URL.createObjectURL(new Blob([content], {
-        type: markdown ? "text/markdown;charset=utf-8" : "application/json",
-      }));
+      const content = markdown
+        ? journalMarkdown(journal)
+        : JSON.stringify(journal, null, 2);
+      const url = URL.createObjectURL(
+        new Blob([content], {
+          type: markdown ? "text/markdown;charset=utf-8" : "application/json",
+        }),
+      );
       const link = document.createElement("a");
       link.href = url;
-      link.download = markdown ? "market-weather-journal.md" : "market-weather-journal.json";
+      link.download = markdown
+        ? "market-weather-journal.md"
+        : "market-weather-journal.json";
       link.click();
       window.setTimeout(() => URL.revokeObjectURL(url), 2000);
       break;
@@ -930,7 +1189,10 @@ app.addEventListener("click", (event) => {
   }
 });
 app.addEventListener("change", async (event) => {
-  if (event.target instanceof HTMLInputElement && event.target.id === "journal-import") {
+  if (
+    event.target instanceof HTMLInputElement &&
+    event.target.id === "journal-import"
+  ) {
     const file = event.target.files?.[0];
     if (!file) return;
     try {
@@ -940,7 +1202,8 @@ app.addEventListener("change", async (event) => {
       journal = rows;
       journalFeedback = `已导入 ${added} 条。相同记录 ID 保留本机版本。`;
     } catch (error) {
-      journalFeedback = error instanceof Error ? `导入失败：${error.message}` : "导入失败。";
+      journalFeedback =
+        error instanceof Error ? `导入失败：${error.message}` : "导入失败。";
     }
     const feedback = document.getElementById("journal-import-feedback");
     if (journalEditing && feedback) {
@@ -991,15 +1254,20 @@ app.addEventListener("submit", (event) => {
     quantity: trade ? number("quantity") : null,
     fees: trade ? number("fees") : null,
     ...(!trade && {
-      target, outcome, confirm: text("confirm"), invalidate: text("invalidate"),
-      nextCheck: text("nextCheck"), reviewDate: text("reviewDate") || undefined,
+      target,
+      outcome,
+      confirm: text("confirm"),
+      invalidate: text("invalidate"),
+      nextCheck: text("nextCheck"),
+      reviewDate: text("reviewDate") || undefined,
       checkIndustryRank: fields.has("rank"),
     }),
   };
   const feedback = document.getElementById("journal-error");
   if (!feedback) return;
   if (!validEntry(row)) {
-    feedback.textContent = "请核对标的、日期和字段长度。交易记录还需要有效买入均价和数量。";
+    feedback.textContent =
+      "请核对标的、日期和字段长度。交易记录还需要有效买入均价和数量。";
     return;
   }
   const next = editing
@@ -1048,7 +1316,16 @@ window.addEventListener("hashchange", () => {
   }
   route = parseRoute(hash);
   render(false);
-  if (follow) requestAnimationFrame(() => document.getElementById("journal-form")?.scrollIntoView({ block: "center" }));
+  if (hash === "#/global?section=bonds")
+    requestAnimationFrame(() =>
+      document.getElementById("bonds")?.scrollIntoView(),
+    );
+  if (follow)
+    requestAnimationFrame(() =>
+      document
+        .getElementById("journal-form")
+        ?.scrollIntoView({ block: "center" }),
+    );
 });
 store.subscribe(() => {
   if (!journalEditing) render();

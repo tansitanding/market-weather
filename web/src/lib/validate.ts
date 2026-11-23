@@ -541,6 +541,11 @@ export function parseSnapshot(v: unknown): Snapshot {
   return {
     schema_version: "1.0",
     snapshot_id: code(r.snapshot_id),
+    collection_run_id:
+      typeof r.collection_run_id === "string" &&
+      /^\d{1,20}$/.test(r.collection_run_id)
+        ? r.collection_run_id
+        : undefined,
     started_at: started,
     published_at: published,
     public_access_requires_login: false,

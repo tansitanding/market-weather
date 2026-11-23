@@ -112,6 +112,7 @@ export interface ResearchCard {
 export interface Snapshot {
   schema_version: "1.0";
   snapshot_id: string;
+  collection_run_id?: string;
   started_at: string;
   published_at: string;
   public_access_requires_login: false;

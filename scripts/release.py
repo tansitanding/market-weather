@@ -1,5 +1,5 @@
 """Collect, generate research, and export a bounded public brief for Pages."""
-import argparse,json,sys
+import argparse,json,os,sys
 from pathlib import Path
 from datetime import datetime,timezone
 from market_weather.pipeline import collect
@@ -15,6 +15,9 @@ if a.trigger=='schedule':
  except ValueError:print('交易日历未知，继续更新资讯但相关信号将降级')
 snapshot,advanced=collect(a.root,now=now)
 if not advanced:raise SystemExit('本次没有可发布的新版本，保留现有网页')
+run_id = os.environ.get('GITHUB_RUN_ID', '')
+if run_id.isascii() and run_id.isdecimal():
+    snapshot['collection_run_id'] = run_id
 export_snapshot(snapshot,a.out)
 tracking=Path(a.root)/'tracking.json'
 if tracking.exists():atomic_json(Path(a.out)/'tracking.json',json.loads(tracking.read_text()))

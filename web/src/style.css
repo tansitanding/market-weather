@@ -1232,3 +1232,43 @@ footer small {
 .journal-actions {
   flex-wrap: wrap;
 }
+
+.collection-dialog {
+  width: min(92vw, 420px);
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  padding: 18px;
+  color: inherit;
+}
+.collection-dialog::backdrop {
+  background: #10283799;
+}
+.collection-dialog form {
+  display: grid;
+  gap: 8px;
+}
+.collection-dialog h2,
+.collection-dialog p {
+  margin: 0;
+}
+.collection-dialog label {
+  display: grid;
+  gap: 6px;
+}
+.collection-dialog input {
+  font: inherit;
+  padding: 9px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  width: 100%;
+}
+.collection-status {
+  background: #e5f2ed;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 13px;
+}
+.collection-status[hidden],
+#collection-error:empty {
+  display: none;
+}
