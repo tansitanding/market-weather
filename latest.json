@@ -1,15 +1,15 @@
 {
   "schema_version": "1.0",
-  "snapshot_id": "20261123T062322-f22a6571",
-  "started_at": "2026-11-23T06:23:22.036269+00:00",
-  "published_at": "2026-11-23T06:24:22.558387+00:00",
+  "snapshot_id": "20261123T062447-05cfc25a",
+  "started_at": "2026-11-23T06:24:47.453450+00:00",
+  "published_at": "2026-11-23T06:30:36.250947+00:00",
   "trigger": "local_manual_validation",
   "timezone": "Asia/Shanghai",
   "public_access_requires_login": false,
   "analysis_status": "rules_v1",
   "modules": {
     "industry": {
-      "status": "partial",
+      "status": "stale",
       "source_as_of_date": "2026-11-20",
       "collected_at": "2026-11-23T06:23:22.036269+00:00",
       "data": {
@@ -8394,7 +8394,7 @@
               "短期上涨可能来自行业轮动",
               "需核验成交及上涨能否扩散到成分股"
             ],
-            "published_at": "2026-11-23T06:23:22.036269+00:00",
+            "published_at": "2026-11-23T06:24:47.453450+00:00",
             "rule_version": "sector-daily-v2.0"
           },
           {
@@ -8409,7 +8409,7 @@
               "短期上涨可能来自行业轮动",
               "需核验成交及上涨能否扩散到成分股"
             ],
-            "published_at": "2026-11-23T06:23:22.036269+00:00",
+            "published_at": "2026-11-23T06:24:47.453450+00:00",
             "rule_version": "sector-daily-v2.0"
           },
           {
@@ -8424,7 +8424,7 @@
               "短期上涨可能来自行业轮动",
               "需核验成交及上涨能否扩散到成分股"
             ],
-            "published_at": "2026-11-23T06:23:22.036269+00:00",
+            "published_at": "2026-11-23T06:24:47.453450+00:00",
             "rule_version": "sector-daily-v2.0"
           }
         ],
@@ -8432,12 +8432,13 @@
         "age_calendar_days": 3,
         "freshness": "latest_available"
       },
-      "carried_forward": false
+      "carried_forward": true,
+      "last_attempt_at": "2026-11-23T06:24:47.453450+00:00"
     },
     "cn_market": {
-      "status": "succeeded",
+      "status": "stale",
       "collected_at": "2026-11-23T06:23:22.036269+00:00",
-      "carried_forward": false,
+      "carried_forward": true,
       "data": {
         "benchmark": [
           {
@@ -8478,29 +8479,30 @@
           ]
         }
       },
-      "source_as_of_date": "2026-11-20"
+      "source_as_of_date": "2026-11-20",
+      "last_attempt_at": "2026-11-23T06:24:47.453450+00:00"
     },
     "global": {
       "status": "succeeded",
-      "collected_at": "2026-11-23T06:23:22.036269+00:00",
+      "collected_at": "2026-11-23T06:24:47.453450+00:00",
       "carried_forward": false,
       "data": [
         {
           "symbol": "510300.SS",
           "name": "沪深300ETF华泰柏瑞",
           "asset_type": "equity_etf",
-          "price": 4.041,
+          "price": 4.018,
           "unit": "CNY",
           "currency": "CNY",
-          "market_date": "2026-11-23",
-          "observed_at": "2026-11-23T06:09:09+00:00",
+          "market_date": "2026-11-20",
+          "observed_at": "2026-11-20T15:00:00+08:00",
           "exchange_timezone": "Asia/Shanghai",
-          "source": "yahoo",
-          "change_vs_previous_day_close_pct": 0.572421,
+          "source": "eastmoney",
+          "change_vs_previous_day_close_pct": -1.034483,
           "change_bp": null,
           "change_unit": "percent",
           "availability": "latest_available_observation",
-          "age_hours": 0.237,
+          "age_hours": 71.413,
           "is_live_guaranteed": false,
           "freshness": "latest_available"
         },
@@ -8508,18 +8510,18 @@
           "symbol": "510500.SS",
           "name": "中证500ETF南方",
           "asset_type": "equity_etf",
-          "price": 6.2,
+          "price": 6.053,
           "unit": "CNY",
           "currency": "CNY",
-          "market_date": "2026-11-23",
-          "observed_at": "2026-11-23T06:09:08+00:00",
+          "market_date": "2026-11-20",
+          "observed_at": "2026-11-20T15:00:00+08:00",
           "exchange_timezone": "Asia/Shanghai",
-          "source": "yahoo",
-          "change_vs_previous_day_close_pct": 2.428548,
+          "source": "eastmoney",
+          "change_vs_previous_day_close_pct": -3.70665,
           "change_bp": null,
           "change_unit": "percent",
           "availability": "latest_available_observation",
-          "age_hours": 0.237,
+          "age_hours": 71.413,
           "is_live_guaranteed": false,
           "freshness": "latest_available"
         },
@@ -8527,18 +8529,18 @@
           "symbol": "511010.SS",
           "name": "国泰上证5年期国债ETF",
           "asset_type": "bond_etf",
-          "price": 141.386,
+          "price": 141.411,
           "unit": "CNY",
           "currency": "CNY",
-          "market_date": "2026-11-23",
-          "observed_at": "2026-11-23T06:09:09+00:00",
+          "market_date": "2026-11-20",
+          "observed_at": "2026-11-20T15:00:00+08:00",
           "exchange_timezone": "Asia/Shanghai",
-          "source": "yahoo",
-          "change_vs_previous_day_close_pct": -0.017676,
+          "source": "eastmoney",
+          "change_vs_previous_day_close_pct": 0.0,
           "change_bp": null,
           "change_unit": "percent",
           "availability": "latest_available_observation",
-          "age_hours": 0.237,
+          "age_hours": 71.413,
           "is_live_guaranteed": false,
           "freshness": "latest_available"
         },
@@ -8546,18 +8548,18 @@
           "symbol": "CL=F",
           "name": "WTI原油期货连续",
           "asset_type": "continuous_futures",
-          "price": 83.29,
+          "price": 83.39,
           "unit": "USD",
           "currency": "USD",
           "market_date": "2026-11-23",
-          "observed_at": "2026-11-23T06:13:59+00:00",
+          "observed_at": "2026-11-23T06:16:12+00:00",
           "exchange_timezone": "America/New_York",
           "source": "yahoo",
-          "change_vs_previous_day_close_pct": -0.821628,
+          "change_vs_previous_day_close_pct": -0.702552,
           "change_bp": null,
           "change_unit": "percent",
           "availability": "latest_available_observation",
-          "age_hours": 0.156,
+          "age_hours": 0.143,
           "is_live_guaranteed": false,
           "freshness": "latest_available"
         },
@@ -8565,18 +8567,18 @@
           "symbol": "DX-Y.NYB",
           "name": "美元指数",
           "asset_type": "index",
-          "price": 103.664,
+          "price": 103.655,
           "unit": "index_points",
           "currency": "USD",
           "market_date": "2026-11-23",
-          "observed_at": "2026-11-23T06:13:57+00:00",
+          "observed_at": "2026-11-23T06:16:12+00:00",
           "exchange_timezone": "America/New_York",
           "source": "yahoo",
-          "change_vs_previous_day_close_pct": -0.140639,
+          "change_vs_previous_day_close_pct": -0.149309,
           "change_bp": null,
           "change_unit": "percent",
           "availability": "latest_available_observation",
-          "age_hours": 0.157,
+          "age_hours": 0.143,
           "is_live_guaranteed": false,
           "freshness": "latest_available"
         },
@@ -8584,18 +8586,18 @@
           "symbol": "GC=F",
           "name": "黄金期货连续",
           "asset_type": "continuous_futures",
-          "price": 3617.5,
+          "price": 3618.3,
           "unit": "USD",
           "currency": "USD",
           "market_date": "2026-11-23",
-          "observed_at": "2026-11-23T06:13:57+00:00",
+          "observed_at": "2026-11-23T06:16:10+00:00",
           "exchange_timezone": "America/New_York",
           "source": "yahoo",
-          "change_vs_previous_day_close_pct": 2.904367,
+          "change_vs_previous_day_close_pct": 2.927124,
           "change_bp": null,
           "change_unit": "percent",
           "availability": "latest_available_observation",
-          "age_hours": 0.157,
+          "age_hours": 0.144,
           "is_live_guaranteed": false,
           "freshness": "latest_available"
         },
@@ -8603,18 +8605,18 @@
           "symbol": "HSTECH.HK",
           "name": "恒生科技",
           "asset_type": "index",
-          "price": 3522.56,
+          "price": 3513.03,
           "unit": "index_points",
           "currency": null,
           "market_date": "2026-11-23",
-          "observed_at": "2026-11-23T06:08:56+00:00",
+          "observed_at": "2026-11-23T06:11:10+00:00",
           "exchange_timezone": "Asia/Hong_Kong",
           "source": "yahoo",
           "change_vs_previous_day_close_pct": null,
           "change_bp": null,
           "change_unit": "percent",
           "availability": "latest_available_observation",
-          "age_hours": 0.241,
+          "age_hours": 0.227,
           "is_live_guaranteed": false,
           "freshness": "latest_available"
         },
@@ -8633,7 +8635,7 @@
           "change_bp": null,
           "change_unit": "percent",
           "availability": "latest_available_observation",
-          "age_hours": 56.79,
+          "age_hours": 56.813,
           "is_live_guaranteed": false,
           "freshness": "latest_available"
         },
@@ -8652,7 +8654,7 @@
           "change_bp": null,
           "change_unit": "percent",
           "availability": "latest_available_observation",
-          "age_hours": 56.791,
+          "age_hours": 56.815,
           "is_live_guaranteed": false,
           "freshness": "latest_available"
         },
@@ -8660,18 +8662,18 @@
           "symbol": "^HSI",
           "name": "恒生指数",
           "asset_type": "index",
-          "price": 22430.42,
+          "price": 22406.98,
           "unit": "index_points",
           "currency": "HKD",
           "market_date": "2026-11-23",
-          "observed_at": "2026-11-23T06:08:56+00:00",
+          "observed_at": "2026-11-23T06:11:10+00:00",
           "exchange_timezone": "Asia/Hong_Kong",
           "source": "yahoo",
-          "change_vs_previous_day_close_pct": 0.087544,
+          "change_vs_previous_day_close_pct": -0.017049,
           "change_bp": null,
           "change_unit": "percent",
           "availability": "latest_available_observation",
-          "age_hours": 0.241,
+          "age_hours": 0.227,
           "is_live_guaranteed": false,
           "freshness": "latest_available"
         },
@@ -8690,7 +8692,7 @@
           "change_bp": null,
           "change_unit": "percent",
           "availability": "latest_available_observation",
-          "age_hours": 56.123,
+          "age_hours": 56.147,
           "is_live_guaranteed": false,
           "freshness": "latest_available"
         },
@@ -8709,7 +8711,7 @@
           "change_bp": -14.000005,
           "change_unit": "bp",
           "availability": "latest_available_observation",
-          "age_hours": 58.391,
+          "age_hours": 58.415,
           "is_live_guaranteed": false,
           "freshness": "latest_available"
         }
@@ -8717,7 +8719,7 @@
     },
     "news": {
       "status": "succeeded",
-      "collected_at": "2026-11-23T06:23:22.036269+00:00",
+      "collected_at": "2026-11-23T06:24:47.453450+00:00",
       "carried_forward": false,
       "data": [
         {
@@ -8729,12 +8731,12 @@
           "published_date": "2026-11-23",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-23T06:23:22.036269+00:00",
+          "collected_at": "2026-11-23T06:24:47.453450+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
+          "related_sources": [],
           "importance_score": 0,
-          "importance_reason": null,
-          "related_sources": []
+          "importance_reason": null
         },
         {
           "event_id": "494407c8ec96df855d11",
@@ -8745,12 +8747,12 @@
           "published_date": "2026-11-23",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-23T06:23:22.036269+00:00",
+          "collected_at": "2026-11-23T06:24:47.453450+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
+          "related_sources": [],
           "importance_score": 0,
-          "importance_reason": null,
-          "related_sources": []
+          "importance_reason": null
         },
         {
           "event_id": "ea7751b855833db5c0f2",
@@ -8761,12 +8763,12 @@
           "published_date": "2026-11-23",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-23T06:23:22.036269+00:00",
+          "collected_at": "2026-11-23T06:24:47.453450+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
+          "related_sources": [],
           "importance_score": 0,
-          "importance_reason": null,
-          "related_sources": []
+          "importance_reason": null
         },
         {
           "event_id": "78f7cd7ad19da76eabc5",
@@ -8777,12 +8779,12 @@
           "published_date": "2026-11-23",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-23T06:23:22.036269+00:00",
+          "collected_at": "2026-11-23T06:24:47.453450+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
+          "related_sources": [],
           "importance_score": 0,
-          "importance_reason": null,
-          "related_sources": []
+          "importance_reason": null
         },
         {
           "event_id": "55116fb7c3afe0e1ce2c",
@@ -8793,12 +8795,12 @@
           "published_date": "2026-11-23",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-23T06:23:22.036269+00:00",
+          "collected_at": "2026-11-23T06:24:47.453450+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
+          "related_sources": [],
           "importance_score": 0,
-          "importance_reason": null,
-          "related_sources": []
+          "importance_reason": null
         },
         {
           "event_id": "e370a05065e08c3581db",
@@ -8809,12 +8811,12 @@
           "published_date": "2026-11-23",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-23T06:23:22.036269+00:00",
+          "collected_at": "2026-11-23T06:24:47.453450+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
+          "related_sources": [],
           "importance_score": 0,
-          "importance_reason": null,
-          "related_sources": []
+          "importance_reason": null
         },
         {
           "event_id": "7f2b79b5bc098b079ce4",
@@ -8825,12 +8827,12 @@
           "published_date": "2026-11-23",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-23T06:23:22.036269+00:00",
+          "collected_at": "2026-11-23T06:24:47.453450+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
+          "related_sources": [],
           "importance_score": 0,
-          "importance_reason": null,
-          "related_sources": []
+          "importance_reason": null
         },
         {
           "event_id": "36db5f564c071e07d320",
@@ -8841,12 +8843,12 @@
           "published_date": "2026-11-23",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-23T06:23:22.036269+00:00",
+          "collected_at": "2026-11-23T06:24:47.453450+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
+          "related_sources": [],
           "importance_score": 0,
-          "importance_reason": null,
-          "related_sources": []
+          "importance_reason": null
         },
         {
           "event_id": "0475fad118b52b9c6efb",
@@ -8857,12 +8859,12 @@
           "published_date": "2026-11-23",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-23T06:23:22.036269+00:00",
+          "collected_at": "2026-11-23T06:24:47.453450+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
+          "related_sources": [],
           "importance_score": 0,
-          "importance_reason": null,
-          "related_sources": []
+          "importance_reason": null
         },
         {
           "event_id": "b43247f2ce3b08819802",
@@ -8873,12 +8875,12 @@
           "published_date": "2026-11-23",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-23T06:23:22.036269+00:00",
+          "collected_at": "2026-11-23T06:24:47.453450+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
+          "related_sources": [],
           "importance_score": 0,
-          "importance_reason": null,
-          "related_sources": []
+          "importance_reason": null
         },
         {
           "event_id": "88be64e5287939aaafdd",
@@ -8889,12 +8891,12 @@
           "published_date": "2026-11-23",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-23T06:23:22.036269+00:00",
+          "collected_at": "2026-11-23T06:24:47.453450+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
+          "related_sources": [],
           "importance_score": 0,
-          "importance_reason": null,
-          "related_sources": []
+          "importance_reason": null
         },
         {
           "event_id": "a13e2ec4f8f32a234407",
@@ -8905,12 +8907,12 @@
           "published_date": "2026-11-23",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-23T06:23:22.036269+00:00",
+          "collected_at": "2026-11-23T06:24:47.453450+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
+          "related_sources": [],
           "importance_score": 0,
-          "importance_reason": null,
-          "related_sources": []
+          "importance_reason": null
         },
         {
           "event_id": "875865ea38bf6aa2aa3c",
@@ -8921,12 +8923,12 @@
           "published_date": "2026-11-23",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-23T06:23:22.036269+00:00",
+          "collected_at": "2026-11-23T06:24:47.453450+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
+          "related_sources": [],
           "importance_score": 0,
-          "importance_reason": null,
-          "related_sources": []
+          "importance_reason": null
         },
         {
           "event_id": "0d1e0a66da1be16436ec",
@@ -8937,12 +8939,12 @@
           "published_date": "2026-11-23",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-23T06:23:22.036269+00:00",
+          "collected_at": "2026-11-23T06:24:47.453450+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
+          "related_sources": [],
           "importance_score": 0,
-          "importance_reason": null,
-          "related_sources": []
+          "importance_reason": null
         },
         {
           "event_id": "e3e1286d99dff474dce3",
@@ -8953,12 +8955,12 @@
           "published_date": "2026-11-23",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-23T06:23:22.036269+00:00",
+          "collected_at": "2026-11-23T06:24:47.453450+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
+          "related_sources": [],
           "importance_score": 0,
-          "importance_reason": null,
-          "related_sources": []
+          "importance_reason": null
         },
         {
           "event_id": "09195a516534b3021d36",
@@ -8969,12 +8971,12 @@
           "published_date": "2026-11-23",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-23T06:23:22.036269+00:00",
+          "collected_at": "2026-11-23T06:24:47.453450+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
+          "related_sources": [],
           "importance_score": 0,
-          "importance_reason": null,
-          "related_sources": []
+          "importance_reason": null
         },
         {
           "event_id": "d4401487903ad7ec1068",
@@ -8985,12 +8987,12 @@
           "published_date": "2026-11-23",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-23T06:23:22.036269+00:00",
+          "collected_at": "2026-11-23T06:24:47.453450+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
+          "related_sources": [],
           "importance_score": 0,
-          "importance_reason": null,
-          "related_sources": []
+          "importance_reason": null
         },
         {
           "event_id": "f43f1088d84c40ac21a3",
@@ -9001,12 +9003,12 @@
           "published_date": "2026-11-23",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-23T06:23:22.036269+00:00",
+          "collected_at": "2026-11-23T06:24:47.453450+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
+          "related_sources": [],
           "importance_score": 0,
-          "importance_reason": null,
-          "related_sources": []
+          "importance_reason": null
         },
         {
           "event_id": "b970a1f4918f8c063c05",
@@ -9017,12 +9019,12 @@
           "published_date": "2026-11-23",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-23T06:23:22.036269+00:00",
+          "collected_at": "2026-11-23T06:24:47.453450+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
+          "related_sources": [],
           "importance_score": 0,
-          "importance_reason": null,
-          "related_sources": []
+          "importance_reason": null
         },
         {
           "event_id": "a87116d4c87371ea34e9",
@@ -9033,12 +9035,12 @@
           "published_date": "2026-11-23",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-23T06:23:22.036269+00:00",
+          "collected_at": "2026-11-23T06:24:47.453450+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
+          "related_sources": [],
           "importance_score": 0,
-          "importance_reason": null,
-          "related_sources": []
+          "importance_reason": null
         },
         {
           "event_id": "0403daedb3f94882e4a0",
@@ -9049,12 +9051,12 @@
           "published_date": "2026-11-23",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-23T06:23:22.036269+00:00",
+          "collected_at": "2026-11-23T06:24:47.453450+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
+          "related_sources": [],
           "importance_score": 0,
-          "importance_reason": null,
-          "related_sources": []
+          "importance_reason": null
         },
         {
           "event_id": "6790b1ad6e8daf93726f",
@@ -9065,12 +9067,12 @@
           "published_date": "2026-11-23",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-23T06:23:22.036269+00:00",
+          "collected_at": "2026-11-23T06:24:47.453450+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
+          "related_sources": [],
           "importance_score": 0,
-          "importance_reason": null,
-          "related_sources": []
+          "importance_reason": null
         },
         {
           "event_id": "721c298f8dc7443fd059",
@@ -9081,12 +9083,12 @@
           "published_date": "2026-11-23",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-23T06:23:22.036269+00:00",
+          "collected_at": "2026-11-23T06:24:47.453450+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
+          "related_sources": [],
           "importance_score": 0,
-          "importance_reason": null,
-          "related_sources": []
+          "importance_reason": null
         },
         {
           "event_id": "1b3c893df48c21fafa10",
@@ -9097,12 +9099,12 @@
           "published_date": "2026-11-23",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-23T06:23:22.036269+00:00",
+          "collected_at": "2026-11-23T06:24:47.453450+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
+          "related_sources": [],
           "importance_score": 0,
-          "importance_reason": null,
-          "related_sources": []
+          "importance_reason": null
         },
         {
           "event_id": "9fa0c26b784ebf50973e",
@@ -9113,12 +9115,12 @@
           "published_date": "2026-11-23",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-23T06:23:22.036269+00:00",
+          "collected_at": "2026-11-23T06:24:47.453450+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
+          "related_sources": [],
           "importance_score": 0,
-          "importance_reason": null,
-          "related_sources": []
+          "importance_reason": null
         },
         {
           "event_id": "2204aed4e131ffefc5dc",
@@ -9129,12 +9131,12 @@
           "published_date": "2026-11-23",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-23T06:23:22.036269+00:00",
+          "collected_at": "2026-11-23T06:24:47.453450+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
+          "related_sources": [],
           "importance_score": 0,
-          "importance_reason": null,
-          "related_sources": []
+          "importance_reason": null
         },
         {
           "event_id": "9e5b2a634e6e21931f46",
@@ -9145,12 +9147,12 @@
           "published_date": "2026-11-23",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-23T06:23:22.036269+00:00",
+          "collected_at": "2026-11-23T06:24:47.453450+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
+          "related_sources": [],
           "importance_score": 0,
-          "importance_reason": null,
-          "related_sources": []
+          "importance_reason": null
         },
         {
           "event_id": "f2b91861d3f08099e270",
@@ -9161,12 +9163,12 @@
           "published_date": "2026-11-23",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-23T06:23:22.036269+00:00",
+          "collected_at": "2026-11-23T06:24:47.453450+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
+          "related_sources": [],
           "importance_score": 0,
-          "importance_reason": null,
-          "related_sources": []
+          "importance_reason": null
         },
         {
           "event_id": "bc86c0d3026c118fe48c",
@@ -9177,12 +9179,12 @@
           "published_date": "2026-11-23",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-23T06:23:22.036269+00:00",
+          "collected_at": "2026-11-23T06:24:47.453450+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
+          "related_sources": [],
           "importance_score": 0,
-          "importance_reason": null,
-          "related_sources": []
+          "importance_reason": null
         },
         {
           "event_id": "d494c7f367b6ee1f7f10",
@@ -9193,12 +9195,12 @@
           "published_date": "2026-11-23",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-23T06:23:22.036269+00:00",
+          "collected_at": "2026-11-23T06:24:47.453450+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
+          "related_sources": [],
           "importance_score": 0,
-          "importance_reason": null,
-          "related_sources": []
+          "importance_reason": null
         },
         {
           "event_id": "d9f090ebf20adbad6418",
@@ -10025,7 +10027,7 @@
           "published_date": "2026-11-21",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-23T06:23:22.036269+00:00",
+          "collected_at": "2026-11-23T06:24:47.453450+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -10041,7 +10043,7 @@
           "published_date": "2026-11-21",
           "date_precision": "day",
           "event_occurred_at": null,
-          "collected_at": "2026-11-23T06:23:22.036269+00:00",
+          "collected_at": "2026-11-23T06:24:47.453450+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -10057,7 +10059,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-23T06:23:22.036269+00:00",
+          "collected_at": "2026-11-23T06:24:47.453450+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -10809,7 +10811,7 @@
           "published_date": "2026-11-20",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-23T06:23:22.036269+00:00",
+          "collected_at": "2026-11-23T06:24:47.453450+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -10825,7 +10827,7 @@
           "published_date": "2026-11-20",
           "date_precision": "day",
           "event_occurred_at": null,
-          "collected_at": "2026-11-23T06:23:22.036269+00:00",
+          "collected_at": "2026-11-23T06:24:47.453450+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -10841,7 +10843,7 @@
           "published_date": "2026-11-20",
           "date_precision": "day",
           "event_occurred_at": null,
-          "collected_at": "2026-11-23T06:23:22.036269+00:00",
+          "collected_at": "2026-11-23T06:24:47.453450+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -10857,7 +10859,7 @@
           "published_date": "2026-11-20",
           "date_precision": "day",
           "event_occurred_at": null,
-          "collected_at": "2026-11-23T06:23:22.036269+00:00",
+          "collected_at": "2026-11-23T06:24:47.453450+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -10873,7 +10875,7 @@
           "published_date": "2026-11-19",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-23T06:23:22.036269+00:00",
+          "collected_at": "2026-11-23T06:24:47.453450+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -10889,7 +10891,7 @@
           "published_date": "2026-11-18",
           "date_precision": "day",
           "event_occurred_at": null,
-          "collected_at": "2026-11-23T06:23:22.036269+00:00",
+          "collected_at": "2026-11-23T06:24:47.453450+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -10905,7 +10907,7 @@
           "published_date": "2026-11-14",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-23T06:23:22.036269+00:00",
+          "collected_at": "2026-11-23T06:24:47.453450+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -10921,7 +10923,7 @@
           "published_date": "2026-11-13",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-23T06:23:22.036269+00:00",
+          "collected_at": "2026-11-23T06:24:47.453450+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -10937,7 +10939,7 @@
           "published_date": "2026-11-13",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-23T06:23:22.036269+00:00",
+          "collected_at": "2026-11-23T06:24:47.453450+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -10953,7 +10955,7 @@
           "published_date": "2026-11-13",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-23T06:23:22.036269+00:00",
+          "collected_at": "2026-11-23T06:24:47.453450+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -10969,7 +10971,7 @@
           "published_date": "2026-11-13",
           "date_precision": "day",
           "event_occurred_at": null,
-          "collected_at": "2026-11-23T06:23:22.036269+00:00",
+          "collected_at": "2026-11-23T06:24:47.453450+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -10985,7 +10987,7 @@
           "published_date": "2026-11-12",
           "date_precision": "day",
           "event_occurred_at": null,
-          "collected_at": "2026-11-23T06:23:22.036269+00:00",
+          "collected_at": "2026-11-23T06:24:47.453450+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -11001,7 +11003,7 @@
           "published_date": "2026-11-11",
           "date_precision": "day",
           "event_occurred_at": null,
-          "collected_at": "2026-11-23T06:23:22.036269+00:00",
+          "collected_at": "2026-11-23T06:24:47.453450+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -11017,7 +11019,7 @@
           "published_date": "2026-11-11",
           "date_precision": "day",
           "event_occurred_at": null,
-          "collected_at": "2026-11-23T06:23:22.036269+00:00",
+          "collected_at": "2026-11-23T06:24:47.453450+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -11033,7 +11035,7 @@
           "published_date": "2026-11-11",
           "date_precision": "day",
           "event_occurred_at": null,
-          "collected_at": "2026-11-23T06:23:22.036269+00:00",
+          "collected_at": "2026-11-23T06:24:47.453450+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -11049,7 +11051,7 @@
           "published_date": "2026-11-10",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-23T06:23:22.036269+00:00",
+          "collected_at": "2026-11-23T06:24:47.453450+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -11065,7 +11067,7 @@
           "published_date": "2026-11-06",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-23T06:23:22.036269+00:00",
+          "collected_at": "2026-11-23T06:24:47.453450+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -11081,7 +11083,7 @@
           "published_date": "2026-11-05",
           "date_precision": "day",
           "event_occurred_at": null,
-          "collected_at": "2026-11-23T06:23:22.036269+00:00",
+          "collected_at": "2026-11-23T06:24:47.453450+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -11097,7 +11099,7 @@
           "published_date": "2026-11-05",
           "date_precision": "day",
           "event_occurred_at": null,
-          "collected_at": "2026-11-23T06:23:22.036269+00:00",
+          "collected_at": "2026-11-23T06:24:47.453450+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -11113,7 +11115,7 @@
           "published_date": "2026-11-05",
           "date_precision": "day",
           "event_occurred_at": null,
-          "collected_at": "2026-11-23T06:23:22.036269+00:00",
+          "collected_at": "2026-11-23T06:24:47.453450+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -11129,7 +11131,7 @@
           "published_date": "2026-11-05",
           "date_precision": "day",
           "event_occurred_at": null,
-          "collected_at": "2026-11-23T06:23:22.036269+00:00",
+          "collected_at": "2026-11-23T06:24:47.453450+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -11145,7 +11147,7 @@
           "published_date": "2026-11-04",
           "date_precision": "day",
           "event_occurred_at": null,
-          "collected_at": "2026-11-23T06:23:22.036269+00:00",
+          "collected_at": "2026-11-23T06:24:47.453450+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -11209,7 +11211,7 @@
           "published_date": "2026-10-30",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-23T06:23:22.036269+00:00",
+          "collected_at": "2026-11-23T06:24:47.453450+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -11225,7 +11227,7 @@
           "published_date": "2026-10-29",
           "date_precision": "second",
           "event_occurred_at": null,
-          "collected_at": "2026-11-23T06:23:22.036269+00:00",
+          "collected_at": "2026-11-23T06:24:47.453450+00:00",
           "analysis": null,
           "dedup_method": "exact_normalized_title",
           "related_sources": [],
@@ -11298,7 +11300,7 @@
       },
       "collected_at": "2026-11-22T13:49:34.107132+00:00",
       "carried_forward": true,
-      "last_attempt_at": "2026-11-23T06:23:22.036269+00:00"
+      "last_attempt_at": "2026-11-23T06:24:47.453450+00:00"
     },
     "macro": {
       "status": "succeeded",
@@ -11319,8 +11321,8 @@
           },
           {
             "title": "美元指数",
-            "text": "相对前一完整收盘 -0.14%",
-            "as_of": "2026-11-23T06:13:57+00:00",
+            "text": "相对前一完整收盘 -0.15%",
+            "as_of": "2026-11-23T06:16:12+00:00",
             "source_url": "https://finance.yahoo.com/quote/DX-Y.NYB/"
           },
           {
@@ -11333,7 +11335,7 @@
         "interpretation": "隔夜美股走弱，可能压制风险偏好；国内政策与资金节奏可能形成反向影响。",
         "counter_evidence": "需继续验证国内成交、行业扩散与公告；新闻关联不等于已证实的利好或因果。",
         "global_review": {
-          "score": 28.7,
+          "score": 28.0,
           "label": "偏冷",
           "markets": [
             {
@@ -11348,11 +11350,11 @@
             {
               "name": "港股",
               "date": "2026-11-23",
-              "average_pct": 0.0875,
-              "score": 51.1,
+              "average_pct": -0.017,
+              "score": 49.8,
               "coverage": 1,
               "expected": 2,
-              "advancing": 1
+              "advancing": 0
             }
           ],
           "notes": [
@@ -11366,11 +11368,11 @@
             },
             {
               "title": "美元与利率",
-              "text": "美元指数 -0.14%（2026-11-23），美国10年期收益率 -14.0 基点（2026-11-20）。分别观察美元变化对非美资产、利率变化对估值的压力。"
+              "text": "美元指数 -0.15%（2026-11-23），美国10年期收益率 -14.0 基点（2026-11-20）。分别观察美元变化对非美资产、利率变化对估值的压力。"
             },
             {
               "title": "商品线索",
-              "text": "黄金 +2.90%，WTI -0.82%（2026-11-23）。金油分化，分别核查美元、避险需求及原油供需。"
+              "text": "黄金 +2.93%，WTI -0.70%（2026-11-23）。金油分化，分别核查美元、避险需求及原油供需。"
             }
           ]
         },
@@ -11385,12 +11387,12 @@
               "published_date": "2026-11-23",
               "date_precision": "second",
               "event_occurred_at": null,
-              "collected_at": "2026-11-23T06:23:22.036269+00:00",
+              "collected_at": "2026-11-23T06:24:47.453450+00:00",
               "analysis": null,
               "dedup_method": "exact_normalized_title",
+              "related_sources": [],
               "importance_score": 0,
-              "importance_reason": null,
-              "related_sources": []
+              "importance_reason": null
             },
             {
               "event_id": "6bb83d3d6edc7532adb8",
@@ -11401,7 +11403,7 @@
               "published_date": "2026-11-21",
               "date_precision": "day",
               "event_occurred_at": null,
-              "collected_at": "2026-11-23T06:23:22.036269+00:00",
+              "collected_at": "2026-11-23T06:24:47.453450+00:00",
               "analysis": null,
               "dedup_method": "exact_normalized_title",
               "related_sources": [],
@@ -11501,12 +11503,12 @@
               "published_date": "2026-11-23",
               "date_precision": "second",
               "event_occurred_at": null,
-              "collected_at": "2026-11-23T06:23:22.036269+00:00",
+              "collected_at": "2026-11-23T06:24:47.453450+00:00",
               "analysis": null,
               "dedup_method": "exact_normalized_title",
+              "related_sources": [],
               "importance_score": 0,
-              "importance_reason": null,
-              "related_sources": []
+              "importance_reason": null
             },
             {
               "event_id": "0447f66de2bec346cae6",
@@ -11621,12 +11623,12 @@
               "published_date": "2026-11-23",
               "date_precision": "second",
               "event_occurred_at": null,
-              "collected_at": "2026-11-23T06:23:22.036269+00:00",
+              "collected_at": "2026-11-23T06:24:47.453450+00:00",
               "analysis": null,
               "dedup_method": "exact_normalized_title",
+              "related_sources": [],
               "importance_score": 0,
-              "importance_reason": null,
-              "related_sources": []
+              "importance_reason": null
             }
           ],
           "801770": [
@@ -11666,40 +11668,28 @@
         },
         "news_coverage_note": "只依据已采集公开标题，来源覆盖有限。"
       },
-      "collected_at": "2026-11-23T06:23:22.036269+00:00"
+      "collected_at": "2026-11-23T06:24:47.453450+00:00"
     },
     "observations": {
       "status": "partial",
       "data": [],
-      "collected_at": "2026-11-23T06:23:22.036269+00:00",
+      "collected_at": "2026-11-23T06:24:47.453450+00:00",
       "pool_count": 0,
       "validated_count": 0,
-      "market_gate": "closed",
-      "explanation": "沪深300收盘未高于20日均线，本期不新增个股候选。 当前没有可验证的研究成分池。"
+      "market_gate": "unknown",
+      "explanation": "缺少完整基准日线，暂停新增个股候选。 当前没有可验证的研究成分池。"
     },
     "investment": {
-      "status": "succeeded",
-      "data": {
-        "as_of_date": "2026-11-20",
-        "sector_date": "2026-11-20",
-        "stance": "防守观察",
-        "action": "暂缓新增方向仓位。已有持仓先复核买入理由、风险线和行业集中度。",
-        "evidence": [
-          "沪深300收盘 3954.57 点，较20日均线 4034.49 点 -1.98%。",
-          "同日上涨家数占有效报价 5.6%。",
-          "2026-11-20 完整行业榜的持续强势方向：银行、煤炭、石油石化。",
-          "本期符合个股筛选规则的候选 0 只。"
-        ],
-        "confirm": "关注后续完整收盘：沪深300在20日均线上方、上涨家数占比达到55%，且候选行业维持上涨并进入当日Top 10。",
-        "invalidate": "收盘再度跌破20日均线、上涨广度低于40%，或观察行业退出当日Top 10时，复核参与理由。",
-        "risk": "评价使用日终数据与固定阈值。题材轮动、跳空和来源延迟都可能影响可执行性。",
-        "rule_version": "investment-plan-v1.0"
+      "status": "failed",
+      "error": {
+        "code": "ValueError",
+        "message": "基准收盘数据不足"
       }
     },
     "tracking": {
       "status": "succeeded",
       "data": [],
-      "collected_at": "2026-11-23T06:23:22.036269+00:00"
+      "collected_at": "2026-11-23T06:24:47.453450+00:00"
     }
   },
   "sources": {
@@ -11744,7 +11734,7 @@
     "public_export_enabled": true,
     "mode": "bounded_research_brief_with_attribution"
   },
-  "collection_run_id": "45123702105",
+  "collection_run_id": "45123701827",
   "publication": {
     "scope": "公开研究简报：必要的观测、衍生指标与来源链接；不提供完整原始行情下载",
     "research_only": true,
